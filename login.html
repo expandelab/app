@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Gold Bird — Acceso al Sistema</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0A0C10;
+    --surface: #14171F;
+    --surface-2: #1A1E28;
+    --border-gold: rgba(201, 162, 39, 0.3);
+    --border-soft: rgba(242, 239, 230, 0.08);
+    --gold: #C9A227;
+    --gold-light: #E8C874;
+    --gold-pale: #F4E7C4;
+    --text: #F2EFE6;
+    --text-dim: #9C9A90;
+    --text-faint: #6B6A63;
+    --radius-lg: 20px;
+    --radius-md: 12px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+    display: flex;
+  }
+
+  /* Layout principal Split Screen */
+  .login-container {
+    display: flex;
+    width: 100vw;
+    min-height: 100vh;
+  }
+
+  /* LADO IZQUIERDO: Branding & Experience */
+  .brand-panel {
+    flex: 1;
+    background: radial-gradient(circle at 20% 20%, rgba(201, 162, 39, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(232, 200, 116, 0.05) 0%, transparent 50%),
+                var(--bg);
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-right: 1px solid var(--border-soft);
+  }
+
+  .brand-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .brand-header h1 {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    color: var(--gold-light);
+  }
+
+  .hero-content {
+    max-width: 480px;
+  }
+  .hero-content h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 38px;
+    line-height: 1.2;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+  .hero-content h2 span { color: var(--gold-light); }
+  .hero-content p {
+    color: var(--text-dim);
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  /* Status Widgets estilo Goldbird */
+  .widget-card {
+    background: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    backdrop-filter: blur(10px);
+  }
+  .widget-info { display: flex; align-items: center; gap: 12px; }
+  .widget-title { font-size: 13.5px; font-weight: 600; color: var(--text); }
+  .widget-sub { font-size: 11.5px; color: var(--text-faint); }
+  .status-tag {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: rgba(201, 162, 39, 0.15);
+    color: var(--gold-light);
+    border: 1px solid var(--border-gold);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* LADO DERECHO: Formulario Login */
+  .auth-panel {
+    width: 480px;
+    background: var(--surface);
+    padding: 3.5rem 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .nav-back {
+    align-self: flex-end;
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+  }
+  .nav-back:hover { color: var(--gold-light); }
+
+  .auth-box { margin: auto 0; }
+  .auth-box h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 26px;
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .auth-box .subtitle {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 1.5rem;
+  }
+
+  /* Selector de Rol (Cliente vs Comercio) */
+  .role-selector {
+    display: flex;
+    background: var(--surface-2);
+    padding: 4px;
+    border-radius: 999px;
+    border: 1px solid var(--border-soft);
+    margin-bottom: 1.5rem;
+  }
+  .role-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    padding: 8px 0;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .role-btn.active {
+    background: var(--gold);
+    color: #1A1400;
+    font-weight: 600;
+  }
+
+  .form-group { margin-bottom: 1.2rem; }
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .input-wrapper { position: relative; }
+  .input-wrapper input {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border-soft);
+    color: var(--text);
+    border-radius: var(--radius-md);
+    padding: 12px 14px 12px 40px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-wrapper input:focus { border-color: var(--gold); }
+  .input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.4;
+  }
+
+  .btn-submit {
+    width: 100%;
+    background: var(--gold);
+    color: #1A1400;
+    border: none;
+    border-radius: var(--radius-md);
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn-submit:hover { background: var(--gold-light); }
+  .btn-submit:active { transform: scale(0.99); }
+
+  .footer-text {
+    font-size: 12px;
+    color: var(--text-faint);
+    text-align: center;
+  }
+
+  @media(max-width: 860px) {
+    .brand-panel { display: none; }
+    .auth-panel { width: 100%; padding: 2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <!-- LADO IZQUIERDO: Presentación de Marca -->
+  <div class="brand-panel">
+    <div class="brand-header">
+      <svg width="32" height="32" viewBox="0 0 34 34" fill="none">
+        <circle cx="17" cy="17" r="16.5" stroke="#C9A227" stroke-width="1"/>
+        <path d="M17 8c3 3 3 7 3 9-2 0-6 0-9-3 1-4 4-6 6-6z" fill="#E8C874"/>
+        <path d="M17 26c-3-3-3-7-3-9 2 0 6 0 9 3-1 4-4 6-6 6z" fill="#C9A227"/>
+      </svg>
+      <h1>Gold Bird</h1>
+    </div>
+
+    <div class="hero-content">
+      <h2>Premia la lealtad. <span>Eleva la experiencia.</span></h2>
+      <p>Accede a tu pasaporte digital de recompensas o gestiona la fidelización de tus clientes en tiempo real.</p>
+      
+      <!-- Status Cards -->
+      <div class="widget-card">
+        <div class="widget-info">
+          <div>
+            <div class="widget-title">Programa VIP Plumas de Oro</div>
+            <div class="widget-sub">Canje instantáneo vía QR</div>
+          </div>
+        </div>
+        <span class="status-tag">● Activo</span>
+      </div>
+
+      <div class="widget-card">
+        <div class="widget-info">
+          <div>
+            <div class="widget-title">Seguridad y Validación</div>
+            <div class="widget-sub">Códigos dinámicos de 6 dígitos</div>
+          </div>
+        </div>
+        <span class="status-tag">Protegido</span>
+      </div>
+    </div>
+
+    <div class="footer-text" style="text-align:left;">
+      © 2026 Gold Bird Loyalty System. Todos los derechos reservados.
+    </div>
+  </div>
+
+  <!-- LADO DERECHO: Formulario de Login -->
+  <div class="auth-panel">
+    <a href="#" class="nav-back">← Volver al sitio web</a>
+
+    <div class="auth-box">
+      <h3>Bienvenido de vuelta</h3>
+      <p class="subtitle">Ingresa tus credenciales para acceder a tu tarjeta o panel.</p>
+
+      <!-- Selector de Rol Integrado -->
+      <div class="role-selector">
+        <button class="role-btn active" id="btn-client" onclick="switchRole('client')">Soy Cliente</button>
+        <button class="role-btn" id="btn-merchant" onclick="switchRole('merchant')">Soy Comercio</button>
+      </div>
+
+      <form onsubmit="event.preventDefault();">
+        <div class="form-group">
+          <label>Correo Electrónico / Teléfono</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            <input type="email" placeholder="ejemplo@goldbird.com" required>
+          </div>
+        </div>
+
+        <div class="form-group" id="pwd-group">
+          <label>Contraseña / PIN de acceso</label>
+          <div class="input-wrapper">
+            <svg class="input-icon" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            <input type="password" placeholder="••••••••" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit" id="submit-btn">Ingresar a mi Tarjeta →</button>
+      </form>
+    </div>
+
+    <div class="footer-text">
+      ¿Primera vez en Gold Bird? <a href="#" style="color:var(--gold-light); text-decoration:none;">Crear una tarjeta</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function switchRole(role) {
+    const isClient = role === 'client';
+    document.getElementById('btn-client').classList.toggle('active', isClient);
+    document.getElementById('btn-merchant').classList.toggle('active', !isClient);
+    
+    // Adaptación UX de campos según el rol seleccionado
+    document.getElementById('submit-btn').textContent = isClient 
+      ? 'Ingresar a mi Tarjeta →' 
+      : 'Acceder al Comercio →';
+  }
+</script>
+</body>
+</html>
