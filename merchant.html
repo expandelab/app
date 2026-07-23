@@ -1,0 +1,1766 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gold Bird — Entorno de Simulación y Arquitectura de Datos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0C10;
+    --surface:#14171F;
+    --surface-2:#1A1E28;
+    --border:rgba(201,162,39,0.3);
+    --border-soft:rgba(242,239,230,0.08);
+    --gold:#C9A227;
+    --gold-light:#E8C874;
+    --text:#F2EFE6;
+    --text-dim:#9C9A90;
+    --text-faint:#6B6A63;
+    --bronze:#B08D57;
+    --silver:#C7CAD1;
+    --oro:#E8C874;
+    --danger:#D96C5F;
+    --success:#77B255;
+    --radius-lg:16px;
+    --radius-md:10px;
+    --feather-icon:url("data:image/webp;base64,UklGRuQGAABXRUJQVlA4INgGAABwKQCdASptAJ4APm0wkkWkIyGYPHQ8QAbEoA0FJE3V57freVp7X3gxv+17Pv6Odu//893dvalC82dOggH+3dPqfPPUAzVvOv6X9K+5/RdzVNNN5l45lCQcW6copEuA5rqJrfvV9xCCTAeQ4Pj7HU5t7NV5WrTVaHGsftphNzGpUzsxeB/A4uPAVWOFRYb9y6VvS8OUlkP/+p7iFALpd6X+8tr5yjntUsnIfYQSlz/9fLadrfkydcXebAumQ+3xH3EM9j3+opPwuTnpZ4I2UpoAQEYwdp9Lcem7H8Il4eKTeZJ2xjBgE3l9OF7QVTkCw6zzVcqF05sIrIXh0tZMfH0YuzA2DWGj++2DgfLyXzl8SHMTFb3jethg6/Vmf7CulVFrPhhtQhaSadV25GJ5hm+7W1z+WyCWXrTbJRROZGxKy2qWd/AzaQPgz6HPnYMvVfc2TsSAAP7/hSCIO0bbwd0gqYcGz839TjNgHTedlkKcN1FeuOfYhp0rr7vvl8E/lNbkWDu8rdCR4USKnIs0Mx+cYfmz9jviA5HcgACNyvqDV7NpiLxnd1PGWffYvw/2RlmPFVe/eAWRH38uoGYAfqBBzy5f5z8IoBuRz1BL7ugP/BvG98/ll9/vu8fBy8RLAdNyThgb8jSZg3+D/pqiKoD5FYYx31BTOW1HwywYq84yk0CLNRreJGPSft24Y266MOMCmRSbfBa9pVKMtdhV81fp10exq5GGaO2E0a1QbOcTTt/pz6eoNfujmDfwdZXUGBBFtCFrkkR9vlpJ5CrVnoERC/nLBAm84k1dJCMSJxZJJ3ajfQ68TTbYywArirjq/hZseaYUPfboBRBn/VVSKtnnV81Jkd6TqCLcifHM3LB9G2R62KxHbiQjl/4Agg+6wjTKwm0du8e2uLRCONWOUScDzeO4vmsVByL9GjgU3HEWAbrrbgudmXZAJ09qeg0oSDKX21ykxN4ASHlob7XKk24Bh9dTsI5Q2CcRUkesuTKFK6bxrXQ65nW31d0yosOovYXfvpPBHvQ4NvjjCW4UDPINqAkvO6Ga0IJ1fNiOQTyJnToNwTpn2NSgJnUXyA7R/X4/cWPDBRF0WtA9A1VgHCgCVEuSJ/BiwwHq/0yrkBLDBj/9Z07XfG0wMjsfwQ/WMaDwgXRz9B4TJ5I4h4+P+jgU3SnPH6GuCYeopw8uQiHtrWSAX3n0PqOx6Puiaf02rAqA5mRPraDCfgPacJO3G7ai0H9++KlZEahFaRYmN8k/lSSJv4G9MlCg3nXB/r3x/hDMpOlKu2vPZH+BYYzwSXo8JpyfORVTkqyL9Ajny4NqD3AY2/4GMQk6R7/+Vj+WNTRIjkT9+B294j2qlTNXUvfVpkS5rr2IA8G9UPjDzvVBSCFc7ciLCYOM1zetQehJ1jM7u/cfF/nN4fwaWCWQ2l+r262DkVAI4xu7E1DUQX8V/8hg96vx7c0Xz+ginBH1xMZZRa0Z6DBYdJbv7LlcPnGROylhlCWgkk1faL8ke6ZzNJg7BV1UAUkF3CtPT/KvTNnkOQWXn+13/jBqSdgRKGDc+80EfqCQRyKoGAK2PgXutt4wxuruAyKKXlm5xvVueQmzrNfBa6xnpWAwJIYhYcdC48APfjTC5ZmFJQ5I9Pi1VixlqUwccgTE9RfZ3mg93aBmKc0HbBDXxKiAH4us/i0Aa7f4qJBxOiJgFyEBGZ4f67viAu8pzB0JFlamVcBJkbN1a5rHn1QXiDtZ0rMMVaqjscvenGaFqeA8vVbIAXI7BvmTH5dPG5VwNiUXcsImWy94jY6rjU8V+wQbcnply/zbPzcjfEtiH8xMWWLrdMvUFNnZ68MjSOTuIhf+JvXV/MZ/AHJvEqXmjOvpcUc8FVIqUB5iv34FirN6b2JjE820lHTnVTw7DZd1X7dDjkYWR2aqU3YVg4azzg0FTDD+2XJhoulHqknAkE7xN2MzJMxj3gYsU9VEykAn/PubDtrhon02PAHr3S1yIZKQ93wMHQ2aSwPsxeQMCSQFd0sj72woT/TizwVBKgG6o0+0yLVGehOu6UT/Z3PYvTBzIzuum8IxZ+MYXPCazTMxARGH+nEOJo7CAMNY/nshQ4Rfcpv8gbEQnZyPVE09048/TNeXT++Wj34UaQl1w6OOe28h4gUAF6/ZVjl3EYeNDd9ehy4UCuBmoTiCCXGYs/Tgro6anPWLVGoQ1O4xzm2Emtp7jSD92SAS+ViQq/QISyCqBltZFZmh1EjfbtB8vFU/o1KeEqPT2d1Yr/K/UEOiKdNdlWPliJpyu7JIgrmg1Z3hXYiwGCk+eJ/1QBFCeykcgs899J8cF0KEZDuQAAA=");
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; padding:2rem 1rem; -webkit-font-smoothing:antialiased;}
+  .container{max-width:1200px; margin:0 auto;}
+
+  header{text-align:center; margin-bottom:2.5rem;}
+  header h1{font-family:'Fraunces',serif; font-weight:500; color:var(--gold-light); font-size:32px;}
+  header p{color:var(--text-dim); font-size:14px; margin-top:5px;}
+
+  /* --- GRID PRINCIPAL DE LA DEMO --- */
+  .grid-demo{display:grid; grid-template-columns: 1fr 1.2fr; gap:2rem; margin-bottom:2.5rem;}
+  @media(max-width:900px){ .grid-demo{grid-template-columns:1fr;} }
+
+  .card{background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius-lg); padding:1.75rem; box-shadow:0 10px 30px rgba(0,0,0,0.5);}
+  .card-h{font-family:'Fraunces',serif; font-size:20px; font-weight:500; margin-bottom:1rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-soft); padding-bottom:0.5rem;}
+
+  /* --- VISTA CLIENTE (PASS) --- */
+  .pass{background:#0D1015; border:1px solid var(--border); border-radius:var(--radius-md); overflow:hidden; display:flex; position:relative; transition:background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;}
+  .pass.tier-pass-Plata{
+    background:linear-gradient(135deg,#0D1015 0%, rgba(199,202,209,0.16) 45%, #0D1015 100%);
+    border-color:rgba(199,202,209,0.55);
+    box-shadow:0 0 24px rgba(199,202,209,0.08);
+  }
+  .pass.tier-pass-Oro{
+    background:linear-gradient(135deg,#0D1015 0%, rgba(232,200,116,0.22) 45%, #0D1015 100%);
+    border-color:rgba(232,200,116,0.6);
+    box-shadow:0 0 28px rgba(232,200,116,0.14);
+  }
+  .pass.tier-pass-Oro::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%);
+    background-size:250% 250%; animation:shine 6s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce){ .pass.tier-pass-Oro::after{ animation:none; } }
+  @keyframes shine{ 0%{background-position:200% 0;} 100%{background-position:-50% 0;} }
+
+  .pass-main{flex:1; padding:1.25rem; position:relative; z-index:1;}
+  .pass-stub{width:120px; background:var(--surface-2); display:flex; flex-direction:column; align-items:center; justify-content:center; padding:1rem; border-left:1.5px dashed rgba(242,239,230,0.15); text-align:center; position:relative; z-index:1;}
+  .client-name{font-family:'Fraunces',serif; font-size:22px;}
+  .tier-badge{font-size:11px; font-weight:600; padding:3px 10px; border-radius:999px; margin-top:4px; display:inline-block;}
+  .tier-Bronce{background:rgba(176,141,87,0.2); color:var(--bronze);}
+  .tier-Plata{background:rgba(199,202,209,0.2); color:var(--silver);}
+  .tier-Oro{background:rgba(232,200,116,0.2); color:var(--oro);}
+
+  .stamp-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin:1.25rem 0;}
+  .stamp{aspect-ratio:1; border-radius:50%; border:1.5px solid var(--border-soft); display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--text-faint); transition: all 0.3s;}
+  .stamp.active{background:radial-gradient(circle at 35% 30%, #3a2f10, #1A1400 72%); border-color:var(--gold); box-shadow:0 0 10px rgba(201,162,39,0.35), inset 0 0 6px rgba(0,0,0,0.5); position:relative;}
+  .stamp.active .feather-icon{width:62%; height:62%; background-image:var(--feather-icon); background-size:contain; background-repeat:no-repeat; background-position:center; filter:drop-shadow(0 0 3px rgba(232,200,116,0.5));}
+  .reward-banner{background:rgba(232,200,116,0.1); border:1px solid var(--gold); border-radius:var(--radius-md); padding:0.75rem; font-size:12.5px; color:var(--gold-light); margin-top:0.5rem;}
+
+  /* --- BARRA DE NIVELES SEGMENTADA --- */
+  .level-track{position:relative; height:6px; background:var(--surface-2); border-radius:999px; margin:14px 4px 22px;}
+  .level-fill{position:absolute; top:0; left:0; height:100%; border-radius:999px; background:linear-gradient(90deg, var(--bronze), var(--gold-light)); transition:width 0.5s ease;}
+  .level-seg{position:absolute; top:50%; transform:translate(-50%,-50%); width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-size:12px; background:var(--bg); border:1.5px solid var(--border-soft); border-radius:50%;}
+  .level-microcopy{font-size:12px; color:var(--gold-light); line-height:1.4; margin-top:-8px; margin-bottom:10px;}
+
+  /* --- TABS ESTILO APP --- */
+  .tabs-nav{display:flex; border-top:1px solid var(--border-soft); border-bottom:1px solid var(--border-soft); margin:1.25rem 0 1rem;}
+  .tab-btn{flex:1; background:none; border:none; color:var(--text-faint); font-family:inherit; font-size:12px; font-weight:600; padding:10px 4px; cursor:pointer; border-bottom:2px solid transparent; transition:all 0.2s;}
+  .tab-btn.active{color:var(--gold-light); border-bottom-color:var(--gold);}
+  .tab-btn:hover{color:var(--text);}
+
+  /* --- BARRA SUPERIOR TIPO APP --- */
+  .app-topbar{display:flex; align-items:center; gap:10px; margin-bottom:4px;}
+  .app-avatar{width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg, var(--gold), var(--bronze)); color:#1A1400; font-weight:700; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .app-topbar-mid{flex:1; min-width:0;}
+  .app-greeting{font-size:10.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.4px;}
+  .app-user-name{font-family:'Fraunces',serif; font-size:16px; color:var(--text); line-height:1.2;}
+  .icon-btn{background:var(--surface-2); border:1px solid var(--border-soft); color:var(--text); width:34px; height:34px; border-radius:50%; cursor:pointer; font-size:14px; flex-shrink:0;}
+
+  .section-label{font-size:11px; font-weight:600; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.5px; margin:14px 0 8px;}
+
+  /* --- TARJETAS POR COMERCIO AFILIADO (WALLET) --- */
+  .biz-card{background:linear-gradient(135deg, var(--c1), var(--c2)); border-radius:var(--radius-md); padding:14px; margin-bottom:10px; cursor:pointer; color:#fff; box-shadow:0 8px 18px rgba(0,0,0,0.35); transition:transform 0.15s ease;}
+  .biz-card:hover{transform:translateY(-1px);}
+  .biz-card-top{display:flex; justify-content:space-between; align-items:center;}
+  .biz-card-id{display:flex; align-items:center; gap:8px;}
+  .biz-emoji{font-size:20px;}
+  .biz-name{font-family:'Fraunces',serif; font-size:15px; line-height:1.2;}
+  .biz-cat{font-size:10.5px; opacity:0.75;}
+  .biz-chevron{opacity:0.7; font-size:14px;}
+  .tier-medal{font-size:10px; font-weight:700; background:rgba(0,0,0,0.28); border:1px solid rgba(255,255,255,0.35); padding:2px 7px; border-radius:999px; white-space:nowrap;}
+  .biz-stamp-row{display:flex; flex-wrap:wrap; gap:5px; margin:10px 0 6px;}
+  .stamp-sm{width:20px; height:20px; border:1.5px solid rgba(255,255,255,0.35); background:rgba(0,0,0,0.15);}
+  .stamp-sm.active{background:rgba(0,0,0,0.35); border-color:rgba(255,255,255,0.7); box-shadow:none;}
+  .stamp-sm.active .feather-icon{width:70%; height:70%;}
+  .biz-card-foot{display:flex; justify-content:space-between; font-size:11px; opacity:0.85;}
+  .biz-card-detail{margin-top:10px; padding-top:10px; border-top:1px solid rgba(255,255,255,0.2);}
+
+  /* --- STATS ROW (PREMIOS / PERFIL) --- */
+  .stats-row{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px;}
+  .stat-pill{background:var(--surface-2); border:1px solid var(--border-soft); border-radius:var(--radius-md); padding:10px 6px; text-align:center;}
+  .stat-icon{font-size:16px;}
+  .stat-num{font-size:17px; font-weight:700; color:var(--gold-light); margin-top:2px;}
+  .stat-label{font-size:9.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.3px; margin-top:1px;}
+
+  /* --- CERCA DE MÍ: CHIPS DE CATEGORÍA --- */
+  .chips-row{display:flex; gap:6px; flex-wrap:wrap; margin:10px 0 4px;}
+  .chip{background:var(--surface-2); border:1px solid var(--border-soft); color:var(--text-dim); font-size:11.5px; padding:6px 12px; border-radius:999px; cursor:pointer; font-family:inherit;}
+  .chip.active{background:var(--gold); border-color:var(--gold); color:#1A1400; font-weight:600;}
+
+  /* --- FEED DE REGALO --- */
+  .gift-item{display:flex; align-items:center; gap:10px; padding:10px 0; border-bottom:1px solid var(--border-soft);}
+  .gift-item:last-child{border-bottom:none;}
+  .gift-emoji{font-size:26px; width:38px; text-align:center;}
+  .gift-info{flex:1;}
+  .gift-info .m-name{font-size:12.5px; color:var(--text-dim);}
+  .gift-info .m-title{font-size:13.5px; font-weight:500; color:var(--text);}
+  .gift-price{text-align:right; margin-right:6px;}
+  .price-original{font-size:11px; color:var(--text-faint); text-decoration:line-through;}
+  .price-final{font-size:14px; font-weight:600; color:var(--gold-light);}
+  .btn-mini{background:var(--gold); color:#1A1400; border:none; padding:7px 12px; border-radius:8px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap;}
+  .btn-mini:hover{background:var(--gold-light);}
+
+  /* --- MIS CUPONES --- */
+  .coupon-card{display:flex; justify-content:space-between; align-items:center; background:var(--surface-2); border:1px solid var(--border-soft); border-radius:var(--radius-md); padding:10px 12px; margin-bottom:8px;}
+  .coupon-card .code{font-family:'JetBrains Mono',monospace; font-size:15px; color:var(--gold-light); letter-spacing:1px;}
+  .coupon-card .meta{font-size:11.5px; color:var(--text-dim);}
+  .status-pill{font-size:10.5px; font-weight:700; padding:3px 9px; border-radius:999px; text-transform:uppercase; letter-spacing:0.4px;}
+  .status-purchased{background:rgba(95,168,211,0.18); color:#5FA8D3;}
+  .status-redeemed{background:rgba(119,178,85,0.18); color:var(--success);}
+  .empty-state{font-size:12.5px; color:var(--text-faint); padding:1.5rem 0; text-align:center;}
+
+  /* --- COMPONENTES FORM / TABLAS --- */
+  label{display:block; font-size:12px; color:var(--text-dim); margin:10px 0 4px;}
+  select, input{width:100%; background:var(--surface-2); border:1px solid var(--border-soft); color:var(--text); padding:10px 12px; border-radius:var(--radius-md); font-family:inherit; outline:none;}
+  select:focus, input:focus{border-color:var(--gold);}
+  .btn{background:var(--gold); color:#1A1400; border:none; padding:10px 16px; border-radius:var(--radius-md); font-weight:600; cursor:pointer; width:100%; margin-top:10px; transition:all 0.2s;}
+  .btn:hover{background:var(--gold-light);}
+  .btn-outline{background:transparent; border:1px solid var(--border); color:var(--gold-light); margin-top:8px;}
+  .btn-outline:hover{background:rgba(201,162,39,0.05);}
+  .btn:disabled{opacity:0.3; cursor:not-allowed;}
+
+  /* --- MODALES --- */
+  .modal-overlay{position:fixed; inset:0; background:rgba(5,6,9,0.72); display:none; align-items:center; justify-content:center; z-index:1000; padding:1rem;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:1.5rem; max-width:380px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,0.6); max-height:90vh; overflow-y:auto;}
+  .modal-close{float:right; background:none; border:none; color:var(--text-faint); font-size:18px; cursor:pointer; line-height:1;}
+  .modal-title{font-family:'Fraunces',serif; font-size:19px; color:var(--gold-light); margin-bottom:4px;}
+  .modal-sub{font-size:12.5px; color:var(--text-dim); margin-bottom:12px;}
+  .wa-preview{background:var(--surface-2); border:1px solid var(--border-soft); border-radius:var(--radius-md); padding:10px 12px; font-size:12.5px; color:var(--text); line-height:1.5; margin-top:8px; white-space:pre-wrap;}
+  .levelup-box{text-align:center; border-width:1.5px;}
+  .levelup-box.lv-Plata{border-color:var(--silver); box-shadow:0 0 30px rgba(199,202,209,0.15);}
+  .levelup-box.lv-Oro{border-color:var(--gold); box-shadow:0 0 34px rgba(232,200,116,0.2);}
+  .levelup-medal{font-size:44px; margin-bottom:6px;}
+  .levelup-perks{text-align:left; font-size:12.5px; color:var(--text-dim); margin:14px 0; padding-left:18px; line-height:1.6;}
+
+  /* --- VALIDADOR DE CUPONES (COMERCIO) --- */
+  .coupon-validator{margin-top:1.5rem; border-top:1px dashed var(--border-soft); padding-top:1.1rem;}
+  .validator-row{display:flex; gap:8px; align-items:flex-end;}
+  .validator-row input{text-transform:uppercase; letter-spacing:2px; font-family:'JetBrains Mono',monospace;}
+  .validator-row button{width:auto; white-space:nowrap; margin-top:0;}
+  .validate-feedback{margin-top:10px; font-size:12.5px; padding:8px 10px; border-radius:8px; display:none;}
+  .validate-feedback.ok{display:block; background:rgba(119,178,85,0.12); color:var(--success); border:1px solid rgba(119,178,85,0.3);}
+  .validate-feedback.err{display:block; background:rgba(217,108,95,0.12); color:var(--danger); border:1px solid rgba(217,108,95,0.3);}
+
+  /* --- SIMULADOR DE ESCANEO QR (COMERCIO) --- */
+  .qr-steps{list-style:none; padding:0; margin:2px 0 4px; font-size:11.5px; color:var(--text-dim); line-height:1.5;}
+  .qr-steps li{padding:2px 0; display:flex; gap:6px;}
+  .qr-steps li b{color:var(--gold-light); min-width:14px;}
+  .qr-scanner{position:relative; width:150px; height:150px; margin:12px auto 10px; border-radius:14px; background:#05060a; overflow:hidden; display:flex; align-items:center; justify-content:center; border:1px solid var(--border-soft);}
+  .qr-scanner.found{border-color:var(--success); box-shadow:0 0 18px rgba(119,178,85,0.25);}
+  .qr-scanner .corner{position:absolute; width:22px; height:22px;}
+  .qr-scanner .corner.tl{top:8px; left:8px; border-top:3px solid var(--gold); border-left:3px solid var(--gold); border-top-left-radius:6px;}
+  .qr-scanner .corner.tr{top:8px; right:8px; border-top:3px solid var(--gold); border-right:3px solid var(--gold); border-top-right-radius:6px;}
+  .qr-scanner .corner.bl{bottom:8px; left:8px; border-bottom:3px solid var(--gold); border-left:3px solid var(--gold); border-bottom-left-radius:6px;}
+  .qr-scanner .corner.br{bottom:8px; right:8px; border-bottom:3px solid var(--gold); border-right:3px solid var(--gold); border-bottom-right-radius:6px;}
+  .scan-line{position:absolute; left:8px; right:8px; height:2px; background:linear-gradient(90deg, transparent, var(--gold-light), transparent); box-shadow:0 0 8px var(--gold-light); animation:scanmove 1.4s ease-in-out infinite;}
+  @keyframes scanmove{ 0%{top:10%;} 50%{top:86%;} 100%{top:10%;} }
+  @media (prefers-reduced-motion: reduce){ .scan-line{ animation:none; top:50%; } }
+
+  /* --- DASHBOARD DEL COMERCIO --- */
+  .dashboard-section{margin-bottom:2.5rem;}
+  .dash-header{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px;}
+  .dash-sub{font-size:12.5px; color:var(--text-dim);}
+  .dash-filters{display:flex; gap:8px; flex-wrap:wrap;}
+  .dash-filters select{width:auto; min-width:140px; padding:8px 10px; font-size:12.5px;}
+
+  .dash-grid-top{display:grid; grid-template-columns:1fr 1.4fr; gap:1.25rem; margin-bottom:1.25rem;}
+  .dash-grid-bottom{display:grid; grid-template-columns:1fr 1.2fr; gap:1.25rem; margin-bottom:1.25rem;}
+  @media(max-width:900px){ .dash-grid-top, .dash-grid-bottom{grid-template-columns:1fr;} }
+
+  .dash-card{background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius-lg); padding:1.5rem; box-shadow:0 10px 30px rgba(0,0,0,0.4); position:relative;}
+  .dash-label{font-size:11px; font-weight:600; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.5px; display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+  .dash-microcopy{font-size:11.5px; color:var(--text-dim); margin-bottom:10px; text-align:left;}
+  .plan-tag{background:rgba(201,162,39,0.14); color:var(--gold-light); font-size:9px; font-weight:700; padding:2px 8px; border-radius:999px; text-transform:none; letter-spacing:0.2px;}
+  .plan-tag.plan-full{background:rgba(217,108,95,0.14); color:var(--danger);}
+
+  .kpi-big{font-family:'Fraunces',serif; font-size:34px; color:var(--text); line-height:1;}
+  .kpi-trend{font-size:11.5px; font-weight:600; margin-top:6px; display:inline-block; padding:2px 8px; border-radius:6px;}
+  .kpi-trend.up{background:rgba(119,178,85,0.15); color:var(--success);}
+  .kpi-trend.down{background:rgba(217,108,95,0.15); color:var(--danger);}
+  .kpi-trend.flat{background:rgba(156,154,144,0.15); color:var(--text-dim);}
+  .kpi-sub-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:18px; padding-top:14px; border-top:1px solid var(--border-soft);}
+  .kpi-sub-label{font-size:9.5px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.4px;}
+  .kpi-sub-val{font-size:16px; font-weight:700; color:var(--text); margin-top:2px;}
+
+  .daily-chart-svg{width:100%; height:auto; overflow:visible;}
+  .daily-bar{fill:var(--gold); opacity:0.85;}
+  .daily-bar:hover{opacity:1;}
+  .daily-axis-label{fill:var(--text-faint); font-size:8px; font-family:'Inter',sans-serif;}
+  .daily-val-label{fill:var(--gold-light); font-size:8px; font-family:'JetBrains Mono',monospace;}
+
+  .recurrence-gauge-wrap{display:flex; justify-content:center; margin:6px 0 10px;}
+  .recurrence-pct{font-family:'Fraunces',serif; font-size:26px; fill:var(--gold-light);}
+  .recurrence-legend{display:flex; justify-content:center; gap:14px; flex-wrap:wrap; font-size:10.5px; color:var(--text-dim); margin-top:6px;}
+  .recurrence-legend .dot{width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:4px;}
+
+  .dash-tabs{display:flex; gap:6px; margin-bottom:14px;}
+  .dash-tab{background:var(--surface-2); border:1px solid var(--border-soft); color:var(--text-dim); font-size:11.5px; font-weight:600; padding:6px 14px; border-radius:8px; cursor:pointer; font-family:inherit;}
+  .dash-tab.active{background:var(--gold); color:#1A1400; border-color:var(--gold);}
+
+  .rank-row{margin-bottom:12px;}
+  .rank-row-top{display:flex; justify-content:space-between; font-size:12px; margin-bottom:5px;}
+  .rank-row-top .rk-name{color:var(--text); font-weight:500;}
+  .rank-row-top .rk-name .rk-idx{color:var(--text-faint); font-family:'JetBrains Mono',monospace; margin-right:6px;}
+  .rank-row-top .rk-val{color:var(--gold-light); font-weight:600; font-family:'JetBrains Mono',monospace;}
+  .rank-bar-track{height:6px; background:var(--surface-2); border-radius:999px; overflow:hidden;}
+  .rank-bar-fill{height:100%; background:linear-gradient(90deg, var(--bronze), var(--gold-light)); border-radius:999px; transition:width 0.4s ease;}
+
+  .dash-locked{overflow:hidden;}
+  .dash-locked-content{filter:blur(2.5px) grayscale(0.3); opacity:0.55; pointer-events:none; user-select:none;}
+  .dash-locked-overlay{position:absolute; inset:0; z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; padding:1.5rem; background:rgba(10,12,16,0.35);}
+  .dash-locked-overlay .lock-icon{font-size:26px;}
+  .dash-locked-overlay p{font-size:12.5px; color:var(--text); max-width:280px; text-align:center;}
+  .dash-example-row{display:flex; align-items:center; gap:18px; flex-wrap:wrap;}
+  .dash-example-legend{font-size:12px; color:var(--text-dim); display:flex; flex-direction:column; gap:6px;}
+  .dash-example-legend .dot{width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:6px;}
+  .dash-example-legend b{color:var(--text); margin-left:6px;}
+
+  /* --- ARCHITECTURE ARCHIVE (INSPECTOR RELACIONAL) --- */
+  .architecture-section{border-top:2px dashed var(--border-soft); padding-top:2rem; margin-top:1rem;}
+  .arch-title{font-family:'Fraunces',serif; font-size:22px; color:var(--gold-light); margin-bottom:1rem; display:flex; align-items:center; gap:8px;}
+  .tables-container{display:flex; flex-direction:column; gap:1.5rem;}
+  .db-table{background:#0D1015; border:1px solid var(--border-soft); border-radius:var(--radius-md); overflow:hidden;}
+  .db-table-h{background:var(--surface-2); padding:8px 12px; font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--gold-light); border-bottom:1px solid var(--border-soft); display:flex; justify-content:space-between;}
+  .table-wrapper{overflow-x:auto;}
+  table{width:100%; border-collapse:collapse; font-size:12.5px; text-align:left;}
+  th{padding:8px 12px; background:rgba(242,239,230,0.02); color:var(--text-faint); font-weight:500; text-transform:uppercase; font-size:11px; letter-spacing:0.5px;}
+  td{padding:8px 12px; border-top:1px solid var(--border-soft); font-family:'JetBrains Mono',monospace; color:var(--text-dim);}
+  td.highlight{color:var(--gold-light); font-weight:600;}
+  .pk{color:#D96C5F;} .fk{color:#5FA8D3;}
+
+  .qr-mock{width:70px; height:70px; background:var(--gold-light); padding:4px; border-radius:4px;}
+  .qr-mock div{width:100%; height:100%; background:#0D1015; clip-path: polygon(0 0, 40% 0, 40% 40%, 0 40%, 0 0, 60% 60%, 100% 60%, 100% 100%, 60% 100%);}
+
+  .toast{position:fixed; bottom:20px; right:20px; background:var(--gold); color:#1A1400; padding:10px 20px; border-radius:var(--radius-md); font-size:13px; font-weight:600; opacity:0; transition:opacity 0.3s; pointer-events:none; z-index:1200;}
+  .toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Gold Bird — Entorno de Pruebas Core</h1>
+    <p>Simulador técnico de niveles, sellos/plumas y Gifting Economy · Inspector de Base de Datos Relacional</p>
+    <a href="index" style="font-size:11px; color:var(--text-faint); text-decoration:none; border:1px solid var(--border-soft); padding:6px 12px; border-radius:999px; display:inline-block; margin-top:10px;">← Salir al sitio</a>
+  </header>
+
+  <div class="grid-demo">
+    <!-- COLUMNA IZQUIERDA: FRONT-END DEL CLIENTE -->
+    <div class="card">
+      <div class="card-h">📱 Vista App Cliente (PWA)</div>
+      <div id="client-view-target"></div>
+    </div>
+
+    <!-- COLUMNA DERECHA: PANEL DE CONTROL DEL COMERCIO -->
+    <div class="card">
+      <div class="card-h">🏪 Panel de Control del Comercio (En Caja)</div>
+
+      <div id="merchant-search-target"></div>
+
+      <div id="merchant-actions-target" style="margin-top:1.5rem;"></div>
+
+      <div class="coupon-validator">
+        <label style="margin-top:0;">🎁 Validar Cupón de Regalo / Experiencia</label>
+        <div class="validator-row">
+          <input type="text" id="coupon-validate-input" placeholder="Ej: 7XQ2K9" maxlength="6">
+          <button class="btn" onclick="validateCouponCode()">Validar</button>
+        </div>
+        <div class="validate-feedback" id="coupon-validate-feedback"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN DASHBOARD DE VISUALIZACIÓN DEL COMERCIO -->
+  <div class="dashboard-section">
+    <div class="dash-header">
+      <div>
+        <div class="arch-title" style="margin-bottom:2px;">📊 Dashboard del Comercio</div>
+        <p class="dash-sub">Resumen operativo del período · Datos en vivo de fidelización</p>
+      </div>
+      <div class="dash-filters">
+        <select id="dash-business-filter" onchange="setDashBusiness(this.value)"></select>
+        <select id="dash-period-filter" onchange="setDashPeriod(this.value)">
+          <option value="7">Últimos 7 días</option>
+          <option value="30" selected>Últimos 30 días</option>
+          <option value="all">Todo el histórico</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="chips-row" style="margin:12px 0 18px;">
+      <button class="chip" id="dash-chip-all" onclick="setDashChip('all')">Mostrar Todo</button>
+      <button class="chip" id="dash-chip-recurrente" onclick="setDashChip('recurrente')">🔁 Más Recurrente</button>
+      <button class="chip" id="dash-chip-racha" onclick="setDashChip('racha')">🔥 Mejor Racha</button>
+      <button class="chip" id="dash-chip-plumas" onclick="setDashChip('plumas')">🪶 Más Plumas</button>
+    </div>
+
+    <div class="dash-grid-top">
+      <div class="dash-card">
+        <div class="dash-label">🪶 Plumas otorgadas <span class="plan-tag">Plan Base</span></div>
+        <div class="kpi-big" id="dash-kpi-plumas">—</div>
+        <div id="dash-kpi-trend"></div>
+        <div class="kpi-sub-grid">
+          <div><div class="kpi-sub-label">Tasa de canje</div><div class="kpi-sub-val" id="dash-kpi-redemption">—</div></div>
+          <div><div class="kpi-sub-label">N° de visitas</div><div class="kpi-sub-val" id="dash-kpi-visits">—</div></div>
+          <div><div class="kpi-sub-label">Clientes activos</div><div class="kpi-sub-val" id="dash-kpi-active">—</div></div>
+          <div><div class="kpi-sub-label">Premios canjeados</div><div class="kpi-sub-val" id="dash-kpi-redeemed">—</div></div>
+        </div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-label">📈 Sellos / Plumas generados por día <span class="plan-tag">Plan Base</span></div>
+        <div id="dash-daily-chart"></div>
+      </div>
+    </div>
+
+    <div class="dash-grid-bottom">
+      <div class="dash-card" style="text-align:center;">
+        <div class="dash-label" style="text-align:left;">🔁 Recurrencia mensual <span class="plan-tag">Plan Base</span></div>
+        <p class="dash-microcopy">% de clientes que volvieron a estampar al menos 2 veces en los últimos 30 días.</p>
+        <div id="dash-recurrence-donut"></div>
+        <div id="dash-recurrence-legend"></div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-tabs">
+          <button class="dash-tab" id="dash-rank-tab-clientes" onclick="setDashRankTab('clientes')">Clientes</button>
+          <button class="dash-tab" id="dash-rank-tab-comercios" onclick="setDashRankTab('comercios')">Comercios</button>
+        </div>
+        <div id="dash-rank-list"></div>
+      </div>
+    </div>
+
+    <div class="dash-card dash-locked">
+      <div class="dash-locked-overlay">
+        <span class="lock-icon">🔒</span>
+        <p>Analítica de ventas y categorías de canje — disponible con <b>Plan Full</b></p>
+      </div>
+      <div class="dash-locked-content">
+        <div class="dash-label">🍩 Categorías más canjeadas <span class="plan-tag plan-full">Ejemplo · Plan Full</span></div>
+        <div class="dash-example-row">
+          <div class="dash-donut-mock">
+            <svg viewBox="0 0 120 120" width="120" height="120">
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#1A1E28" stroke-width="16"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#5FA8D3" stroke-width="16" stroke-dasharray="135 165" stroke-dashoffset="0" transform="rotate(-90 60 60)"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#C9A227" stroke-width="16" stroke-dasharray="60 240" stroke-dashoffset="-135" transform="rotate(-90 60 60)"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#D96C5F" stroke-width="16" stroke-dasharray="45 255" stroke-dashoffset="-195" transform="rotate(-90 60 60)"/>
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#77B255" stroke-width="16" stroke-dasharray="60 240" stroke-dashoffset="-240" transform="rotate(-90 60 60)"/>
+            </svg>
+          </div>
+          <div class="dash-example-legend">
+            <div><span class="dot" style="background:#5FA8D3;"></span>Bebidas <b>45%</b></div>
+            <div><span class="dot" style="background:#C9A227;"></span>Desayunos <b>20%</b></div>
+            <div><span class="dot" style="background:#D96C5F;"></span>Postres <b>15%</b></div>
+            <div><span class="dot" style="background:#77B255;"></span>Combos <b>20%</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCIÓN INFERIOR: ARQUITECTURA E INSPECTOR DE BASE DE DATOS -->
+  <div class="architecture-section">
+    <div class="arch-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      Inspector de Base de Datos Estructural (Looker Studio Ready)
+    </div>
+    <p style="font-size:13px; color:var(--text-dim); margin-bottom:1.5rem;">Las siguientes tablas representan exactamente el estado relacional en tu base de datos en tiempo real. Modifica el estado arriba para observar cómo fluyen las llaves foráneas y los estados del negocio.</p>
+
+    <div class="tables-container">
+
+      <!-- TABLA USERS -->
+      <div class="db-table">
+        <div class="db-table-h"><span>📋 Tabla: Users</span><span>Dimension Table</span></div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th><span class="pk">id (PK)</span></th><th>name</th><th>email</th><th>role</th><th>doc_type</th><th>experience_points</th></tr></thead>
+            <tbody id="db-users-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TABLA BUSINESSES -->
+      <div class="db-table">
+        <div class="db-table-h"><span>🏢 Tabla: Businesses</span><span>Configuration Table</span></div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th><span class="pk">id (PK)</span></th><th>name</th><th>categoria</th><th>puntos_por_sello</th><th>max_sellos_recompensa</th><th>rating</th><th>orden_registro</th></tr></thead>
+            <tbody id="db-businesses-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TABLA LOYALTY CARDS -->
+      <div class="db-table">
+        <div class="db-table-h"><span>💳 Tabla: LoyaltyCards</span><span>State Table (Fact Summary)</span></div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th><span class="pk">id (PK)</span></th><th><span class="fk">user_id (FK)</span></th><th><span class="fk">business_id (FK)</span></th><th>current_stamps</th><th>total_historical_plumas</th><th>nivel_comercio</th><th>reward_ready</th></tr></thead>
+            <tbody id="db-cards-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TABLA GIFTED COUPONS -->
+      <div class="db-table">
+        <div class="db-table-h"><span>🎁 Tabla: GiftedCoupons</span><span>Fact Table (Gifting Economy)</span></div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr>
+              <th><span class="pk">id (PK)</span></th>
+              <th><span class="fk">sender_id (FK)</span></th>
+              <th>friend_name</th>
+              <th>friend_contact</th>
+              <th>merchant_name</th>
+              <th>experience_title</th>
+              <th>price_paid</th>
+              <th>coupon_code</th>
+              <th>status</th>
+            </tr></thead>
+            <tbody id="db-coupons-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TABLA TRANSACTIONS -->
+      <div class="db-table">
+        <div class="db-table-h"><span>🔥 Tabla: Transactions</span><span>Fact Table (Línea de tiempo para Looker Studio)</span></div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr><th><span class="pk">id (PK)</span></th><th><span class="fk">card_id (FK)</span></th><th>type</th><th>amount_stamps</th><th>amount_plumas</th><th>fecha_visita</th><th>hora_visita</th></tr></thead>
+            <tbody id="db-transactions-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VISTA CALCULADA: CLIENT ACTIVITY (RECURRENCIA Y FIDELIDAD) -->
+      <div class="db-table">
+        <div class="db-table-h"><span>📊 Vista: ClientActivity</span><span>Vista Calculada (Recurrencia · Fidelidad)</span></div>
+        <div class="table-wrapper">
+          <table>
+            <thead><tr>
+              <th><span class="fk">user_id (FK)</span></th>
+              <th>cliente</th>
+              <th>n° visitas</th>
+              <th>primera visita</th>
+              <th>última visita</th>
+              <th>hora última visita</th>
+              <th>recurrencia (días prom.)</th>
+              <th>indicador de fidelidad</th>
+            </tr></thead>
+            <tbody id="db-client-activity-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: FORMULARIO DE REGALO (CLICK 2) -->
+<div class="modal-overlay" id="gift-form-modal" onclick="if(event.target===this) closeGiftForm()">
+  <div class="modal-box" id="gift-form-box"></div>
+</div>
+
+<!-- MODAL: RESULTADO DE REGALO / MENSAJE WHATSAPP (POST CLICK 3) -->
+<div class="modal-overlay" id="gift-result-modal" onclick="if(event.target===this) closeGiftResult()">
+  <div class="modal-box" id="gift-result-box"></div>
+</div>
+
+<!-- MODAL: CAMBIO DE NIVEL -->
+<div class="modal-overlay" id="levelup-modal" onclick="if(event.target===this) closeLevelUp()">
+  <div class="modal-box levelup-box" id="levelup-box"></div>
+</div>
+
+<div class="toast" id="toast">Acción ejecutada</div>
+
+<script>
+// --- CATÁLOGO DE EXPERIENCIAS AFILIADAS (FEED "REGALAR") ---
+const GIFT_CATALOG = [
+  { id:"EXP-01", merchant:"Café Central", title:"Vale por 1 Desayuno Completo", price:25, emoji:"☕" },
+  { id:"EXP-02", merchant:"Sushi Itto", title:"Vale por 1 Combo para 2 personas", price:60, emoji:"🍣" },
+  { id:"EXP-03", merchant:"Spa Urbano", title:"Vale por 1 Masaje Relajante 30 min", price:80, emoji:"💆" },
+  { id:"EXP-04", merchant:"Librería Nube", title:"Vale por 1 Libro a elección (hasta S/40)", price:40, emoji:"📚" }
+];
+
+// --- MOTOR DE BASE DE DATOS EN MEMORIA ---
+const DB = {
+  users: [
+    { id: "USR72841096", name: "user1", email: "prueba1@expandelab.app", role: "client", experience_points: 16, doc_type: "DNI", doc_value: "72841096", registration_order: null },
+    { id: "USR68459213", name: "user2", email: "prueba2@expandelab.app", role: "client", experience_points: 42, doc_type: "DNI", doc_value: "68459213", registration_order: null },
+    { id: "USR00000001", name: "user3", email: "prueba3@expandelab.app", role: "merchant", doc_type: "OTRO", doc_value: null, registration_order: 1 }
+  ],
+  businesses: [
+    { id: "BIZ00001", name: "Gold Bird Café", category: "Cafetería", puntos_por_sello: 1, max_sellos_recompensa: 10, icon: "☕", color1: "#8a5a1e", color2: "#e0913a", rating: 4.8, distance: "350 m", registration_order: 1 },
+    { id: "BIZ00002", name: "Pizzería Fuego", category: "Pizzería", puntos_por_sello: 1, max_sellos_recompensa: 10, icon: "🍕", color1: "#7a2a1a", color2: "#e0642f", rating: 4.6, distance: "800 m", registration_order: 2 },
+    { id: "BIZ00003", name: "Barbería Rey", category: "Barbería", puntos_por_sello: 1, max_sellos_recompensa: 8, icon: "💈", color1: "#3a2a6b", color2: "#7a5ad1", rating: 4.9, distance: "1.2 km", registration_order: 3 },
+    { id: "BIZ00004", name: "Spa Urbano", category: "Spa", puntos_por_sello: 1, max_sellos_recompensa: 10, icon: "💆", color1: "#1e5a4a", color2: "#3ad19a", rating: 4.7, distance: "2.1 km", registration_order: 4 }
+  ],
+  loyaltyCards: [
+    { id: "CRD-881", user_id: "USR72841096", business_id: "BIZ00001", current_stamps: 8, total_historical_plumas: 8, reward_ready: false },
+    { id: "CRD-883", user_id: "USR72841096", business_id: "BIZ00002", current_stamps: 3, total_historical_plumas: 3, reward_ready: false },
+    { id: "CRD-884", user_id: "USR72841096", business_id: "BIZ00003", current_stamps: 5, total_historical_plumas: 5, reward_ready: false },
+    { id: "CRD-882", user_id: "USR68459213", business_id: "BIZ00001", current_stamps: 0, total_historical_plumas: 32, reward_ready: false },
+    { id: "CRD-885", user_id: "USR68459213", business_id: "BIZ00002", current_stamps: 10, total_historical_plumas: 10, reward_ready: true }
+  ],
+  transactions: [
+    { id: "TX-0991", card_id: "CRD-881", type: "stamp_add", amount_stamps: 1, amount_plumas: 1, created_at: "09:40 AM", visit_date: "2026-06-12" },
+    { id: "TX-0992", card_id: "CRD-881", type: "stamp_add", amount_stamps: 1, amount_plumas: 1, created_at: "18:05 PM", visit_date: "2026-06-21" },
+    { id: "TX-0993", card_id: "CRD-881", type: "stamp_add", amount_stamps: 2, amount_plumas: 2, created_at: "10:30 AM", visit_date: "2026-07-02" },
+    { id: "TX-1001", card_id: "CRD-881", type: "stamp_add", amount_stamps: 4, amount_plumas: 4, created_at: "10:14 AM", visit_date: "2026-07-13" },
+    { id: "TX-0981", card_id: "CRD-882", type: "stamp_add", amount_stamps: 4, amount_plumas: 4, created_at: "08:55 AM", visit_date: "2026-06-15" },
+    { id: "TX-0982", card_id: "CRD-882", type: "stamp_add", amount_stamps: 3, amount_plumas: 3, created_at: "13:20 PM", visit_date: "2026-06-19" },
+    { id: "TX-0983", card_id: "CRD-882", type: "stamp_add", amount_stamps: 5, amount_plumas: 5, created_at: "17:10 PM", visit_date: "2026-06-24" },
+    { id: "TX-0984", card_id: "CRD-882", type: "stamp_add", amount_stamps: 6, amount_plumas: 6, created_at: "09:05 AM", visit_date: "2026-06-29" },
+    { id: "TX-0985", card_id: "CRD-882", type: "stamp_add", amount_stamps: 4, amount_plumas: 4, created_at: "16:45 PM", visit_date: "2026-07-04" },
+    { id: "TX-0986", card_id: "CRD-882", type: "stamp_add", amount_stamps: 5, amount_plumas: 5, created_at: "12:15 PM", visit_date: "2026-07-08" },
+    { id: "TX-1002", card_id: "CRD-882", type: "stamp_add", amount_stamps: 5, amount_plumas: 5, created_at: "11:02 AM", visit_date: "2026-07-12" },
+    { id: "TX-0971", card_id: "CRD-883", type: "stamp_add", amount_stamps: 2, amount_plumas: 2, created_at: "19:20 PM", visit_date: "2026-07-05" },
+    { id: "TX-0972", card_id: "CRD-883", type: "stamp_add", amount_stamps: 1, amount_plumas: 1, created_at: "20:10 PM", visit_date: "2026-07-15" },
+    { id: "TX-0973", card_id: "CRD-884", type: "stamp_add", amount_stamps: 2, amount_plumas: 2, created_at: "17:00 PM", visit_date: "2026-06-20" },
+    { id: "TX-0974", card_id: "CRD-884", type: "stamp_add", amount_stamps: 2, amount_plumas: 2, created_at: "16:30 PM", visit_date: "2026-07-01" },
+    { id: "TX-0975", card_id: "CRD-884", type: "stamp_add", amount_stamps: 1, amount_plumas: 1, created_at: "18:45 PM", visit_date: "2026-07-14" },
+    { id: "TX-0976", card_id: "CRD-885", type: "stamp_add", amount_stamps: 3, amount_plumas: 3, created_at: "13:00 PM", visit_date: "2026-06-10" },
+    { id: "TX-0977", card_id: "CRD-885", type: "stamp_add", amount_stamps: 3, amount_plumas: 3, created_at: "13:40 PM", visit_date: "2026-06-18" },
+    { id: "TX-0978", card_id: "CRD-885", type: "stamp_add", amount_stamps: 2, amount_plumas: 2, created_at: "14:15 PM", visit_date: "2026-06-27" },
+    { id: "TX-0979", card_id: "CRD-885", type: "stamp_add", amount_stamps: 2, amount_plumas: 2, created_at: "12:50 PM", visit_date: "2026-07-06" }
+  ],
+  giftedCoupons: []
+};
+
+let activeClientId = "USR72841096";
+let activeClientTab = "cards"; // cards | rewards | nearby | profile
+let expandedCardId = null;
+let nearbyQuery = "";
+let nearbyCategory = "Todas";
+let pendingGift = null; // { catalogItem, discountedPrice, tier }
+
+let merchantMode = "search"; // search | qr
+let qrScanState = "idle"; // idle | scanning | found
+let qrFoundUserId = null;
+let qrTimeoutRef = null;
+
+let dashBusinessId = "BIZ00001";
+let dashPeriod = "30"; // "7" | "30" | "all"
+let dashChip = "all"; // all | recurrente | racha | plumas
+let dashRankTab = "clientes"; // clientes | comercios
+
+function triggerToast(msg) {
+  const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// --- MOTOR DE SONIDO (Web Audio API, sin archivos externos) ---
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function playTone(freq, duration, type, delay, volume) {
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    const t0 = ctx.currentTime + (delay || 0);
+    gain.gain.setValueAtTime(volume || 0.15, t0);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.start(t0);
+    osc.stop(t0 + duration + 0.02);
+  } catch (e) { /* audio no disponible en este entorno */ }
+}
+// Sonido corto al agregar 1 sello
+function playStampSound() { playTone(920, 0.09, 'sine', 0, 0.16); }
+// Sonido distinto y más festivo al completar el ciclo (reward_ready)
+function playCompleteSound() {
+  playTone(660, 0.1, 'triangle', 0, 0.18);
+  playTone(880, 0.1, 'triangle', 0.1, 0.18);
+  playTone(1320, 0.22, 'triangle', 0.2, 0.2);
+}
+
+function getTier(plumas) {
+  if (plumas >= 30) return "Oro";
+  if (plumas >= 10) return "Plata";
+  return "Bronce";
+}
+
+function getDiscountRate(tier) {
+  if (tier === "Oro") return 0.20;
+  if (tier === "Plata") return 0.10;
+  return 0;
+}
+
+// --- GENERADORES DE ID SEGÚN REGLA DE NEGOCIO ---
+// USR + 8 dígitos: si el documento es DNI, se usan sus 8 dígitos tal cual.
+// Si es otro tipo de documento, el ID es "000" + 5 dígitos correlativos de orden de registro.
+function generateUserId(docType, docValue, registrationOrder) {
+  if (docType === "DNI" && /^\d{8}$/.test(docValue || "")) {
+    return "USR" + docValue;
+  }
+  return "USR000" + String(registrationOrder).padStart(5, "0");
+}
+
+// BIZ + 5 dígitos correlativos según el orden de afiliación de cada comercio.
+function generateBusinessId(registrationOrder) {
+  return "BIZ" + String(registrationOrder).padStart(5, "0");
+}
+
+// --- NIVELES POR COMERCIO (cada tarjeta/comercio tiene su propio rango) ---
+// El "mejor nivel" alcanzado por el usuario en cualquiera de sus comercios
+// es el que habilita los descuentos transversales de la Gifting Economy.
+function getBestTier(userId) {
+  const tiers = getUserCards(userId).map(c => getTier(c.total_historical_plumas));
+  if (tiers.includes("Oro")) return "Oro";
+  if (tiers.includes("Plata")) return "Plata";
+  return "Bronce";
+}
+
+function getBestTierInfo(userId) {
+  const cards = getUserCards(userId);
+  let best = { tier: "Bronce", plumas: -1, bizName: null };
+  cards.forEach(c => {
+    const t = getTier(c.total_historical_plumas);
+    const rank = { Bronce: 0, Plata: 1, Oro: 2 };
+    if (rank[t] > rank[best.tier] || (rank[t] === rank[best.tier] && c.total_historical_plumas > best.plumas)) {
+      const biz = DB.businesses.find(b => b.id === c.business_id);
+      best = { tier: t, plumas: c.total_historical_plumas, bizName: biz ? biz.name : "" };
+    }
+  });
+  return best;
+}
+
+const TIER_MEDAL = { Bronce: "🥉", Plata: "🥈", Oro: "🥇" };
+
+// --- RACHA POR COMERCIO: semanas consecutivas con al menos 1 visita a esa tarjeta ---
+function getWeekBucket(isoDate) {
+  return Math.floor(new Date(isoDate + "T00:00:00").getTime() / (7 * 86400000));
+}
+
+function computeCardStreak(cardId) {
+  const weeks = [...new Set(
+    DB.transactions
+      .filter(t => t.card_id === cardId && t.type === 'stamp_add' && t.visit_date)
+      .map(t => getWeekBucket(t.visit_date))
+  )].sort((a, b) => a - b);
+
+  if (weeks.length === 0) return 0;
+  let streak = 1;
+  for (let i = weeks.length - 1; i > 0; i--) {
+    if (weeks[i] - weeks[i - 1] === 1) streak++;
+    else break;
+  }
+  return streak;
+}
+
+function getBestStreak(userId) {
+  const cards = getUserCards(userId);
+  let best = { streak: 0, bizName: null };
+  cards.forEach(c => {
+    const s = computeCardStreak(c.id);
+    if (s > best.streak) {
+      const biz = DB.businesses.find(b => b.id === c.business_id);
+      best = { streak: s, bizName: biz ? biz.name : "" };
+    }
+  });
+  return best;
+}
+
+// --- HELPERS DE ECOSISTEMA MULTI-COMERCIO ---
+function getUserCards(userId) {
+  return DB.loyaltyCards.filter(c => c.user_id === userId);
+}
+
+function getUserTotalPlumas(userId) {
+  return getUserCards(userId).reduce((sum, c) => sum + c.total_historical_plumas, 0);
+}
+
+// El panel de comercio (en caja) representa siempre a Gold Bird Café (BIZ00001)
+function getPrimaryMerchantCard(userId) {
+  return DB.loyaltyCards.find(c => c.user_id === userId && c.business_id === "BIZ00001");
+}
+
+function toggleCardExpand(cardId) {
+  expandedCardId = expandedCardId === cardId ? null : cardId;
+  renderClientComponent();
+}
+
+function joinBusiness(businessId) {
+  const already = DB.loyaltyCards.find(c => c.user_id === activeClientId && c.business_id === businessId);
+  if (already) { triggerToast("Ya tienes una tarjeta en este comercio"); return; }
+  const biz = DB.businesses.find(b => b.id === businessId);
+  const newCard = {
+    id: "CRD-" + Math.floor(Math.random() * 9000 + 1000),
+    user_id: activeClientId,
+    business_id: businessId,
+    current_stamps: 0,
+    total_historical_plumas: 0,
+    reward_ready: false
+  };
+  DB.loyaltyCards.push(newCard);
+  triggerToast(`🎉 ¡Te uniste a ${biz.name}! Tu nueva tarjeta ya está disponible en Mis Tarjetas`);
+  activeClientTab = 'cards';
+  renderAll();
+}
+
+// --- DASHBOARD DEL COMERCIO: KPIs, SERIE DIARIA, RECURRENCIA Y RANKINGS ---
+function setDashBusiness(id) { dashBusinessId = id; renderDashboard(); }
+function setDashPeriod(val) { dashPeriod = val; renderDashboard(); }
+function setDashChip(val) { dashChip = val; renderDashboard(); }
+function setDashRankTab(tab) { dashRankTab = tab; renderDashboard(); }
+
+function daysSinceToday(isoDate) {
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const d = new Date(isoDate + "T00:00:00");
+  return Math.round((today - d) / 86400000);
+}
+
+function getBusinessCards(businessId) {
+  return DB.loyaltyCards.filter(c => c.business_id === businessId);
+}
+
+// Transacciones de sellado de un comercio, opcionalmente acotadas a una ventana de días
+function getBusinessStampTx(businessId, withinDays) {
+  const cardIds = getBusinessCards(businessId).map(c => c.id);
+  return DB.transactions.filter(t => {
+    if (t.type !== 'stamp_add' || !t.visit_date || !cardIds.includes(t.card_id)) return false;
+    if (withinDays === 'all' || withinDays === undefined) return true;
+    return daysSinceToday(t.visit_date) <= Number(withinDays) && daysSinceToday(t.visit_date) >= 0;
+  });
+}
+
+function getBusinessRedemptions(businessId, withinDays) {
+  const cardIds = getBusinessCards(businessId).map(c => c.id);
+  return DB.transactions.filter(t => {
+    if (t.type !== 'reward_redeem' || !cardIds.includes(t.card_id)) return false;
+    return true; // los canjes no llevan visit_date en el modelo actual
+  });
+}
+
+// % de clientes de un comercio que visitaron 2+ veces en los últimos 30 días
+function getMonthlyRecurrence(businessId) {
+  const tx = getBusinessStampTx(businessId, 30);
+  const byCard = {};
+  tx.forEach(t => { byCard[t.card_id] = (byCard[t.card_id] || new Set()); byCard[t.card_id].add(t.visit_date); });
+  const cardIdsWithVisits = Object.keys(byCard);
+  const total = cardIdsWithVisits.length;
+  const recurrentes = cardIdsWithVisits.filter(id => byCard[id].size >= 2).length;
+  const pct = total > 0 ? Math.round((recurrentes / total) * 100) : 0;
+  return { pct, recurrentes, total, nuevos: total - recurrentes };
+}
+
+// Serie de plumas otorgadas por día para el gráfico
+function getDailySeries(businessId, period) {
+  const days = period === 'all' ? 60 : Number(period);
+  const tx = getBusinessStampTx(businessId, period === 'all' ? 'all' : days);
+  const byDate = {};
+  tx.forEach(t => { byDate[t.visit_date] = (byDate[t.visit_date] || 0) + t.amount_plumas; });
+
+  if (period === 'all') {
+    return Object.keys(byDate).sort().map(d => ({ date: d, value: byDate[d] }));
+  }
+  const series = [];
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  for (let i = days - 1; i >= 0; i--) {
+    const d = new Date(today); d.setDate(d.getDate() - i);
+    const iso = d.toISOString().slice(0, 10);
+    series.push({ date: iso, value: byDate[iso] || 0 });
+  }
+  return series;
+}
+
+function renderDailyChart(series) {
+  const w = 560, h = 150, padL = 6, padR = 6, padB = 18, padT = 10;
+  const innerW = w - padL - padR;
+  const innerH = h - padT - padB;
+  const max = Math.max(1, ...series.map(p => p.value));
+  const barW = Math.max(2, innerW / series.length - 3);
+  const step = innerW / series.length;
+
+  const showEvery = series.length > 20 ? Math.ceil(series.length / 10) : 1;
+
+  const bars = series.map((p, i) => {
+    const barH = (p.value / max) * innerH;
+    const x = padL + i * step + (step - barW) / 2;
+    const y = padT + (innerH - barH);
+    const label = new Date(p.date + "T00:00:00").toLocaleDateString('es-PE', { day: '2-digit', month: 'short' });
+    const showLabel = (i % showEvery === 0) || i === series.length - 1;
+    return `
+      <rect class="daily-bar" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${Math.max(1, barH).toFixed(1)}" rx="2">
+        <title>${label}: ${p.value} 🪶</title>
+      </rect>
+      ${p.value > 0 ? `<text class="daily-val-label" x="${(x + barW / 2).toFixed(1)}" y="${(y - 3).toFixed(1)}" text-anchor="middle">${p.value}</text>` : ''}
+      ${showLabel ? `<text class="daily-axis-label" x="${(x + barW / 2).toFixed(1)}" y="${h - 4}" text-anchor="middle">${label}</text>` : ''}
+    `;
+  }).join('');
+
+  return `<svg class="daily-chart-svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet">${bars}</svg>`;
+}
+
+function renderRecurrenceGauge(pct) {
+  const r = 46, c = 2 * Math.PI * r;
+  const filled = (pct / 100) * c;
+  return `
+    <svg width="140" height="140" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="${r}" fill="none" stroke="var(--surface-2)" stroke-width="12"/>
+      <circle cx="60" cy="60" r="${r}" fill="none" stroke="url(#gaugeGrad)" stroke-width="12"
+        stroke-dasharray="${filled.toFixed(1)} ${c.toFixed(1)}" stroke-linecap="round" transform="rotate(-90 60 60)"/>
+      <defs>
+        <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#B08D57"/>
+          <stop offset="100%" stop-color="#E8C874"/>
+        </linearGradient>
+      </defs>
+      <text x="60" y="66" text-anchor="middle" class="recurrence-pct">${pct}%</text>
+    </svg>
+  `;
+}
+
+function getDashRankingData() {
+  if (dashRankTab === 'comercios') {
+    return DB.businesses.map(b => {
+      const cards = getBusinessCards(b.id);
+      const plumas = cards.reduce((s, c) => s + c.total_historical_plumas, 0);
+      const rec = getMonthlyRecurrence(b.id).pct;
+      const bestStreakInBiz = Math.max(0, ...cards.map(c => computeCardStreak(c.id)));
+      return { label: `${b.icon} ${b.name}`, plumas, rec, streak: bestStreakInBiz };
+    });
+  }
+  // clientes del comercio actualmente filtrado
+  return getBusinessCards(dashBusinessId).map(c => {
+    const user = DB.users.find(u => u.id === c.user_id);
+    const rec = getBusinessStampTx(dashBusinessId, 30).filter(t => t.card_id === c.id).length;
+    return { label: user ? user.name : c.user_id, plumas: c.total_historical_plumas, rec, streak: computeCardStreak(c.id) };
+  });
+}
+
+function renderDashRankList() {
+  let data = getDashRankingData();
+  if (dashChip === 'recurrente') data = [...data].sort((a, b) => b.rec - a.rec);
+  else if (dashChip === 'racha') data = [...data].sort((a, b) => b.streak - a.streak);
+  else data = [...data].sort((a, b) => b.plumas - a.plumas);
+
+  if (!data.length) return `<div class="empty-state">Sin datos para este comercio todavía.</div>`;
+  const metricLabel = dashChip === 'recurrente' ? 'visitas (30d)' : (dashChip === 'racha' ? 'sem. racha' : '🪶');
+  const metricVal = d => dashChip === 'recurrente' ? d.rec : (dashChip === 'racha' ? d.streak : d.plumas);
+  const top6 = data.slice(0, 6);
+  const maxMetric = Math.max(1, ...top6.map(metricVal));
+
+  return top6.map((d, i) => `
+    <div class="rank-row">
+      <div class="rank-row-top">
+        <span class="rk-name"><span class="rk-idx">${String(i + 1).padStart(2, '0')}</span>${d.label}</span>
+        <span class="rk-val">${metricVal(d)} ${metricLabel}</span>
+      </div>
+      <div class="rank-bar-track"><div class="rank-bar-fill" style="width:${Math.min(100, (metricVal(d) / maxMetric) * 100)}%"></div></div>
+    </div>
+  `).join('');
+}
+
+function renderDashboard() {
+  const selectBiz = document.getElementById('dash-business-filter');
+  if (!selectBiz) return;
+  if (!selectBiz.dataset.filled) {
+    selectBiz.innerHTML = DB.businesses.map(b => `<option value="${b.id}">${b.icon} ${b.name}</option>`).join('');
+    selectBiz.dataset.filled = "1";
+  }
+  selectBiz.value = dashBusinessId;
+  document.getElementById('dash-period-filter').value = dashPeriod;
+
+  ['all', 'recurrente', 'racha', 'plumas'].forEach(k => {
+    document.getElementById('dash-chip-' + k).classList.toggle('active', dashChip === k);
+  });
+  document.getElementById('dash-rank-tab-clientes').classList.toggle('active', dashRankTab === 'clientes');
+  document.getElementById('dash-rank-tab-comercios').classList.toggle('active', dashRankTab === 'comercios');
+
+  const biz = DB.businesses.find(b => b.id === dashBusinessId);
+  const periodDays = dashPeriod === 'all' ? 'all' : Number(dashPeriod);
+  const currentTx = getBusinessStampTx(dashBusinessId, periodDays);
+  const totalPlumas = currentTx.reduce((s, t) => s + t.amount_plumas, 0);
+
+  // Comparación vs período anterior equivalente
+  let trendHtml = '';
+  if (periodDays !== 'all') {
+    const prevTx = DB.transactions.filter(t => {
+      if (t.type !== 'stamp_add' || !t.visit_date) return false;
+      const cardIds = getBusinessCards(dashBusinessId).map(c => c.id);
+      if (!cardIds.includes(t.card_id)) return false;
+      const d = daysSinceToday(t.visit_date);
+      return d > periodDays && d <= periodDays * 2;
+    });
+    const prevTotal = prevTx.reduce((s, t) => s + t.amount_plumas, 0);
+    if (prevTotal === 0 && totalPlumas === 0) {
+      trendHtml = `<span class="kpi-trend flat">Sin datos en el período anterior</span>`;
+    } else if (prevTotal === 0) {
+      trendHtml = `<span class="kpi-trend up">▲ Nuevo crecimiento</span>`;
+    } else {
+      const change = Math.round(((totalPlumas - prevTotal) / prevTotal) * 100);
+      trendHtml = `<span class="kpi-trend ${change >= 0 ? 'up' : 'down'}">${change >= 0 ? '▲' : '▼'} ${Math.abs(change)}% vs. período anterior</span>`;
+    }
+  }
+
+  const activeClients = new Set(currentTx.map(t => t.card_id)).size;
+  const redemptions = getBusinessRedemptions(dashBusinessId).length;
+  const readyNow = getBusinessCards(dashBusinessId).filter(c => c.reward_ready).length;
+  const redemptionRate = (redemptions + readyNow) > 0 ? Math.round((redemptions / (redemptions + readyNow)) * 100) : null;
+
+  document.getElementById('dash-kpi-plumas').textContent = totalPlumas + ' 🪶';
+  document.getElementById('dash-kpi-trend').innerHTML = trendHtml;
+  document.getElementById('dash-kpi-redemption').textContent = redemptionRate !== null ? redemptionRate + '%' : '—';
+  document.getElementById('dash-kpi-visits').textContent = currentTx.length;
+  document.getElementById('dash-kpi-active').textContent = activeClients;
+  document.getElementById('dash-kpi-redeemed').textContent = redemptions;
+
+  document.getElementById('dash-daily-chart').innerHTML = renderDailyChart(getDailySeries(dashBusinessId, dashPeriod));
+
+  const recurrence = getMonthlyRecurrence(dashBusinessId);
+  document.getElementById('dash-recurrence-donut').innerHTML = `<div class="recurrence-gauge-wrap">${renderRecurrenceGauge(recurrence.pct)}</div>`;
+  document.getElementById('dash-recurrence-legend').innerHTML = `
+    <div class="recurrence-legend">
+      <span><span class="dot" style="background:var(--gold-light);"></span>Recurrentes (2+ visitas): ${recurrence.recurrentes}</span>
+      <span><span class="dot" style="background:var(--text-faint);"></span>Visita única: ${recurrence.nuevos}</span>
+    </div>
+  `;
+
+  document.getElementById('dash-rank-list').innerHTML = renderDashRankList();
+}
+
+// --- CÁLCULO DE RECURRENCIA E INDICADOR DE FIDELIDAD (ANALÍTICA DE VISITAS) ---
+function formatVisitDate(isoDate) {
+  const d = new Date(isoDate + "T00:00:00");
+  return d.toLocaleDateString('es-PE', { day: '2-digit', month: 'short' });
+}
+
+function computeClientActivity(userId) {
+  const card = getPrimaryMerchantCard(userId);
+  if (!card) return null;
+
+  const visits = DB.transactions
+    .filter(t => t.card_id === card.id && t.type === 'stamp_add' && t.visit_date)
+    .sort((a, b) => a.visit_date.localeCompare(b.visit_date));
+
+  if (visits.length === 0) {
+    return { totalVisits: 0, firstVisit: null, lastVisit: null, lastVisitTime: null, avgIntervalDays: null, fidelity: "🆕 Sin visitas", fidelityClass: "nuevo" };
+  }
+
+  const first = visits[0];
+  const last = visits[visits.length - 1];
+  const daysSpan = (new Date(last.visit_date) - new Date(first.visit_date)) / 86400000;
+  const avgIntervalDays = visits.length > 1 ? Math.round((daysSpan / (visits.length - 1)) * 10) / 10 : null;
+
+  let fidelity, fidelityClass;
+  if (visits.length === 1) { fidelity = "🆕 Nuevo"; fidelityClass = "nuevo"; }
+  else if (avgIntervalDays <= 7) { fidelity = "🔥 Alta"; fidelityClass = "alta"; }
+  else if (avgIntervalDays <= 15) { fidelity = "🙂 Media"; fidelityClass = "media"; }
+  else { fidelity = "💤 Baja"; fidelityClass = "baja"; }
+
+  return {
+    totalVisits: visits.length,
+    firstVisit: first.visit_date,
+    lastVisit: last.visit_date,
+    lastVisitTime: last.created_at,
+    avgIntervalDays,
+    fidelity,
+    fidelityClass
+  };
+}
+
+function generateCouponCode() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sin caracteres ambiguos
+  let code = "";
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  // Aseguramos unicidad frente a cupones ya generados
+  if (DB.giftedCoupons.some(c => c.coupon_code === code)) return generateCouponCode();
+  return code;
+}
+
+// --- LOGICA DE CRECIMIENTO, RECOMPENSAS Y CAMBIO DE NIVEL ---
+function executeAddStamp(cardId) {
+  const card = DB.loyaltyCards.find(c => c.id === cardId);
+  const biz = DB.businesses.find(b => b.id === card.business_id);
+
+  if (card.reward_ready) {
+    triggerToast("¡El cliente ya posee un premio pendiente de canje!");
+    return;
+  }
+
+  const prevPlumas = card.total_historical_plumas;
+
+  // Regla de Negocio: 1 Sello = 1 Pluma
+  card.current_stamps += 1;
+  card.total_historical_plumas += 1;
+
+  // Sincroniza experience_points (suma total de plumas en TODOS los comercios)
+  const user = DB.users.find(u => u.id === card.user_id);
+  if (user) user.experience_points = getUserTotalPlumas(card.user_id);
+
+  // Registro del evento transaccional puro
+  const now = new Date();
+  DB.transactions.push({
+    id: "TX-" + Math.floor(Math.random() * 9000 + 1000),
+    card_id: card.id,
+    type: "stamp_add",
+    amount_stamps: 1,
+    amount_plumas: 1,
+    created_at: now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+    visit_date: now.toISOString().slice(0, 10)
+  });
+
+  // El nivel es POR COMERCIO: el cruce se evalúa sobre el historial de ESTA tarjeta
+  const crossedGold = prevPlumas < 30 && card.total_historical_plumas >= 30;
+  const crossedSilver = !crossedGold && prevPlumas < 10 && card.total_historical_plumas >= 10;
+
+  if (card.current_stamps >= biz.max_sellos_recompensa) {
+    card.reward_ready = true;
+    playCompleteSound();
+    triggerToast(`🎁 ¡Ciclo completado en ${biz.name}! Premio habilitado para ${user.name}`);
+  } else {
+    playStampSound();
+    triggerToast("+1 Pluma / Sello otorgado correctamente");
+  }
+
+  renderAll();
+
+  if (crossedGold) showLevelUpModal("Oro", user, biz);
+  else if (crossedSilver) showLevelUpModal("Plata", user, biz);
+}
+
+function executeRedeemReward(cardId) {
+  const card = DB.loyaltyCards.find(c => c.id === cardId);
+  if (!card.reward_ready) return;
+
+  DB.transactions.push({
+    id: "TX-" + Math.floor(Math.random() * 9000 + 1000),
+    card_id: card.id,
+    type: "reward_redeem",
+    amount_stamps: -10,
+    amount_plumas: 0,
+    created_at: new Date().toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+  });
+
+  card.current_stamps = 0;
+  card.reward_ready = false;
+
+  triggerToast("Premio entregado. Tarjeta reiniciada para acumulación.");
+  renderAll();
+}
+
+// --- CELEBRACIÓN DE CAMBIO DE NIVEL ---
+function showLevelUpModal(tier, user, biz) {
+  const box = document.getElementById('levelup-box');
+  box.className = "modal-box levelup-box lv-" + tier;
+  const medal = TIER_MEDAL[tier];
+  const perks = tier === "Oro"
+    ? ["20% OFF en toda la Gifting Economy (mejor nivel alcanzado)", "Acceso prioritario a experiencias premium", `Medalla 🥇 Oro visible en tu tarjeta de ${biz.name}`]
+    : ["10% OFF en toda la Gifting Economy (mejor nivel alcanzado)", `Medalla 🥈 Plata visible en tu tarjeta de ${biz.name}`, "A un paso del nivel Oro en este comercio"];
+
+  box.innerHTML = `
+    <button class="modal-close" onclick="closeLevelUp()">✕</button>
+    <div style="text-align:center;">
+      <div class="levelup-medal">${medal}</div>
+      <div class="modal-title">¡${user.name} subió a Nivel ${tier} en ${biz.name}!</div>
+      <div class="modal-sub">Correo simulado enviado a ${user.email}</div>
+    </div>
+    <ul class="levelup-perks">
+      ${perks.map(p => `<li>${p}</li>`).join('')}
+    </ul>
+    <button class="btn" onclick="closeLevelUp()">Continuar</button>
+  `;
+  document.getElementById('levelup-modal').classList.add('show');
+}
+function closeLevelUp() { document.getElementById('levelup-modal').classList.remove('show'); }
+
+// --- SELECTOR DE FLUJO DE INTERFAZ ---
+function selectClient(userId) {
+  activeClientId = userId;
+  renderAll();
+}
+
+function switchClientTab(tabName) {
+  activeClientTab = tabName;
+  renderClientComponent();
+}
+
+// --- MÓDULO DE IDENTIFICACIÓN DE CLIENTE EN CAJA: BÚSQUEDA O QR ---
+function switchMerchantMode(mode) {
+  merchantMode = mode;
+  qrScanState = "idle";
+  qrFoundUserId = null;
+  if (qrTimeoutRef) clearTimeout(qrTimeoutRef);
+  renderMerchantSearch();
+}
+
+function filterMerchantSearch(query) {
+  const select = document.getElementById('merchant-select-client');
+  if (!select) return;
+  const q = (query || "").trim().toLowerCase();
+  const matches = DB.users.filter(u => u.role === 'client')
+    .filter(u => !q || u.id.toLowerCase().includes(q) || u.name.toLowerCase().includes(q));
+
+  select.innerHTML = matches.length
+    ? matches.map(u => `<option value="${u.id}">${u.name} [ID: ${u.id}]</option>`).join('')
+    : `<option disabled selected>Sin coincidencias para "${query}"</option>`;
+
+  if (matches.some(u => u.id === activeClientId)) {
+    select.value = activeClientId;
+  } else if (matches.length) {
+    selectClient(matches[0].id);
+  }
+}
+
+function startQrScan() {
+  qrScanState = "scanning";
+  renderMerchantSearch();
+  qrTimeoutRef = setTimeout(() => {
+    const clients = DB.users.filter(u => u.role === 'client');
+    const pick = clients[Math.floor(Math.random() * clients.length)];
+    qrFoundUserId = pick.id;
+    qrScanState = "found";
+    renderMerchantSearch();
+  }, 1500);
+}
+
+function confirmQrClient() {
+  if (!qrFoundUserId) return;
+  selectClient(qrFoundUserId);
+  triggerToast(`✅ Cliente identificado por QR: ${DB.users.find(u => u.id === qrFoundUserId).name}`);
+}
+
+function resetQrScan() {
+  qrScanState = "idle";
+  qrFoundUserId = null;
+  renderMerchantSearch();
+}
+
+function renderMerchantSearch() {
+  const target = document.getElementById('merchant-search-target');
+  if (!target) return;
+
+  const tabsHtml = `
+    <div class="tabs-nav" style="margin:0 0 12px;">
+      <button class="tab-btn ${merchantMode === 'search' ? 'active' : ''}" onclick="switchMerchantMode('search')">🔍 Buscar ID / Nombre</button>
+      <button class="tab-btn ${merchantMode === 'qr' ? 'active' : ''}" onclick="switchMerchantMode('qr')">📷 Escanear QR</button>
+    </div>
+  `;
+
+  let bodyHtml = '';
+
+  if (merchantMode === 'search') {
+    bodyHtml = `
+      <label style="margin-top:0;">Buscar por ID o nombre del cliente</label>
+      <input type="text" id="merchant-search-input" placeholder="Ej: USR72841096 o user1" oninput="filterMerchantSearch(this.value)">
+      <label>Cliente seleccionado</label>
+      <select id="merchant-select-client" onchange="selectClient(this.value)"></select>
+    `;
+  } else {
+    const stepsHtml = `
+      <ol class="qr-steps">
+        <li><b>1.</b> El cliente abre su Pase Digital y muestra el QR de su pantalla.</li>
+        <li><b>2.</b> El comercio apunta la cámara del celular/tablet hacia el código.</li>
+        <li><b>3.</b> El sistema detecta al cliente y pide confirmar antes de estampar.</li>
+      </ol>
+    `;
+
+    if (qrScanState === 'idle') {
+      bodyHtml = `
+        ${stepsHtml}
+        <div class="qr-scanner">
+          <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+          <span style="font-size:11px; color:var(--text-faint);">Cámara en espera</span>
+        </div>
+        <button class="btn" onclick="startQrScan()">▶ Iniciar escaneo</button>
+      `;
+    } else if (qrScanState === 'scanning') {
+      bodyHtml = `
+        ${stepsHtml}
+        <div class="qr-scanner">
+          <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+          <div class="scan-line"></div>
+        </div>
+        <p style="text-align:center; font-size:12px; color:var(--gold-light);">🔎 Buscando código QR del cliente…</p>
+      `;
+    } else {
+      const user = DB.users.find(u => u.id === qrFoundUserId);
+      bodyHtml = `
+        ${stepsHtml}
+        <div class="qr-scanner found">
+          <div class="qr-mock" style="width:58px; height:58px;"><div></div></div>
+        </div>
+        <p style="text-align:center; font-size:13px; color:var(--success); font-weight:600;">✅ QR detectado: ${user.name} [${user.id}]</p>
+        <button class="btn" onclick="confirmQrClient()">Usar este cliente y continuar</button>
+        <button class="btn btn-outline" onclick="resetQrScan()">🔄 Escanear otro cliente</button>
+      `;
+    }
+  }
+
+  target.innerHTML = tabsHtml + bodyHtml;
+  if (merchantMode === 'search') populateSelect();
+}
+
+// --- FLUJO DE REGALO (3 CLICKS) ---
+// Click 1: seleccionar producto del feed
+function openGiftForm(catalogId) {
+  const tier = getBestTier(activeClientId);
+  const item = GIFT_CATALOG.find(i => i.id === catalogId);
+  const rate = getDiscountRate(tier);
+  const discounted = Math.round(item.price * (1 - rate));
+  pendingGift = { item, tier, discounted };
+
+  const box = document.getElementById('gift-form-box');
+  box.innerHTML = `
+    <button class="modal-close" onclick="closeGiftForm()">✕</button>
+    <div class="modal-title">${item.emoji} ${item.title}</div>
+    <div class="modal-sub">${item.merchant} · Nivel ${tier} aplicado (${Math.round(rate*100)}% OFF)</div>
+    <div style="margin:8px 0 4px;">
+      ${rate > 0 ? `<span class="price-original">S/ ${item.price}</span> &nbsp;` : ''}
+      <span class="price-final" style="font-size:20px;">S/ ${discounted}</span>
+    </div>
+
+    <label>Nombre del amigo</label>
+    <input type="text" id="gift-friend-name" placeholder="Ej: María Torres">
+    <label>WhatsApp / Email</label>
+    <input type="text" id="gift-friend-contact" placeholder="Ej: +51 999 999 999">
+
+    <button class="btn" onclick="processGiftPayment(false)">💳 Pagar S/ ${discounted} con Yape/Plin</button>
+    <button class="btn btn-outline" onclick="processGiftPayment(true)">🔗 Generar Link de Regalo en su lugar</button>
+  `;
+  document.getElementById('gift-form-modal').classList.add('show');
+}
+function closeGiftForm() { document.getElementById('gift-form-modal').classList.remove('show'); }
+
+// Click 2 (datos) + Click 3 (pago / generar link) -> procesa y persiste
+function processGiftPayment(asLink) {
+  if (!pendingGift) return;
+  const nameInput = document.getElementById('gift-friend-name');
+  const contactInput = document.getElementById('gift-friend-contact');
+  const friendName = (nameInput.value || "").trim() || "Amigo(a)";
+  const friendContact = asLink ? "Link de regalo generado" : ((contactInput.value || "").trim() || "No especificado");
+
+  if (!asLink && !contactInput.value.trim()) {
+    triggerToast("Ingresa un contacto o usa 'Generar Link de Regalo'");
+    return;
+  }
+
+  const sender = DB.users.find(u => u.id === activeClientId);
+  const coupon = {
+    id: "GFT-" + Math.floor(Math.random() * 9000 + 1000),
+    sender_id: activeClientId,
+    friend_name: friendName,
+    friend_contact: friendContact,
+    merchant_name: pendingGift.item.merchant,
+    experience_title: pendingGift.item.title,
+    price_paid: pendingGift.discounted,
+    coupon_code: generateCouponCode(),
+    status: "purchased"
+  };
+  DB.giftedCoupons.push(coupon);
+
+  closeGiftForm();
+
+  const waText = `🎁 ¡Tienes un regalo de Gold Bird!\n${sender.name} te invitó: ${coupon.experience_title} en ${coupon.merchant_name}.\nPresenta este código en caja: ${coupon.coupon_code}\n¡Que lo disfrutes! 🥂`;
+
+  const resBox = document.getElementById('gift-result-box');
+  resBox.innerHTML = `
+    <button class="modal-close" onclick="closeGiftResult()">✕</button>
+    <div style="text-align:center;">
+      <div class="levelup-medal">🎉</div>
+      <div class="modal-title">¡Regalo creado con éxito!</div>
+      <div class="modal-sub">Código único: <b style="color:var(--gold-light); letter-spacing:1px;">${coupon.coupon_code}</b></div>
+    </div>
+    <label>Mensaje listo para enviar por WhatsApp</label>
+    <div class="wa-preview" id="wa-text-preview">${waText}</div>
+    <button class="btn" onclick="copyGiftMessage()">📋 Copiar mensaje</button>
+    <button class="btn btn-outline" onclick="closeGiftResult()">Cerrar</button>
+  `;
+  document.getElementById('gift-result-modal').classList.add('show');
+
+  triggerToast(asLink ? "Link de regalo generado y guardado" : "Pago procesado. Cupón de regalo creado");
+  pendingGift = null;
+  renderAll();
+}
+function closeGiftResult() { document.getElementById('gift-result-modal').classList.remove('show'); }
+
+function copyGiftMessage() {
+  const text = document.getElementById('wa-text-preview').innerText;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => triggerToast("Mensaje copiado al portapapeles"));
+  } else {
+    triggerToast("Selecciona y copia el mensaje manualmente");
+  }
+}
+
+// --- VALIDACIÓN DE CUPONES EN CAJA (COMERCIO) ---
+function validateCouponCode() {
+  const input = document.getElementById('coupon-validate-input');
+  const feedback = document.getElementById('coupon-validate-feedback');
+  const code = (input.value || "").trim().toUpperCase();
+
+  feedback.className = "validate-feedback";
+  if (!code) {
+    feedback.classList.add('err');
+    feedback.textContent = "Ingresa un código de 6 caracteres.";
+    return;
+  }
+
+  const coupon = DB.giftedCoupons.find(c => c.coupon_code === code);
+  if (!coupon) {
+    feedback.classList.add('err');
+    feedback.textContent = `Código "${code}" no encontrado en la base de datos.`;
+    triggerToast("Cupón no encontrado");
+    return;
+  }
+  if (coupon.status === "redeemed") {
+    feedback.classList.add('err');
+    feedback.textContent = `Este cupón ya fue canjeado previamente.`;
+    triggerToast("Cupón ya canjeado");
+    return;
+  }
+
+  coupon.status = "redeemed";
+  feedback.classList.add('ok');
+  feedback.textContent = `✅ Validado: ${coupon.experience_title} — ${coupon.merchant_name}`;
+  triggerToast("🎁 Cupón de regalo canjeado correctamente");
+  input.value = "";
+  renderAll();
+}
+
+// --- RENDERIZADORES DE COMPONENTES WEB UI ---
+function renderLevelBlock(plumas) {
+  const tier = getTier(plumas);
+  const pct = Math.min(100, (Math.min(plumas, 30) / 30) * 100);
+  let microcopy;
+  if (tier === "Bronce") {
+    microcopy = `A solo <b>${10 - plumas}</b> plumas de desbloquear los beneficios de Nivel Plata y 10% OFF en regalos.`;
+  } else if (tier === "Plata") {
+    microcopy = `A solo <b>${30 - plumas}</b> plumas de desbloquear los beneficios de Nivel Oro y cupones de regalo premium.`;
+  } else {
+    microcopy = `🥇 Nivel máximo alcanzado. Disfrutas 20% OFF en toda la Gifting Economy Gold Bird.`;
+  }
+  return `
+    <div class="level-track">
+      <div class="level-fill" style="width:${pct}%"></div>
+      <div class="level-seg" style="left:0%;">🥉</div>
+      <div class="level-seg" style="left:33.3%;">🥈</div>
+      <div class="level-seg" style="left:100%;">🥇</div>
+    </div>
+    <p class="level-microcopy">${microcopy}</p>
+  `;
+}
+
+// --- TAB 1: MIS TARJETAS (pase maestro Gold Bird + wallet de comercios afiliados) ---
+function renderBizCard(card) {
+  const biz = DB.businesses.find(b => b.id === card.business_id);
+  const isExpanded = expandedCardId === card.id;
+  const cardTier = getTier(card.total_historical_plumas);
+  const streak = computeCardStreak(card.id);
+  let stampsHtml = '';
+  for (let i = 1; i <= biz.max_sellos_recompensa; i++) {
+    const isFilled = i <= card.current_stamps;
+    stampsHtml += `<div class="stamp stamp-sm ${isFilled ? 'active' : ''}">${isFilled ? '<span class="feather-icon"></span>' : ''}</div>`;
+  }
+  return `
+    <div class="biz-card" style="--c1:${biz.color1}; --c2:${biz.color2};" onclick="toggleCardExpand('${card.id}')">
+      <div class="biz-card-top">
+        <div class="biz-card-id"><span class="biz-emoji">${biz.icon}</span><div><div class="biz-name">${biz.name}</div><div class="biz-cat">${biz.category}</div></div></div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span class="tier-medal" title="Nivel ${cardTier} en ${biz.name}">${TIER_MEDAL[cardTier]} ${cardTier}</span>
+          <span class="biz-chevron">${isExpanded ? '⌃' : '⌄'}</span>
+        </div>
+      </div>
+      <div class="biz-stamp-row">${stampsHtml}</div>
+      <div class="biz-card-foot">
+        <span>${card.current_stamps}/${biz.max_sellos_recompensa} · ${streak > 0 ? '🔥 Racha ' + streak + (streak === 1 ? ' semana' : ' semanas') : 'Sin racha activa'}</span>
+        <span>${card.reward_ready ? '🎉 ¡Casi listo! Reclama tu premio' : 'Toca para ver detalle'}</span>
+      </div>
+      ${isExpanded ? `
+        <div class="biz-card-detail">
+          ${card.reward_ready
+            ? `<div class="reward-banner" style="background:rgba(255,255,255,0.14); border-color:rgba(255,255,255,0.4); color:#fff;">🎁 ¡Recompensa lista! Muestra esta tarjeta en ${biz.name} para reclamarla.</div>`
+            : `<p style="font-size:11.5px; color:rgba(255,255,255,0.85);">Te faltan <b>${biz.max_sellos_recompensa - card.current_stamps}</b> sellos para tu próximo premio en ${biz.name}.</p>`}
+          <p style="font-size:11px; color:rgba(255,255,255,0.6); margin-top:4px 0 8px;">Histórico en este comercio: ${card.total_historical_plumas} 🪶 · Tarjeta ${card.id}</p>
+          <div style="background:rgba(0,0,0,0.2); border-radius:8px; padding:8px 10px; margin-top:8px;">${renderLevelBlock(card.total_historical_plumas)}</div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+function renderTabCards(user, totalPlumas) {
+  const myCards = getUserCards(user.id);
+  const best = getBestTierInfo(user.id);
+  return `
+    <div class="pass tier-pass-${best.tier}">
+      <div class="pass-main">
+        <span class="eyebrow" style="font-size:10px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.5px;">Programa general Gold Bird</span>
+        <div class="client-name">${user.name}</div>
+        <p style="font-size:12px; color:var(--text-dim); margin-top:4px;">🪶 <b style="color:var(--gold-light)">${totalPlumas} plumas</b> acumuladas en total, en ${myCards.length} comercio${myCards.length === 1 ? '' : 's'} afiliado${myCards.length === 1 ? '' : 's'}.</p>
+        ${best.bizName ? `<span class="tier-badge tier-${best.tier}">Mejor nivel: ${TIER_MEDAL[best.tier]} ${best.tier} en ${best.bizName}</span>` : ''}
+      </div>
+      <div class="pass-stub">
+        <div class="qr-mock"><div></div></div>
+        <div style="font-family:'JetBrains Mono', monospace; font-size:11px; margin-top:8px; color:var(--gold-light);">${user.id}</div>
+      </div>
+    </div>
+    <div class="section-label">Mis comercios afiliados (${myCards.length})</div>
+    <p style="font-size:11.5px; color:var(--text-faint); margin:-4px 0 10px;">El nivel y la racha se calculan de forma independiente en cada comercio.</p>
+    ${myCards.map(renderBizCard).join('')}
+    <button class="btn btn-outline" onclick="switchClientTab('nearby')">📍 Descubrir más comercios cerca</button>
+  `;
+}
+
+// --- TAB 2: PREMIOS (rachas, recompensas listas, regalar experiencias y mis cupones) ---
+function renderTabRewards(user, totalPlumas) {
+  const tier = getBestTier(user.id);
+  const rate = getDiscountRate(tier);
+  const myCards = getUserCards(user.id);
+  const readyCards = myCards.filter(c => c.reward_ready);
+  const myCoupons = DB.giftedCoupons.filter(c => c.sender_id === user.id);
+  const vigentes = myCoupons.filter(c => c.status === 'purchased').length;
+  const bestStreak = getBestStreak(user.id);
+
+  const readyHtml = readyCards.length ? readyCards.map(c => {
+    const biz = DB.businesses.find(b => b.id === c.business_id);
+    return `<div class="reward-banner">🎁 ¡Premio listo en <b>${biz.name}</b>! Muéstralo en caja para reclamarlo.</div>`;
+  }).join('') : '';
+
+  const giftItems = GIFT_CATALOG.map(item => {
+    const discounted = Math.round(item.price * (1 - rate));
+    return `
+      <div class="gift-item">
+        <div class="gift-emoji">${item.emoji}</div>
+        <div class="gift-info">
+          <div class="m-name">${item.merchant}</div>
+          <div class="m-title">${item.title}</div>
+        </div>
+        <div class="gift-price">
+          ${rate > 0 ? `<div class="price-original">S/ ${item.price}</div>` : ''}
+          <div class="price-final">S/ ${discounted}</div>
+        </div>
+        <button class="btn-mini" onclick="openGiftForm('${item.id}')">Regalar</button>
+      </div>
+    `;
+  }).join('');
+
+  const couponsHtml = myCoupons.length === 0
+    ? `<div class="empty-state">Aún no has regalado ninguna experiencia.</div>`
+    : myCoupons.map(c => `
+      <div class="coupon-card">
+        <div>
+          <div class="code">${c.coupon_code}</div>
+          <div class="meta">${c.experience_title} · para ${c.friend_name}</div>
+        </div>
+        <span class="status-pill status-${c.status}">${c.status === 'purchased' ? 'Vigente' : 'Canjeado'}</span>
+      </div>
+    `).join('');
+
+  return `
+    <div class="stats-row">
+      <div class="stat-pill"><div class="stat-icon">🔥</div><div class="stat-num">${bestStreak.streak}</div><div class="stat-label">${bestStreak.bizName ? 'Racha en ' + bestStreak.bizName : 'Racha (semanas)'}</div></div>
+      <div class="stat-pill"><div class="stat-icon">🪶</div><div class="stat-num">${totalPlumas}</div><div class="stat-label">Plumas totales</div></div>
+      <div class="stat-pill"><div class="stat-icon">🎁</div><div class="stat-num">${vigentes}</div><div class="stat-label">Cupones vigentes</div></div>
+    </div>
+    ${readyHtml}
+    <div class="section-label">Regala una experiencia</div>
+    <p style="font-size:12px; color:var(--text-dim); margin-bottom:6px;">Tu mejor nivel <b style="color:var(--gold-light)">${TIER_MEDAL[tier]} ${tier}</b> aplica ${Math.round(rate*100)}% OFF automático en toda la Gifting Economy.</p>
+    ${giftItems}
+    <div class="section-label" style="margin-top:14px;">Mis cupones</div>
+    ${couponsHtml}
+  `;
+}
+
+// --- TAB 3: CERCA DE MÍ (descubrir y unirse a nuevos comercios afiliados) ---
+function setNearbyQuery(q) { nearbyQuery = q; renderClientComponent(); }
+function setNearbyCategory(cat) { nearbyCategory = cat; renderClientComponent(); }
+
+function renderTabNearby(user) {
+  const categories = ["Todas", ...new Set(DB.businesses.map(b => b.category))];
+  const q = nearbyQuery.trim().toLowerCase();
+  const list = DB.businesses.filter(b =>
+    (nearbyCategory === 'Todas' || b.category === nearbyCategory) &&
+    (!q || b.name.toLowerCase().includes(q) || b.category.toLowerCase().includes(q))
+  );
+
+  const chipsHtml = categories.map(cat =>
+    `<button class="chip ${nearbyCategory === cat ? 'active' : ''}" onclick="setNearbyCategory('${cat}')">${cat}</button>`
+  ).join('');
+
+  const itemsHtml = list.length ? list.map(b => {
+    const joined = DB.loyaltyCards.some(c => c.user_id === user.id && c.business_id === b.id);
+    return `
+      <div class="gift-item">
+        <div class="gift-emoji">${b.icon}</div>
+        <div class="gift-info">
+          <div class="m-name">${b.category} · ⭐ ${b.rating} · ${b.distance}</div>
+          <div class="m-title">${b.name}</div>
+        </div>
+        ${joined
+          ? `<span class="status-pill status-redeemed">✓ Unido</span>`
+          : `<button class="btn-mini" onclick="joinBusiness('${b.id}')">Unirme</button>`}
+      </div>
+    `;
+  }).join('') : `<div class="empty-state">No encontramos comercios afiliados con ese criterio.</div>`;
+
+  return `
+    <label style="margin-top:0;">Buscar comercios afiliados cerca de ti</label>
+    <input type="text" placeholder="Ej: café, spa, Barbería Rey..." value="${nearbyQuery}" oninput="setNearbyQuery(this.value)">
+    <div class="chips-row">${chipsHtml}</div>
+    ${itemsHtml}
+  `;
+}
+
+// --- TAB 4: PERFIL ---
+function renderTabProfile(user, totalPlumas) {
+  const myCards = getUserCards(user.id);
+  const best = getBestTierInfo(user.id);
+  const bestStreak = getBestStreak(user.id);
+  const initials = user.name.slice(0, 2).toUpperCase();
+  const docLine = user.doc_type === 'DNI'
+    ? `DNI ${user.doc_value}`
+    : `Documento alterno · registro N° ${user.registration_order}`;
+
+  const breakdownHtml = myCards.map(c => {
+    const biz = DB.businesses.find(b => b.id === c.business_id);
+    const t = getTier(c.total_historical_plumas);
+    const s = computeCardStreak(c.id);
+    return `
+      <div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border-soft);">
+        <span style="font-size:18px;">${biz.icon}</span>
+        <div style="flex:1;">
+          <div style="font-size:12.5px; color:var(--text);">${biz.name}</div>
+          <div style="font-size:10.5px; color:var(--text-faint);">${c.total_historical_plumas} 🪶 · ${s > 0 ? '🔥 racha ' + s + 'sem.' : 'sin racha'}</div>
+        </div>
+        <span class="tier-badge tier-${t}">${TIER_MEDAL[t]} ${t}</span>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <div style="text-align:center; padding:10px 0 4px;">
+      <div class="app-avatar" style="width:64px; height:64px; font-size:22px; margin:0 auto 10px;">${initials}</div>
+      <div class="client-name">${user.name}</div>
+      <p style="font-size:12px; color:var(--text-dim); margin:2px 0 2px;">${user.email}</p>
+      <p style="font-size:10.5px; color:var(--text-faint); margin-bottom:8px;">${docLine} · ${user.id}</p>
+      ${best.bizName ? `<span class="tier-badge tier-${best.tier}">Mejor nivel: ${TIER_MEDAL[best.tier]} ${best.tier} en ${best.bizName}</span>` : ''}
+    </div>
+    <div class="stats-row">
+      <div class="stat-pill"><div class="stat-icon">🏪</div><div class="stat-num">${myCards.length}</div><div class="stat-label">Comercios afiliados</div></div>
+      <div class="stat-pill"><div class="stat-icon">🪶</div><div class="stat-num">${totalPlumas}</div><div class="stat-label">Plumas totales</div></div>
+      <div class="stat-pill"><div class="stat-icon">🔥</div><div class="stat-num">${bestStreak.streak}</div><div class="stat-label">Mejor racha (sem.)</div></div>
+    </div>
+    <div class="section-label">Nivel por comercio</div>
+    ${breakdownHtml}
+    <div class="section-label">ID de miembro</div>
+    <div style="display:flex; align-items:center; gap:12px; background:var(--surface-2); border:1px solid var(--border-soft); border-radius:var(--radius-md); padding:12px;">
+      <div class="qr-mock" style="width:52px; height:52px;"><div></div></div>
+      <div style="font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--gold-light);">${user.id}</div>
+    </div>
+  `;
+}
+
+function renderClientComponent() {
+  const target = document.getElementById('client-view-target');
+  const user = DB.users.find(u => u.id === activeClientId);
+
+  if (!user || user.role !== 'client') {
+    target.innerHTML = `<p style='color:var(--text-faint)'>Usuario seleccionado no es un rol cliente.</p>`;
+    return;
+  }
+
+  const totalPlumas = getUserTotalPlumas(user.id);
+  const bestTier = getBestTier(user.id);
+  const initials = user.name.slice(0, 2).toUpperCase();
+
+  let tabContent = '';
+  if (activeClientTab === 'cards') tabContent = renderTabCards(user, totalPlumas);
+  else if (activeClientTab === 'rewards') tabContent = renderTabRewards(user, totalPlumas);
+  else if (activeClientTab === 'nearby') tabContent = renderTabNearby(user);
+  else tabContent = renderTabProfile(user, totalPlumas);
+
+  const greetingHour = new Date().getHours();
+  const greeting = greetingHour < 12 ? "Buenos días" : (greetingHour < 19 ? "Buenas tardes" : "Buenas noches");
+
+  target.innerHTML = `
+    <div class="app-topbar">
+      <div class="app-avatar">${initials}</div>
+      <div class="app-topbar-mid">
+        <div class="app-greeting">${greeting}</div>
+        <div class="app-user-name">${user.name}</div>
+      </div>
+      <span class="tier-badge tier-${bestTier}">${TIER_MEDAL[bestTier]} ${bestTier}</span>
+      <button class="icon-btn" title="Notificaciones">🔔</button>
+    </div>
+
+    <div class="tabs-nav">
+      <button class="tab-btn ${activeClientTab === 'cards' ? 'active' : ''}" onclick="switchClientTab('cards')">🎟️ Tarjetas</button>
+      <button class="tab-btn ${activeClientTab === 'rewards' ? 'active' : ''}" onclick="switchClientTab('rewards')">🎁 Premios</button>
+      <button class="tab-btn ${activeClientTab === 'nearby' ? 'active' : ''}" onclick="switchClientTab('nearby')">📍 Cerca de mí</button>
+      <button class="tab-btn ${activeClientTab === 'profile' ? 'active' : ''}" onclick="switchClientTab('profile')">👤 Perfil</button>
+    </div>
+    <div id="tab-content">${tabContent}</div>
+  `;
+}
+
+
+function renderMerchantComponent() {
+  const target = document.getElementById('merchant-actions-target');
+  const card = getPrimaryMerchantCard(activeClientId);
+  const user = DB.users.find(u => u.id === activeClientId);
+
+  if (!card || !user) {
+    target.innerHTML = `<div class="empty-state">Selecciona un cliente válido del lector QR ficticio superior.</div>`;
+    return;
+  }
+
+  const biz = DB.businesses.find(b => b.id === card.business_id);
+  const activity = computeClientActivity(user.id);
+  const cardTier = getTier(card.total_historical_plumas);
+  const cardStreak = computeCardStreak(card.id);
+  target.innerHTML = `
+    <div style="background:var(--surface-2); padding:1rem; border-radius:var(--radius-md); border:1px solid var(--border-soft);">
+      <h4 style="font-size:14px; font-weight:600; margin-bottom:4px;">Cliente detectado: ${user.name}</h4>
+      <p style="font-size:12px; color:var(--text-dim);">Tarjeta ${biz.name}: <b>${card.current_stamps}/${biz.max_sellos_recompensa} Sellos</b> | Nivel en este comercio: <b>${TIER_MEDAL[cardTier]} ${cardTier}</b> | Racha: <b>${cardStreak > 0 ? cardStreak + ' sem.' : '—'}</b></p>
+      <p style="font-size:12px; color:var(--text-dim); margin-top:4px;">Última visita: <b style="color:var(--gold-light)">${activity.lastVisit ? formatVisitDate(activity.lastVisit) + ' · ' + activity.lastVisitTime : 'Sin registro'}</b> · Recurrencia: <b>${activity.avgIntervalDays !== null ? 'cada ~' + activity.avgIntervalDays + ' días' : '—'}</b> · Fidelidad: <b>${activity.fidelity}</b></p>
+
+      <button class="btn" onclick="executeAddStamp('${card.id}')" ${card.reward_ready ? 'disabled' : ''}>
+        ${card.reward_ready ? 'Ciclo Bloqueado (Falta Canje)' : '⚡ Estampar Tarjeta (+1 Sello / +1 Pluma)'}
+      </button>
+
+      <button class="btn btn-outline" onclick="executeRedeemReward('${card.id}')" ${!card.reward_ready ? 'disabled' : ''}>
+        🎁 Canjear y Validar Premio (Resetear Ronda)
+      </button>
+    </div>
+  `;
+}
+
+function renderInspectorTables() {
+  document.getElementById('db-users-body').innerHTML = DB.users.map(u =>
+    `<tr><td class="highlight">${u.id}</td><td>${u.name}</td><td>${u.email}</td><td>${u.role}</td><td>${u.doc_type === 'DNI' ? 'DNI ' + u.doc_value : 'Otro (reg. #' + u.registration_order + ')'}</td><td>${u.experience_points !== undefined ? u.experience_points + ' 🪶' : '—'}</td></tr>`
+  ).join('');
+
+  document.getElementById('db-businesses-body').innerHTML = DB.businesses.map(b =>
+    `<tr><td class="highlight">${b.id}</td><td>${b.icon} ${b.name}</td><td>${b.category}</td><td>${b.puntos_por_sello} pluma</td><td>${b.max_sellos_recompensa}</td><td>⭐ ${b.rating}</td><td>#${b.registration_order}</td></tr>`
+  ).join('');
+
+  document.getElementById('db-cards-body').innerHTML = DB.loyaltyCards.map(c => {
+    const biz = DB.businesses.find(b => b.id === c.business_id);
+    const t = getTier(c.total_historical_plumas);
+    return `<tr>
+      <td class="highlight">${c.id}</td>
+      <td>${c.user_id}</td>
+      <td>${c.business_id} (${biz ? biz.name : '—'})</td>
+      <td style="color:var(--gold-light); font-weight:600;">${c.current_stamps}/${biz ? biz.max_sellos_recompensa : '?'}</td>
+      <td style="color:#5FA8D3; font-weight:600;">${c.total_historical_plumas} 🪶</td>
+      <td>${TIER_MEDAL[t]} ${t}</td>
+      <td style="color:${c.reward_ready ? 'var(--gold)' : 'var(--text-faint)'}">${c.reward_ready ? 'TRUE (Listo)' : 'FALSE'}</td>
+     </tr>`;
+  }).join('');
+
+  document.getElementById('db-coupons-body').innerHTML = DB.giftedCoupons.length === 0
+    ? `<tr><td colspan="9" style="color:var(--text-faint); text-align:center; padding:14px;">Sin registros aún — genera un regalo desde la pestaña 🎁 Regalar.</td></tr>`
+    : DB.giftedCoupons.map(c => `
+      <tr>
+        <td class="highlight">${c.id}</td>
+        <td>${c.sender_id}</td>
+        <td>${c.friend_name}</td>
+        <td>${c.friend_contact}</td>
+        <td>${c.merchant_name}</td>
+        <td>${c.experience_title}</td>
+        <td>S/ ${c.price_paid}</td>
+        <td style="color:var(--gold-light); font-weight:600;">${c.coupon_code}</td>
+        <td style="color:${c.status === 'redeemed' ? 'var(--success)' : '#5FA8D3'}">${c.status}</td>
+      </tr>
+    `).join('');
+
+  document.getElementById('db-transactions-body').innerHTML = DB.transactions.map(t =>
+    `<tr>
+      <td class="highlight">${t.id}</td>
+      <td>${t.card_id}</td>
+      <td style="color:${t.type==='reward_redeem'?'var(--danger)':'#77B255'}">${t.type}</td>
+      <td>${t.amount_stamps}</td>
+      <td>${t.amount_plumas}</td>
+      <td>${t.visit_date ? formatVisitDate(t.visit_date) : '—'}</td>
+      <td>${t.created_at}</td>
+     </tr>`
+  ).join('');
+
+  document.getElementById('db-client-activity-body').innerHTML = DB.users.filter(u => u.role === 'client').map(u => {
+    const a = computeClientActivity(u.id);
+    const fidelityColor = { alta: 'var(--success)', media: 'var(--gold-light)', baja: 'var(--danger)', nuevo: '#5FA8D3' }[a.fidelityClass] || 'var(--text-faint)';
+    return `<tr>
+      <td>${u.id}</td>
+      <td class="highlight">${u.name}</td>
+      <td>${a.totalVisits}</td>
+      <td>${a.firstVisit ? formatVisitDate(a.firstVisit) : '—'}</td>
+      <td>${a.lastVisit ? formatVisitDate(a.lastVisit) : '—'}</td>
+      <td>${a.lastVisitTime || '—'}</td>
+      <td>${a.avgIntervalDays !== null ? 'cada ~' + a.avgIntervalDays + ' días' : '—'}</td>
+      <td style="color:${fidelityColor}; font-weight:600;">${a.fidelity}</td>
+     </tr>`;
+  }).join('');
+}
+
+function populateSelect() {
+  const select = document.getElementById('merchant-select-client');
+  if (!select) return;
+  select.innerHTML = DB.users
+    .filter(u => u.role === 'client')
+    .map(u => `<option value="${u.id}">${u.name} [ID: ${u.id}]</option>`).join('');
+  select.value = activeClientId;
+}
+
+function renderAll() {
+  renderClientComponent();
+  renderMerchantSearch();
+  renderMerchantComponent();
+  renderDashboard();
+  renderInspectorTables();
+}
+
+// Inicialización
+document.addEventListener('DOMContentLoaded', () => {
+  renderAll();
+});
+</script>
+</body>
+</html>

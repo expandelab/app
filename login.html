@@ -273,7 +273,7 @@
 
   <!-- LADO DERECHO: Formulario de Login -->
   <div class="auth-panel">
-    <a href="#" class="nav-back">← Volver al sitio web</a>
+    <a href="index#proyectos" class="nav-back" id="nav-back-link">← Volver al sitio web</a>
 
     <div class="auth-box">
       <h3>Bienvenido de vuelta</h3>
@@ -285,7 +285,7 @@
         <button class="role-btn" id="btn-merchant" onclick="switchRole('merchant')">Soy Comercio</button>
       </div>
 
-      <form onsubmit="event.preventDefault();">
+      <form onsubmit="handleLogin(event)">
         <div class="form-group">
           <label>Correo Electrónico / Teléfono</label>
           <div class="input-wrapper">
@@ -307,14 +307,17 @@
     </div>
 
     <div class="footer-text">
-      ¿Primera vez en Gold Bird? <a href="#" style="color:var(--gold-light); text-decoration:none;">Crear una tarjeta</a>
+      ¿Primera vez en Gold Bird? <a href="signup" style="color:var(--gold-light); text-decoration:none;">Crear una tarjeta</a>
     </div>
   </div>
 </div>
 
 <script>
+  let selectedRole = 'client';
+
   function switchRole(role) {
     const isClient = role === 'client';
+    selectedRole = role;
     document.getElementById('btn-client').classList.toggle('active', isClient);
     document.getElementById('btn-merchant').classList.toggle('active', !isClient);
     
@@ -323,6 +326,28 @@
       ? 'Ingresar a mi Tarjeta →' 
       : 'Acceder al Comercio →';
   }
+
+  // Nota para producción: esta validación es un stub de front-end.
+  // Cuando exista backend (ej. Supabase Auth), reemplazar por la
+  // verificación real de credenciales antes de redirigir.
+  function handleLogin(event) {
+    event.preventDefault();
+    if (selectedRole === 'client') {
+      window.location.href = 'user';
+    } else {
+      window.location.href = 'merchant';
+    }
+  }
+
+  // Botón "Volver": si el usuario llegó navegando desde el propio sitio,
+  // regresa a la vista anterior real (history.back()); si entró directo
+  // (link externo, nueva pestaña), cae al href de respaldo hacia #proyectos.
+  document.getElementById('nav-back-link').addEventListener('click', function (e) {
+    if (window.history.length > 1 && document.referrer.includes(window.location.host)) {
+      e.preventDefault();
+      window.history.back();
+    }
+  });
 </script>
 </body>
 </html>
