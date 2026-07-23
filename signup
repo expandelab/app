@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goldbird — Registro de Experiencia VIP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg: #0A0C10;
+      --surface: #14171F;
+      --surface-2: #1A1E28;
+      --border-gold: rgba(201, 162, 39, 0.3);
+      --border-soft: rgba(242, 239, 230, 0.08);
+      --gold: #C9A227;
+      --gold-light: #E8C874;
+      --gold-pale: #F4E7C4;
+      --text: #F2EFE6;
+      --text-dim: #9C9A90;
+      --text-faint: #6B6A63;
+      --oro: #E8C874;
+      --radius-lg: 20px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    .page-container {
+      display: flex;
+      min-height: 100vh;
+      width: 100vw;
+    }
+
+    /* PANEL IZQUIERDO: BRANDING Y BENEFICIOS */
+    .brand-panel {
+      flex: 1;
+      background: radial-gradient(circle at 15% 15%, rgba(201, 162, 39, 0.18) 0%, transparent 45%),
+                  radial-gradient(circle at 85% 85%, rgba(232, 200, 116, 0.06) 0%, transparent 50%),
+                  var(--bg);
+      padding: 3.5rem 4rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      border-right: 1px solid var(--border-soft);
+    }
+
+    .brand-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-header h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 24px;
+      font-weight: 500;
+      color: var(--gold-light);
+    }
+
+    .hero-content { max-width: 520px; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(201, 162, 39, 0.12);
+      border: 1px solid var(--border-gold);
+      color: var(--gold-light);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-title {
+      font-family: 'Fraunces', serif;
+      font-size: 38px;
+      line-height: 1.18;
+      font-weight: 500;
+      color: var(--text);
+      margin-bottom: 1.25rem;
+    }
+    .hero-title span { color: var(--gold-light); }
+
+    .hero-desc {
+      color: var(--text-dim);
+      font-size: 15px;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    /* Live Preview de Tarjeta Boarding Pass */
+    .pass-preview {
+      background: var(--surface);
+      border: 1px solid var(--border-gold);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    }
+    .pass-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    .pass-eyebrow {
+      font-size: 10px;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+    .pass-name {
+      font-family: 'Fraunces', serif;
+      font-size: 22px;
+      color: var(--gold-pale);
+      margin-top: 2px;
+    }
+    .tier-badge {
+      background: rgba(232, 200, 116, 0.18);
+      color: var(--oro);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+    .stamps-row {
+      display: flex;
+      gap: 8px;
+      margin: 1.2rem 0 0.8rem;
+    }
+    .stamp-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px dashed var(--border-gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--text-faint);
+    }
+    .stamp-dot.active {
+      background: var(--gold);
+      border-style: solid;
+      border-color: var(--gold);
+      color: #1A1400;
+      font-weight: bold;
+    }
+
+    /* PANEL DERECHO: FORMULARIO DE REGISTRO */
+    .auth-panel {
+      width: 520px;
+      background: var(--surface);
+      padding: 3rem 3.5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .auth-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .step-indicator {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--gold-light);
+      background: rgba(201, 162, 39, 0.12);
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border-gold);
+    }
+    .nav-link {
+      color: var(--text-dim);
+      text-decoration: none;
+      font-size: 13px;
+    }
+    .nav-link:hover { color: var(--gold-light); }
+
+    .auth-header { margin-bottom: 1.8rem; }
+    .auth-header h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 28px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .auth-header p { font-size: 13.5px; color: var(--text-dim); }
+
+    .form-grid { display: flex; flex-direction: column; gap: 1.2rem; }
+    .form-row { display: flex; gap: 1rem; }
+    .form-row .form-group { flex: 1; }
+
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: var(--text-faint);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    
+    .label-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    /* Checkbox de Sin DNI */
+    .toggle-checkbox {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-size: 11px;
+      color: var(--text-dim);
+      user-select: none;
+    }
+    .toggle-checkbox input[type="checkbox"] {
+      accent-color: var(--gold);
+      cursor: pointer;
+    }
+
+    .input-box { position: relative; display: flex; align-items: center; }
+    .input-box input {
+      width: 100%;
+      background: var(--surface-2);
+      border: 1px solid var(--border-soft);
+      color: var(--text);
+      border-radius: var(--radius-md);
+      padding: 12px 14px 12px 42px;
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .input-box input:focus:not(:disabled) {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.12);
+    }
+    
+    /* Estado visual cuando se deshabilita (Sin DNI activo) */
+    .input-box input:disabled {
+      background: rgba(255, 255, 255, 0.03);
+      border-color: rgba(255, 255, 255, 0.04);
+      color: var(--text-faint);
+      cursor: not-allowed;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--text-faint);
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .input-box input:disabled + .input-icon {
+      opacity: 0.3;
+    }
+
+    .bday-perk {
+      background: rgba(232, 200, 116, 0.08);
+      border: 1px dashed var(--border-gold);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      font-size: 11.5px;
+      color: var(--gold-pale);
+      margin-top: 6px;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #1A1400;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 14px;
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 0.8rem;
+      transition: background 0.2s, transform 0.1s;
+    }
+    .btn-gold:hover { background: var(--gold-light); }
+
+    .auth-footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 12.5px;
+      color: var(--text-dim);
+    }
+    .auth-footer a { color: var(--gold-light); text-decoration: none; }
+
+    @media (max-width: 960px) {
+      .brand-panel { display: none; }
+      .auth-panel { width: 100%; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-container">
+  
+  <!-- PANEL IZQUIERDO -->
+  <div class="brand-panel">
+    <div class="brand-header">
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+        <circle cx="17" cy="17" r="16.5" stroke="#C9A227" stroke-width="1"/>
+        <path d="M17 8c3 3 3 7 3 9-2 0-6 0-9-3 1-4 4-6 6-6z" fill="#E8C874"/>
+        <path d="M17 26c-3-3-3-7-3-9 2 0 6 0 9 3-1 4-4 6-6 6z" fill="#C9A227"/>
+      </svg>
+      <h1>Gold Bird</h1>
+    </div>
+
+    <div class="hero-content">
+      <div class="hero-badge">✨ Regalo de Bienvenida</div>
+      <h2 class="hero-title">Obtén tu primer sello gratis <span>al registrarte</span></h2>
+      <p class="hero-desc">Únete al club exclusivo de recompensas. Acumula Plumas de Oro y desbloquea niveles VIP.</p>
+
+      <div class="pass-preview">
+        <div class="pass-header">
+          <div>
+            <div class="pass-eyebrow">Tarjeta Digital de Fidelización</div>
+            <div class="pass-name" id="preview-name">Tu Nombre Aquí</div>
+          </div>
+          <span class="tier-badge">Nivel Bronce</span>
+        </div>
+        <div class="stamps-row">
+          <div class="stamp-dot active">★</div>
+          <div class="stamp-dot">2</div>
+          <div class="stamp-dot">3</div>
+          <div class="stamp-dot">4</div>
+          <div class="stamp-dot">5</div>
+          <div class="stamp-dot">6</div>
+          <div class="stamp-dot">7</div>
+          <div class="stamp-dot">8</div>
+          <div class="stamp-dot">9</div>
+          <div class="stamp-dot">10</div>
+        </div>
+        <div style="font-size: 11px; color: var(--gold-light);">
+          🎁 1/10 Sellos cargados automáticamente.
+        </div>
+      </div>
+    </div>
+
+    <div style="font-size: 11.5px; color: var(--text-faint);">
+      © 2026 Goldbird Loyalty Systems.
+    </div>
+  </div>
+
+  <!-- PANEL DERECHO: FORMULARIO -->
+  <div class="auth-panel">
+    <div>
+      <div class="auth-top">
+        <span class="step-indicator">Paso 1 de 1 · Registro Rápido</span>
+        <a href="#" class="nav-link">¿Ya tienes cuenta? Ingresa</a>
+      </div>
+
+      <div class="auth-header">
+        <h2>Crea tu Pase Goldbird</h2>
+        <p>Completa tus datos para activar tu tarjeta y recibir tu primer sello gratis.</p>
+      </div>
+
+      <form onsubmit="event.preventDefault();" class="form-grid">
+        
+        <!-- Nombre -->
+        <div class="form-group">
+          <label for="reg-name">Nombre o Apodo</label>
+          <div class="input-box">
+            <input type="text" id="reg-name" placeholder="Ej. Mateo o 'Mat'" required oninput="document.getElementById('preview-name').textContent = this.value.trim() ? this.value : 'Tu Nombre Aquí'">
+            <div class="input-icon">👤</div>
+          </div>
+        </div>
+
+        <!-- Celular y DNI -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="reg-phone">Celular (WhatsApp)</label>
+            <div class="input-box">
+              <input type="tel" id="reg-phone" placeholder="987 654 321" required pattern="[0-9]{9}">
+              <div class="input-icon">📱</div>
+            </div>
+          </div>
+
+          <!-- DNI con Toggle invertido "Sin DNI" -->
+          <div class="form-group">
+            <div class="label-header">
+              <label for="reg-dni">DNI / ID</label>
+              <label class="toggle-checkbox">
+                <input type="checkbox" id="chkSinDNI" onchange="toggleSinDNI()">
+                <span>Sin DNI</span>
+              </label>
+            </div>
+            <div class="input-box">
+              <!-- Habilitado y Requerido por defecto -->
+              <input type="text" id="reg-dni" placeholder="8 dígitos" maxlength="8" required>
+              <div class="input-icon">🪪</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cumpleaños -->
+        <div class="form-group">
+          <label for="reg-bday">Fecha de Cumpleaños</label>
+          <div class="input-box">
+            <input type="date" id="reg-bday" required>
+            <div class="input-icon">🎂</div>
+          </div>
+          <div class="bday-perk">
+            Te regalamos un beneficio exclusivo en tu mes festivo.
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="form-group">
+          <label for="reg-pwd">Contraseña de Acceso</label>
+          <div class="input-box">
+            <input type="password" id="reg-pwd" placeholder="Mínimo 6 caracteres" required minlength="6">
+            <div class="input-icon">🔒</div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-gold">Obtener mi Tarjeta y 1er Sello Gratis →</button>
+
+      </form>
+    </div>
+
+    <div class="auth-footer">
+      ¿Ya eres miembro? <a href="#">Ingresa con tu DNI o Celular</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- Script de Lógica Invertida "Sin DNI" -->
+<script>
+  function toggleSinDNI() {
+    const chkSinDNI = document.getElementById('chkSinDNI');
+    const inputDNI = document.getElementById('reg-dni');
+
+    if (chkSinDNI.checked) {
+      // Si MARCA "Sin DNI": Deshabilitar, quitar requerimiento y limpiar
+      inputDNI.disabled = true;
+      inputDNI.required = false;
+      inputDNI.value = "";
+    } else {
+      // Si DESMARCA "Sin DNI": Habilitar, exigir requerimiento y enfocar
+      inputDNI.disabled = false;
+      inputDNI.required = true;
+      inputDNI.focus();
+    }
+  }
+</script>
+
+</body>
+</html>
