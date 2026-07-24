@@ -1,353 +1,293 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="dark scroll-smooth">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Gold Bird — Acceso al Sistema</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --bg: #0A0C10;
-    --surface: #14171F;
-    --surface-2: #1A1E28;
-    --border-gold: rgba(201, 162, 39, 0.3);
-    --border-soft: rgba(242, 239, 230, 0.08);
-    --gold: #C9A227;
-    --gold-light: #E8C874;
-    --gold-pale: #F4E7C4;
-    --text: #F2EFE6;
-    --text-dim: #9C9A90;
-    --text-faint: #6B6A63;
-    --radius-lg: 20px;
-    --radius-md: 12px;
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-    display: flex;
-  }
-
-  /* Layout principal Split Screen */
-  .login-container {
-    display: flex;
-    width: 100vw;
-    min-height: 100vh;
-  }
-
-  /* LADO IZQUIERDO: Branding & Experience */
-  .brand-panel {
-    flex: 1;
-    background: radial-gradient(circle at 20% 20%, rgba(201, 162, 39, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(232, 200, 116, 0.05) 0%, transparent 50%),
-                var(--bg);
-    padding: 3rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    border-right: 1px solid var(--border-soft);
-  }
-
-  .brand-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .brand-header h1 {
-    font-family: 'Fraunces', serif;
-    font-size: 22px;
-    color: var(--gold-light);
-  }
-
-  .hero-content {
-    max-width: 480px;
-  }
-  .hero-content h2 {
-    font-family: 'Fraunces', serif;
-    font-size: 38px;
-    line-height: 1.2;
-    font-weight: 500;
-    color: var(--text);
-    margin-bottom: 1rem;
-  }
-  .hero-content h2 span { color: var(--gold-light); }
-  .hero-content p {
-    color: var(--text-dim);
-    font-size: 15px;
-    line-height: 1.6;
-    margin-bottom: 2rem;
-  }
-
-  /* Status Widgets estilo Goldbird */
-  .widget-card {
-    background: var(--surface);
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-md);
-    padding: 1rem 1.25rem;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    backdrop-filter: blur(10px);
-  }
-  .widget-info { display: flex; align-items: center; gap: 12px; }
-  .widget-title { font-size: 13.5px; font-weight: 600; color: var(--text); }
-  .widget-sub { font-size: 11.5px; color: var(--text-faint); }
-  .status-tag {
-    font-size: 11px;
-    padding: 3px 10px;
-    border-radius: 999px;
-    background: rgba(201, 162, 39, 0.15);
-    color: var(--gold-light);
-    border: 1px solid var(--border-gold);
-    font-family: 'JetBrains Mono', monospace;
-  }
-
-  /* LADO DERECHO: Formulario Login */
-  .auth-panel {
-    width: 480px;
-    background: var(--surface);
-    padding: 3.5rem 3rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .nav-back {
-    align-self: flex-end;
-    color: var(--text-dim);
-    text-decoration: none;
-    font-size: 13px;
-    transition: color 0.2s;
-  }
-  .nav-back:hover { color: var(--gold-light); }
-
-  .auth-box { margin: auto 0; }
-  .auth-box h3 {
-    font-family: 'Fraunces', serif;
-    font-size: 26px;
-    font-weight: 500;
-    margin-bottom: 6px;
-  }
-  .auth-box .subtitle {
-    font-size: 13px;
-    color: var(--text-dim);
-    margin-bottom: 1.5rem;
-  }
-
-  /* Selector de Rol (Cliente vs Comercio) */
-  .role-selector {
-    display: flex;
-    background: var(--surface-2);
-    padding: 4px;
-    border-radius: 999px;
-    border: 1px solid var(--border-soft);
-    margin-bottom: 1.5rem;
-  }
-  .role-btn {
-    flex: 1;
-    border: none;
-    background: transparent;
-    color: var(--text-dim);
-    padding: 8px 0;
-    border-radius: 999px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-  .role-btn.active {
-    background: var(--gold);
-    color: #1A1400;
-    font-weight: 600;
-  }
-
-  .form-group { margin-bottom: 1.2rem; }
-  .form-group label {
-    display: block;
-    font-size: 11px;
-    letter-spacing: 0.8px;
-    text-transform: uppercase;
-    color: var(--text-faint);
-    margin-bottom: 6px;
-    font-weight: 600;
-  }
-  .input-wrapper { position: relative; }
-  .input-wrapper input {
-    width: 100%;
-    background: var(--surface-2);
-    border: 1px solid var(--border-soft);
-    color: var(--text);
-    border-radius: var(--radius-md);
-    padding: 12px 14px 12px 40px;
-    font-size: 14px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .input-wrapper input:focus { border-color: var(--gold); }
-  .input-icon {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    opacity: 0.4;
-  }
-
-  .btn-submit {
-    width: 100%;
-    background: var(--gold);
-    color: #1A1400;
-    border: none;
-    border-radius: var(--radius-md);
-    padding: 13px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-top: 0.5rem;
-    transition: background 0.2s, transform 0.1s;
-  }
-  .btn-submit:hover { background: var(--gold-light); }
-  .btn-submit:active { transform: scale(0.99); }
-
-  .footer-text {
-    font-size: 12px;
-    color: var(--text-faint);
-    text-align: center;
-  }
-
-  @media(max-width: 860px) {
-    .brand-panel { display: none; }
-    .auth-panel { width: 100%; padding: 2rem 1.5rem; }
-  }
-</style>
-</head>
-<body>
-
-<div class="login-container">
-  <!-- LADO IZQUIERDO: Presentación de Marca -->
-  <div class="brand-panel">
-    <div class="brand-header">
-      <svg width="32" height="32" viewBox="0 0 34 34" fill="none">
-        <circle cx="17" cy="17" r="16.5" stroke="#C9A227" stroke-width="1"/>
-        <path d="M17 8c3 3 3 7 3 9-2 0-6 0-9-3 1-4 4-6 6-6z" fill="#E8C874"/>
-        <path d="M17 26c-3-3-3-7-3-9 2 0 6 0 9 3-1 4-4 6-6 6z" fill="#C9A227"/>
-      </svg>
-      <h1>Gold Bird</h1>
-    </div>
-
-    <div class="hero-content">
-      <h2>Premia la lealtad. <span>Eleva la experiencia.</span></h2>
-      <p>Accede a tu pasaporte digital de recompensas o gestiona la fidelización de tus clientes en tiempo real.</p>
-      
-      <!-- Status Cards -->
-      <div class="widget-card">
-        <div class="widget-info">
-          <div>
-            <div class="widget-title">Programa VIP Plumas de Oro</div>
-            <div class="widget-sub">Canje instantáneo vía QR</div>
-          </div>
-        </div>
-        <span class="status-tag">● Activo</span>
-      </div>
-
-      <div class="widget-card">
-        <div class="widget-info">
-          <div>
-            <div class="widget-title">Seguridad y Validación</div>
-            <div class="widget-sub">Códigos dinámicos de 6 dígitos</div>
-          </div>
-        </div>
-        <span class="status-tag">Protegido</span>
-      </div>
-    </div>
-
-    <div class="footer-text" style="text-align:left;">
-      © 2026 Gold Bird Loyalty System. Todos los derechos reservados.
-    </div>
-  </div>
-
-  <!-- LADO DERECHO: Formulario de Login -->
-  <div class="auth-panel">
-    <a href="index#proyectos" class="nav-back" id="nav-back-link">← Volver al sitio web</a>
-
-    <div class="auth-box">
-      <h3>Bienvenido de vuelta</h3>
-      <p class="subtitle">Ingresa tus credenciales para acceder a tu tarjeta o panel.</p>
-
-      <!-- Selector de Rol Integrado -->
-      <div class="role-selector">
-        <button class="role-btn active" id="btn-client" onclick="switchRole('client')">Soy Cliente</button>
-        <button class="role-btn" id="btn-merchant" onclick="switchRole('merchant')">Soy Comercio</button>
-      </div>
-
-      <form onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label>Correo Electrónico / Teléfono</label>
-          <div class="input-wrapper">
-            <svg class="input-icon" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-            <input type="email" placeholder="ejemplo@goldbird.com" required>
-          </div>
-        </div>
-
-        <div class="form-group" id="pwd-group">
-          <label>Contraseña / PIN de acceso</label>
-          <div class="input-wrapper">
-            <svg class="input-icon" width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-            <input type="password" placeholder="••••••••" required>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-submit" id="submit-btn">Ingresar a mi Tarjeta →</button>
-      </form>
-    </div>
-
-    <div class="footer-text">
-      ¿Primera vez en Gold Bird? <a href="signup" style="color:var(--gold-light); text-decoration:none;">Crear una tarjeta</a>
-    </div>
-  </div>
-</div>
-
-<script>
-  let selectedRole = 'client';
-
-  function switchRole(role) {
-    const isClient = role === 'client';
-    selectedRole = role;
-    document.getElementById('btn-client').classList.toggle('active', isClient);
-    document.getElementById('btn-merchant').classList.toggle('active', !isClient);
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Goldbird — Pasaporte Digital & Acceso al Sistema</title>
     
-    // Adaptación UX de campos según el rol seleccionado
-    document.getElementById('submit-btn').textContent = isClient 
-      ? 'Ingresar a mi Tarjeta →' 
-      : 'Acceder al Comercio →';
-  }
+    <!-- Fuentes Enterprise -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        gold: {
+                            400: '#F4E7C4',
+                            500: '#E8C874',
+                            600: '#C9A227',
+                            accent: '#FACC15',
+                        },
+                        brand: {
+                            accent: '#bef264', // Lime neón de ExpandeLab
+                            500: '#22c55e',
+                        },
+                        dark: {
+                            bg: '#05070B',
+                            card: '#0D1117',
+                            surface: '#14171F',
+                            border: 'rgba(255, 255, 255, 0.08)'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #05070B;
+            color: #f3f4f6;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-x: hidden;
+        }
 
-  // Nota para producción: esta validación es un stub de front-end.
-  // Cuando exista backend (ej. Supabase Auth), reemplazar por la
-  // verificación real de credenciales antes de redirigir.
-  function handleLogin(event) {
-    event.preventDefault();
-    if (selectedRole === 'client') {
-      window.location.href = 'user';
-    } else {
-      window.location.href = 'merchant';
-    }
-  }
+        .glow-bg-gold {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(201, 162, 39, 0.12) 0%, rgba(190, 242, 100, 0.03) 40%, rgba(0,0,0,0) 70%);
+            top: -200px;
+            left: -200px;
+            z-index: 0;
+            pointer-events: none;
+        }
 
-  // Botón "Volver": si el usuario llegó navegando desde el propio sitio,
-  // regresa a la vista anterior real (history.back()); si entró directo
-  // (link externo, nueva pestaña), cae al href de respaldo hacia #proyectos.
-  document.getElementById('nav-back-link').addEventListener('click', function (e) {
-    if (window.history.length > 1 && document.referrer.includes(window.location.host)) {
-      e.preventDefault();
-      window.history.back();
-    }
-  });
-</script>
+        .glow-card {
+            background-color: #0D1117;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glow-card:hover {
+            border-color: rgba(232, 200, 116, 0.3);
+            box-shadow: 0 0 35px rgba(201, 162, 39, 0.08);
+            transform: translateY(-2px);
+        }
+
+        .gradient-gold-text {
+            background: linear-gradient(135deg, #FFFFFF 20%, #E8C874 70%, #bef264 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-gold {
+            background-color: #E8C874;
+            color: #05070B;
+            transition: all 0.25s ease;
+            font-weight: 700;
+            border: 1px solid #E8C874;
+            box-shadow: 0 0 20px rgba(232, 200, 116, 0.2);
+        }
+
+        .btn-gold:hover {
+            background-color: #FACC15;
+            box-shadow: 0 0 30px rgba(250, 204, 21, 0.4);
+            transform: translateY(-1px);
+        }
+
+        .grid-pattern {
+            background-size: 36px 36px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+        }
+
+        .badge-chip {
+            background: rgba(232, 200, 116, 0.1);
+            border: 1px solid rgba(232, 200, 116, 0.25);
+            color: #E8C874;
+        }
+    </style>
+</head>
+<body class="grid-pattern antialiased min-h-screen flex items-center justify-center">
+
+    <div class="glow-bg-gold"></div>
+
+    <div class="w-full min-h-screen flex flex-col lg:flex-row relative z-10">
+        
+        <!-- ================= LADO IZQUIERDO: Branding & Experiencia de Fidelización ================= -->
+        <div class="flex-1 p-8 md:p-14 lg:p-16 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-white/10 bg-[#05070B]/90 backdrop-blur-xl">
+            
+            <!-- Branding Header conAtribución a ExpandeLab -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gold-500/10 border border-gold-500/30 flex items-center justify-center font-extrabold text-gold-500 text-lg shadow-lg">
+                        GB
+                    </div>
+                    <div>
+                        <span class="text-xl font-extrabold text-white tracking-tight flex items-center gap-1">
+                            Goldbird <span class="text-gold-500">.</span>
+                        </span>
+                        <span class="text-[11px] text-slate-400 font-mono block -mt-1">Loyalty System</span>
+                    </div>
+                </div>
+
+                <!-- Atribución ExpandeLab -->
+                <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand-accent/20 bg-brand-accent/5 text-xs font-mono">
+                    <span class="text-slate-400">Una solución de</span>
+                    <span class="text-brand-accent font-bold tracking-wide">Expande<span class="text-white">Lab</span></span>
+                </div>
+            </div>
+
+            <!-- Hero Narrative -->
+            <div class="my-12 lg:my-auto max-w-xl">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full badge-chip text-xs font-mono font-semibold mb-6">
+                    <span class="w-2 h-2 rounded-full bg-gold-accent animate-pulse"></span>
+                    SISTEMA B2C DE FIDELIZACIÓN INTEGRAL
+                </div>
+
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-[1.18] mb-6">
+                    Premia la lealtad. <br>
+                    <span class="gradient-gold-text">Eleva la experiencia.</span>
+                </h1>
+
+                <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-8">
+                    A través de tu <strong class="text-gold-400 font-semibold">pasaporte digital</strong> serás nuestro socio preferencial: obtén recompensas exclusivas, beneficios inmediatos y descuentos directos en cada consumo realizado dentro de nuestra red de establecimientos aliados.
+                </p>
+
+                <!-- Bento Status Cards -->
+                <div class="space-y-4">
+                    <div class="glow-card p-4 rounded-2xl flex items-center justify-between">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-gold-500/10 border border-gold-500/20 flex items-center justify-center text-gold-500">
+                                💳
+                            </div>
+                            <div>
+                                <div class="text-white font-bold text-sm">Pasaporte Digital de Socio</div>
+                                <div class="text-slate-400 text-xs mt-0.5">Acumulación automática por consumo directo</div>
+                            </div>
+                        </div>
+                        <span class="text-[11px] badge-chip font-mono px-2.5 py-1 rounded-full font-bold">● ACTIVO</span>
+                    </div>
+
+                    <div class="glow-card p-4 rounded-2xl flex items-center justify-between">
+                        <div class="flex items-center gap-3.5">
+                            <div class="w-10 h-10 rounded-xl bg-brand-accent/10 border border-brand-accent/20 flex items-center justify-center text-brand-accent">
+                                🏪
+                            </div>
+                            <div>
+                                <div class="text-white font-bold text-sm">Ecosistema de Establecimientos Aliados</div>
+                                <div class="text-slate-400 text-xs mt-0.5">Beneficios en tiempo real con código QR seguro</div>
+                            </div>
+                        </div>
+                        <span class="text-[11px] text-brand-accent bg-brand-accent/10 border border-brand-accent/20 font-mono px-2.5 py-1 rounded-full font-bold">RED B2C</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Branding -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-mono border-t border-white/5 pt-6">
+                <div>© 2026 Goldbird Loyalty. Todos los derechos reservados.</div>
+                <div class="text-slate-400">Powered by <span class="text-brand-accent font-semibold">ExpandeLab Core</span></div>
+            </div>
+        </div>
+
+        <!-- ================= LADO DERECHO: Formulario Auth UX ================= -->
+        <div class="w-full lg:w-[500px] bg-[#0D1117] p-8 md:p-14 flex flex-col justify-between border-l border-white/5">
+            
+            <!-- Top Action -->
+            <div class="flex justify-end mb-8">
+                <a href="https://goldbird.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-xs text-slate-400 hover:text-gold-500 transition-colors flex items-center gap-1.5 font-mono">
+                    <span>← Volver al sitio web</span>
+                </a>
+            </div>
+
+            <!-- Auth Box Container -->
+            <div class="my-auto max-w-sm mx-auto w-full">
+                <div class="mb-8">
+                    <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Bienvenido</h2>
+                    <p class="text-slate-400 text-xs md:text-sm mt-2">Ingresa a tu pasaporte digital o administra tu comercio.</p>
+                </div>
+
+                <!-- Selector de Rol (Cliente vs Comercio) -->
+                <div class="flex bg-[#14171F] p-1 rounded-xl border border-white/10 mb-8">
+                    <button class="flex-1 py-2.5 rounded-lg text-xs font-bold transition-all text-slate-900 bg-gold-500 shadow-md" id="btn-client" onclick="switchRole('client')">
+                        Soy Socio / Cliente
+                    </button>
+                    <button class="flex-1 py-2.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all" id="btn-merchant" onclick="switchRole('merchant')">
+                        Soy Comercio
+                    </button>
+                </div>
+
+                <!-- Formulario Login -->
+                <form onsubmit="event.preventDefault();" class="space-y-5">
+                    <div>
+                        <label class="block text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold mb-2" id="label-identity">
+                            Correo o Teléfono del Socio
+                        </label>
+                        <div class="relative">
+                            <svg class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/></svg>
+                            <input type="text" id="input-identity" placeholder="socio@goldbird.com o +51 900 000 000" class="w-full bg-[#14171F] border border-white/10 text-white text-sm rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:border-gold-500 transition-colors placeholder:text-slate-600" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
+                                Contraseña / PIN Digital
+                            </label>
+                            <a href="#" class="text-[11px] text-gold-500 hover:underline">¿Olvidaste tu PIN?</a>
+                        </div>
+                        <div class="relative">
+                            <svg class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <input type="password" placeholder="••••••••" class="w-full bg-[#14171F] border border-white/10 text-white text-sm rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:border-gold-500 transition-colors placeholder:text-slate-600" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="w-full btn-gold py-3.5 rounded-xl text-sm font-extrabold flex items-center justify-center gap-2 mt-4">
+                        <span>Ingresar a mi Pasaporte →</span>
+                    </button>
+                </form>
+
+                <div class="mt-8 pt-6 border-t border-white/5 text-center text-xs text-slate-400">
+                    ¿Aún no tienes tu Pasaporte Digital? <br>
+                    <a href="#" class="text-gold-500 font-bold hover:underline inline-block mt-1">Regístrate como socio en 30 segundos</a>
+                </div>
+            </div>
+
+            <!-- Footer auxiliar -->
+            <div class="mt-8 text-center text-[11px] text-slate-600 font-mono">
+                Protección Encriptada SSL 256-bit • ExpandeLab Architecture
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Script para micro-interacciones de Roles -->
+    <script>
+        function switchRole(role) {
+            const isClient = role === 'client';
+            const btnClient = document.getElementById('btn-client');
+            const btnMerchant = document.getElementById('btn-merchant');
+            const submitBtn = document.getElementById('submit-btn');
+            const labelIdentity = document.getElementById('label-identity');
+            const inputIdentity = document.getElementById('input-identity');
+
+            if (isClient) {
+                btnClient.className = "flex-1 py-2.5 rounded-lg text-xs font-bold transition-all text-slate-900 bg-gold-500 shadow-md";
+                btnMerchant.className = "flex-1 py-2.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all";
+                submitBtn.innerHTML = "<span>Ingresar a mi Pasaporte →</span>";
+                labelIdentity.textContent = "Correo o Teléfono del Socio";
+                inputIdentity.placeholder = "socio@goldbird.com o +51 900 000 000";
+            } else {
+                btnMerchant.className = "flex-1 py-2.5 rounded-lg text-xs font-bold transition-all text-slate-900 bg-gold-500 shadow-md";
+                btnClient.className = "flex-1 py-2.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all";
+                submitBtn.innerHTML = "<span>Acceder a Panel Comercio →</span>";
+                labelIdentity.textContent = "Correo Corporativo del Comercio";
+                inputIdentity.placeholder = "admin@tucomercio.com";
+            }
+        }
+    </script>
 </body>
 </html>
