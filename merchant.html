@@ -280,8 +280,12 @@
 
 <div class="container">
   <header>
-    <h1>Gold Bird — Entorno de Pruebas Core</h1>
+    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+      <h1 style="margin:0;">Gold Bird — Entorno de Pruebas Core</h1>
+      <span id="test-data-badge" title="Esta información es de prueba y se reinicia automáticamente cada 3 minutos" style="font-size:10px; font-weight:700; letter-spacing:.3px; color:#F4E7C4; background:rgba(201,162,39,0.14); border:1px solid rgba(201,162,39,0.4); padding:5px 10px; border-radius:999px; display:inline-flex; align-items:center; gap:5px;">🧪 DATOS DE PRUEBA</span>
+    </div>
     <p>Simulador técnico de niveles, sellos/plumas y Gifting Economy · Inspector de Base de Datos Relacional</p>
+    <p id="reset-countdown" style="font-size:11px; color:var(--text-faint); margin-top:2px;">Estos datos se reinician automáticamente cada 3 minutos.</p>
     <a href="index" style="font-size:11px; color:var(--text-faint); text-decoration:none; border:1px solid var(--border-soft); padding:6px 12px; border-radius:999px; display:inline-block; margin-top:10px;">← Salir al sitio</a>
   </header>
 
@@ -1761,6 +1765,28 @@ function renderAll() {
 document.addEventListener('DOMContentLoaded', () => {
   renderAll();
 });
+
+// ============ RESET AUTOMÁTICO DE DATOS DE PRUEBA (cada 3 minutos) ============
+// Todo el estado de este entorno (DB, tarjetas, transacciones simuladas) vive
+// solo en memoria (const DB = {...}), así que un reload limpio es la forma más
+// segura de reiniciarlo sin arriesgar dejar el objeto DB en un estado intermedio raro.
+const TEST_DATA_RESET_MS = 180000;
+let testDataResetAt = Date.now() + TEST_DATA_RESET_MS;
+
+function tickResetCountdown(){
+  const el = document.getElementById('reset-countdown');
+  if (!el) return;
+  const remaining = Math.max(0, Math.round((testDataResetAt - Date.now()) / 1000));
+  const m = Math.floor(remaining / 60), s = remaining % 60;
+  el.textContent = `Estos datos se reinician automáticamente en ${m}:${String(s).padStart(2,'0')}.`;
+}
+setInterval(tickResetCountdown, 1000);
+tickResetCountdown();
+
+setTimeout(() => {
+  try{ triggerToast('🧪 Reiniciando datos de prueba…'); }catch(e){}
+  setTimeout(() => window.location.reload(), 900);
+}, TEST_DATA_RESET_MS);
 </script>
 </body>
 </html>
