@@ -1,468 +1,454 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Goldbird — Registro de Experiencia VIP</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  
-  <style>
-    :root {
-      --bg: #0A0C10;
-      --surface: #14171F;
-      --surface-2: #1A1E28;
-      --border-gold: rgba(201, 162, 39, 0.3);
-      --border-soft: rgba(242, 239, 230, 0.08);
-      --gold: #C9A227;
-      --gold-light: #E8C874;
-      --gold-pale: #F4E7C4;
-      --text: #F2EFE6;
-      --text-dim: #9C9A90;
-      --text-faint: #6B6A63;
-      --oro: #E8C874;
-      --radius-lg: 20px;
-      --radius-md: 12px;
-      --radius-sm: 8px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Goldbird — Crea tu Pasaporte Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0d;
+    --bg-deep:#050506;
+    --card:#15151b;
+    --card-2:#1b1b22;
+    --line: rgba(212,175,55,.16);
+    --gold:#d4af37;
+    --gold-light:#f1d98b;
+    --gold-deep:#8a6d1f;
+    --gold-soft: rgba(212,175,55,.12);
+    --text:#f4f1e8;
+    --muted:#95939f;
+    --danger:#e2685c;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(90% 60% at 50% -10%, rgba(212,175,55,.10), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:28px 0 60px;
+  }
+  ::selection{ background:var(--gold); color:#0a0a0d; }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh;
-    }
+  .phone{
+    width:100%;
+    max-width:420px;
+    padding:0 18px;
+  }
 
-    .page-container {
-      display: flex;
-      min-height: 100vh;
-      width: 100vw;
-    }
+  /* ---------- top bar ---------- */
+  .brandbar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:6px 2px 22px;
+  }
+  .brandbar .mark{
+    width:34px;height:34px;border-radius:10px;
+    background:linear-gradient(155deg,var(--gold-light),var(--gold) 55%,var(--gold-deep));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif; font-weight:600; color:#161608; font-size:15px;
+    box-shadow:0 4px 14px rgba(212,175,55,.25);
+  }
+  .brandbar .name{ font-size:14.5px; font-weight:600; letter-spacing:.2px; }
+  .brandbar .name span{ color:var(--muted); font-weight:400; }
+  .brandbar .lock{
+    margin-left:auto;
+    display:flex; align-items:center; gap:5px;
+    font-size:10.5px; color:var(--muted);
+    font-family:'JetBrains Mono',monospace;
+  }
+  .brandbar .lock svg{ width:11px; height:11px; }
 
-    /* PANEL IZQUIERDO: BRANDING Y BENEFICIOS */
-    .brand-panel {
-      flex: 1;
-      background: radial-gradient(circle at 15% 15%, rgba(201, 162, 39, 0.18) 0%, transparent 45%),
-                  radial-gradient(circle at 85% 85%, rgba(232, 200, 116, 0.06) 0%, transparent 50%),
-                  var(--bg);
-      padding: 3.5rem 4rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      border-right: 1px solid var(--border-soft);
-    }
+  /* ---------- signature: living passport card ---------- */
+  .passport{
+    position:relative;
+    border-radius:22px;
+    padding:22px 22px 20px;
+    background:
+      radial-gradient(120% 140% at 100% 0%, rgba(212,175,55,.16), transparent 55%),
+      linear-gradient(155deg,#1c1c24,#101014 70%);
+    border:1px solid var(--line);
+    overflow:hidden;
+    box-shadow:0 20px 40px -18px rgba(0,0,0,.6);
+  }
+  .passport::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      repeating-linear-gradient(115deg, rgba(255,255,255,.025) 0 1px, transparent 1px 26px);
+    pointer-events:none;
+  }
+  .passport-top{
+    display:flex; justify-content:space-between; align-items:flex-start;
+    position:relative; z-index:1;
+  }
+  .passport-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:10px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold-light); opacity:.85;
+  }
+  .passport-title{
+    font-family:'Fraunces',serif; font-size:20px; font-weight:500;
+    margin-top:4px; letter-spacing:.2px;
+  }
+  .passport-title .holder{
+    color:var(--muted); font-style:italic; font-weight:400;
+    transition:color .3s ease;
+  }
+  .passport-title .holder.filled{ color:var(--text); font-style:normal; }
+  .tier-chip{
+    font-size:10px; font-family:'JetBrains Mono',monospace;
+    letter-spacing:.06em;
+    background:var(--gold-soft); color:var(--gold-light);
+    border:1px solid var(--line);
+    padding:4px 9px; border-radius:999px; white-space:nowrap;
+  }
 
-    .brand-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .brand-header h1 {
-      font-family: 'Fraunces', serif;
-      font-size: 24px;
-      font-weight: 500;
-      color: var(--gold-light);
-    }
+  .stamps{
+    display:grid; grid-template-columns:repeat(10,1fr);
+    gap:6px; margin-top:18px; position:relative; z-index:1;
+  }
+  .stamp{
+    aspect-ratio:1; border-radius:8px;
+    border:1px dashed rgba(212,175,55,.35);
+    display:flex; align-items:center; justify-content:center;
+    font-size:11px; color:rgba(212,175,55,.4);
+    transition:all .45s cubic-bezier(.2,.9,.3,1);
+  }
+  .stamp.on{
+    border-style:solid;
+    background:linear-gradient(155deg,var(--gold-light),var(--gold));
+    color:#161608; font-weight:700;
+    box-shadow:0 0 0 3px rgba(212,175,55,.12);
+    transform:scale(1.03);
+  }
 
-    .hero-content { max-width: 520px; }
-    .hero-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(201, 162, 39, 0.12);
-      border: 1px solid var(--border-gold);
-      color: var(--gold-light);
-      padding: 6px 14px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 500;
-      margin-bottom: 1.5rem;
-    }
+  .passport-foot{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:16px; position:relative; z-index:1;
+  }
+  .progress-label{
+    font-size:11px; color:var(--muted); font-family:'JetBrains Mono',monospace;
+  }
+  .progress-label b{ color:var(--gold-light); font-weight:600; }
+  .reward-note{
+    font-size:11px; color:var(--muted);
+  }
 
-    .hero-title {
-      font-family: 'Fraunces', serif;
-      font-size: 38px;
-      line-height: 1.18;
-      font-weight: 500;
-      color: var(--text);
-      margin-bottom: 1.25rem;
-    }
-    .hero-title span { color: var(--gold-light); }
+  /* ---------- headline ---------- */
+  .headline{ margin:26px 2px 20px; }
+  .headline .eyebrow{
+    font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--gold-light); font-weight:600; display:flex; align-items:center; gap:7px;
+  }
+  .headline .eyebrow::before{
+    content:""; width:16px; height:1px; background:var(--gold);
+  }
+  .headline h1{
+    font-family:'Fraunces',serif; font-weight:500; font-size:27px;
+    line-height:1.15; margin:10px 0 8px; letter-spacing:.1px;
+  }
+  .headline p{
+    font-size:14px; line-height:1.5; color:var(--muted); margin:0;
+  }
 
-    .hero-desc {
-      color: var(--text-dim);
-      font-size: 15px;
-      line-height: 1.6;
-      margin-bottom: 2rem;
-    }
+  /* ---------- form ---------- */
+  form{ margin-top:6px; }
+  .field{ margin-bottom:14px; }
+  .field label{
+    display:block; font-size:12px; color:var(--muted);
+    margin-bottom:7px; font-weight:500; letter-spacing:.1px;
+  }
+  .field label .opt{ color:#5b5964; font-weight:400; }
 
-    /* Live Preview de Tarjeta Boarding Pass */
-    .pass-preview {
-      background: var(--surface);
-      border: 1px solid var(--border-gold);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      margin-bottom: 2rem;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
-    }
-    .pass-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-    .pass-eyebrow {
-      font-size: 10px;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: var(--text-faint);
-    }
-    .pass-name {
-      font-family: 'Fraunces', serif;
-      font-size: 22px;
-      color: var(--gold-pale);
-      margin-top: 2px;
-    }
-    .tier-badge {
-      background: rgba(232, 200, 116, 0.18);
-      color: var(--oro);
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 12px;
-      border-radius: 999px;
-    }
-    .stamps-row {
-      display: flex;
-      gap: 8px;
-      margin: 1.2rem 0 0.8rem;
-    }
-    .stamp-dot {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 1.5px dashed var(--border-gold);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 10px;
-      color: var(--text-faint);
-    }
-    .stamp-dot.active {
-      background: var(--gold);
-      border-style: solid;
-      border-color: var(--gold);
-      color: #1A1400;
-      font-weight: bold;
-    }
+  .input-shell{
+    display:flex; align-items:center; gap:10px;
+    background:var(--card);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:13px;
+    padding:0 14px;
+    height:52px;
+    transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  .input-shell:focus-within{
+    border-color:var(--gold);
+    box-shadow:0 0 0 3px rgba(212,175,55,.14);
+    background:var(--card-2);
+  }
+  .input-shell.error{ border-color:var(--danger); }
+  .input-shell svg{ flex:none; width:17px; height:17px; color:var(--muted); }
+  .input-shell:focus-within svg{ color:var(--gold-light); }
+  .input-shell input{
+    all:unset; flex:1; color:var(--text); font-size:15px; font-family:'Inter',sans-serif;
+  }
+  .input-shell input::placeholder{ color:#5f5d68; }
+  .check-ok{ width:16px; height:16px; color:var(--gold-light); opacity:0; transition:opacity .2s ease; flex:none; }
+  .check-ok.show{ opacity:1; }
 
-    /* PANEL DERECHO: FORMULARIO DE REGISTRO */
-    .auth-panel {
-      width: 520px;
-      background: var(--surface);
-      padding: 3rem 3.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
+  /* phone row */
+  .phone-row{ display:flex; gap:8px; }
+  .code-shell{
+    width:112px; flex:none;
+    display:flex; align-items:center; gap:6px;
+    background:var(--card); border:1px solid rgba(255,255,255,.07);
+    border-radius:13px; height:52px; padding:0 10px 0 12px;
+    position:relative;
+  }
+  .code-shell:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,175,55,.14); }
+  .code-shell .flag{ font-size:16px; }
+  .code-shell select{
+    all:unset; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13.5px;
+    width:100%; cursor:pointer;
+  }
+  .code-shell::after{
+    content:"";
+    position:absolute; right:9px; top:50%; width:7px; height:7px;
+    border-right:1.5px solid var(--muted); border-bottom:1.5px solid var(--muted);
+    transform:translateY(-65%) rotate(45deg); pointer-events:none;
+  }
+  .phone-input{ flex:1; }
 
-    .auth-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-    .step-indicator {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--gold-light);
-      background: rgba(201, 162, 39, 0.12);
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid var(--border-gold);
-    }
-    .nav-link {
-      color: var(--text-dim);
-      text-decoration: none;
-      font-size: 13px;
-    }
-    .nav-link:hover { color: var(--gold-light); }
+  /* date */
+  .date-row{ display:flex; gap:8px; }
+  .date-row .input-shell{ padding:0; justify-content:center; }
+  .date-row input{
+    text-align:center; font-family:'JetBrains Mono',monospace; letter-spacing:.03em;
+  }
+  .date-row .dd, .date-row .mm{ flex:0 0 68px; }
+  .date-row .yyyy{ flex:1; }
+  .hint{ font-size:11px; color:#6c6a76; margin-top:7px; display:flex; gap:6px; align-items:center; }
+  .hint svg{ width:12px; height:12px; flex:none; color:var(--gold-deep); }
 
-    .auth-header { margin-bottom: 1.8rem; }
-    .auth-header h2 {
-      font-family: 'Fraunces', serif;
-      font-size: 28px;
-      font-weight: 500;
-      margin-bottom: 6px;
-    }
-    .auth-header p { font-size: 13.5px; color: var(--text-dim); }
+  /* terms */
+  .terms{
+    display:flex; align-items:flex-start; gap:10px;
+    margin:20px 2px 22px; font-size:12.5px; color:var(--muted); line-height:1.5;
+  }
+  .terms input{ margin-top:2px; accent-color: var(--gold); width:16px; height:16px; flex:none; }
+  .terms a{ color:var(--gold-light); text-decoration:none; border-bottom:1px solid rgba(241,217,139,.35); }
 
-    .form-grid { display: flex; flex-direction: column; gap: 1.2rem; }
-    .form-row { display: flex; gap: 1rem; }
-    .form-row .form-group { flex: 1; }
+  /* CTA */
+  .cta{
+    width:100%; height:56px; border:none; border-radius:14px;
+    background:linear-gradient(155deg,var(--gold-light),var(--gold) 55%,var(--gold-deep));
+    color:#161608; font-family:'Inter',sans-serif; font-weight:700; font-size:15px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    cursor:pointer; letter-spacing:.1px;
+    box-shadow:0 14px 30px -12px rgba(212,175,55,.45);
+    transition:transform .15s ease, box-shadow .15s ease, opacity .2s ease;
+  }
+  .cta:active{ transform:scale(.98); }
+  .cta:disabled{ opacity:.45; cursor:not-allowed; box-shadow:none; }
+  .cta svg{ width:16px; height:16px; }
 
-    .form-group label {
-      display: block;
-      font-size: 11px;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: var(--text-faint);
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-    
-    .label-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 6px;
-    }
+  .switch{
+    text-align:center; margin-top:18px; font-size:13px; color:var(--muted);
+  }
+  .switch a{ color:var(--gold-light); text-decoration:none; font-weight:600; }
 
-    /* Checkbox de Sin DNI */
-    .toggle-checkbox {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      font-size: 11px;
-      color: var(--text-dim);
-      user-select: none;
-    }
-    .toggle-checkbox input[type="checkbox"] {
-      accent-color: var(--gold);
-      cursor: pointer;
-    }
-
-    .input-box { position: relative; display: flex; align-items: center; }
-    .input-box input {
-      width: 100%;
-      background: var(--surface-2);
-      border: 1px solid var(--border-soft);
-      color: var(--text);
-      border-radius: var(--radius-md);
-      padding: 12px 14px 12px 42px;
-      font-size: 14px;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-    .input-box input:focus:not(:disabled) {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.12);
-    }
-    
-    /* Estado visual cuando se deshabilita (Sin DNI activo) */
-    .input-box input:disabled {
-      background: rgba(255, 255, 255, 0.03);
-      border-color: rgba(255, 255, 255, 0.04);
-      color: var(--text-faint);
-      cursor: not-allowed;
-    }
-
-    .input-icon {
-      position: absolute;
-      left: 14px;
-      color: var(--text-faint);
-      pointer-events: none;
-      transition: opacity 0.2s;
-    }
-
-    .input-box input:disabled + .input-icon {
-      opacity: 0.3;
-    }
-
-    .bday-perk {
-      background: rgba(232, 200, 116, 0.08);
-      border: 1px dashed var(--border-gold);
-      border-radius: var(--radius-sm);
-      padding: 8px 12px;
-      font-size: 11.5px;
-      color: var(--gold-pale);
-      margin-top: 6px;
-    }
-
-    .btn-gold {
-      background: var(--gold);
-      color: #1A1400;
-      border: none;
-      border-radius: var(--radius-md);
-      padding: 14px;
-      font-size: 14.5px;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 0.8rem;
-      transition: background 0.2s, transform 0.1s;
-    }
-    .btn-gold:hover { background: var(--gold-light); }
-
-    .auth-footer {
-      margin-top: 1.5rem;
-      text-align: center;
-      font-size: 12.5px;
-      color: var(--text-dim);
-    }
-    .auth-footer a { color: var(--gold-light); text-decoration: none; }
-
-    @media (max-width: 960px) {
-      .brand-panel { display: none; }
-      .auth-panel { width: 100%; padding: 2rem 1.5rem; }
-    }
-  </style>
+  .footnote{
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    margin-top:26px; font-size:10.5px; color:#54525d;
+    font-family:'JetBrains Mono',monospace;
+  }
+  .footnote svg{ width:11px; height:11px; }
+</style>
 </head>
 <body>
+<div class="phone">
 
-<div class="page-container">
-  
-  <!-- PANEL IZQUIERDO -->
-  <div class="brand-panel">
-    <div class="brand-header">
-      <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-        <circle cx="17" cy="17" r="16.5" stroke="#C9A227" stroke-width="1"/>
-        <path d="M17 8c3 3 3 7 3 9-2 0-6 0-9-3 1-4 4-6 6-6z" fill="#E8C874"/>
-        <path d="M17 26c-3-3-3-7-3-9 2 0 6 0 9 3-1 4-4 6-6 6z" fill="#C9A227"/>
-      </svg>
-      <h1>Gold Bird</h1>
-    </div>
-
-    <div class="hero-content">
-      <div class="hero-badge">✨ Regalo de Bienvenida</div>
-      <h2 class="hero-title">Obtén tu primer sello gratis <span>al registrarte</span></h2>
-      <p class="hero-desc">Únete al club exclusivo de recompensas. Acumula Plumas de Oro y desbloquea niveles VIP.</p>
-
-      <div class="pass-preview">
-        <div class="pass-header">
-          <div>
-            <div class="pass-eyebrow">Tarjeta Digital de Fidelización</div>
-            <div class="pass-name" id="preview-name">Tu Nombre Aquí</div>
-          </div>
-          <span class="tier-badge">Nivel Bronce</span>
-        </div>
-        <div class="stamps-row">
-          <div class="stamp-dot active">★</div>
-          <div class="stamp-dot">2</div>
-          <div class="stamp-dot">3</div>
-          <div class="stamp-dot">4</div>
-          <div class="stamp-dot">5</div>
-          <div class="stamp-dot">6</div>
-          <div class="stamp-dot">7</div>
-          <div class="stamp-dot">8</div>
-          <div class="stamp-dot">9</div>
-          <div class="stamp-dot">10</div>
-        </div>
-        <div style="font-size: 11px; color: var(--gold-light);">
-          🎁 1/10 Sellos cargados automáticamente.
-        </div>
-      </div>
-    </div>
-
-    <div style="font-size: 11.5px; color: var(--text-faint);">
-      © 2026 Goldbird Loyalty Systems.
+  <div class="brandbar">
+    <div class="mark">GB</div>
+    <div class="name">Goldbird <span>· Loyalty System</span></div>
+    <div class="lock">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      SSL 256
     </div>
   </div>
 
-  <!-- PANEL DERECHO: FORMULARIO -->
-  <div class="auth-panel">
-    <div>
-      <div class="auth-top">
-        <span class="step-indicator">Paso 1 de 1 · Registro Rápido</span>
-        <a href="login" class="nav-link">¿Ya tienes cuenta? Ingresa</a>
+  <div class="passport">
+    <div class="passport-top">
+      <div>
+        <div class="passport-eyebrow">Pasaporte Digital</div>
+        <div class="passport-title">Hola, <span class="holder" id="holderName">socio</span></div>
       </div>
-
-      <div class="auth-header">
-        <h2>Crea tu Pase Goldbird</h2>
-        <p>Completa tus datos para activar tu tarjeta y recibir tu primer sello gratis.</p>
-      </div>
-
-      <form onsubmit="event.preventDefault();" class="form-grid">
-        
-        <!-- Nombre -->
-        <div class="form-group">
-          <label for="reg-name">Nombre o Apodo</label>
-          <div class="input-box">
-            <input type="text" id="reg-name" placeholder="Ej. Mateo o 'Mat'" required oninput="document.getElementById('preview-name').textContent = this.value.trim() ? this.value : 'Tu Nombre Aquí'">
-            <div class="input-icon">👤</div>
-          </div>
-        </div>
-
-        <!-- Celular y DNI -->
-        <div class="form-row">
-          <div class="form-group">
-            <label for="reg-phone">Celular (WhatsApp)</label>
-            <div class="input-box">
-              <input type="tel" id="reg-phone" placeholder="987 654 321" required pattern="[0-9]{9}">
-              <div class="input-icon">📱</div>
-            </div>
-          </div>
-
-          <!-- DNI con Toggle invertido "Sin DNI" -->
-          <div class="form-group">
-            <div class="label-header">
-              <label for="reg-dni">DNI / ID</label>
-              <label class="toggle-checkbox">
-                <input type="checkbox" id="chkSinDNI" onchange="toggleSinDNI()">
-                <span>Sin DNI</span>
-              </label>
-            </div>
-            <div class="input-box">
-              <!-- Habilitado y Requerido por defecto -->
-              <input type="text" id="reg-dni" placeholder="8 dígitos" maxlength="8" required>
-              <div class="input-icon">🪪</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Cumpleaños -->
-        <div class="form-group">
-          <label for="reg-bday">Fecha de Cumpleaños</label>
-          <div class="input-box">
-            <input type="date" id="reg-bday" required>
-            <div class="input-icon">🎂</div>
-          </div>
-          <div class="bday-perk">
-            Te regalamos un beneficio exclusivo en tu mes festivo.
-          </div>
-        </div>
-
-        <!-- Contraseña -->
-        <div class="form-group">
-          <label for="reg-pwd">Contraseña de Acceso</label>
-          <div class="input-box">
-            <input type="password" id="reg-pwd" placeholder="Mínimo 6 caracteres" required minlength="6">
-            <div class="input-icon">🔒</div>
-          </div>
-        </div>
-
-        <button type="submit" class="btn-gold">Obtener mi Tarjeta y 1er Sello Gratis →</button>
-
-      </form>
+      <div class="tier-chip">NIVEL BRONCE</div>
     </div>
 
-    <div class="auth-footer">
-      ¿Ya eres miembro? <a href="login">Ingresa con tu DNI o Celular</a>
+    <div class="stamps" id="stamps"></div>
+
+    <div class="passport-foot">
+      <div class="progress-label"><b id="progressCount">0</b>/4 datos · <span id="progressGift">faltan para tu sello gratis</span></div>
+      <div class="reward-note">🎁 1er sello gratis</div>
     </div>
+  </div>
+
+  <div class="headline">
+    <div class="eyebrow">Registro rápido · 30 segundos</div>
+    <h1>Crea tu Pasaporte&nbsp;Gold</h1>
+    <p>Completa tus datos para activar tu tarjeta digital y empezar a acumular recompensas en toda la red de aliados.</p>
+  </div>
+
+  <form id="signupForm" novalidate>
+
+    <div class="field">
+      <label for="fname">Nombre o apodo</label>
+      <div class="input-shell" id="shellName">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+        <input id="fname" type="text" placeholder="¿Cómo te llamamos?" autocomplete="name" maxlength="40">
+        <svg class="check-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="email">Correo electrónico</label>
+      <div class="input-shell" id="shellEmail">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg>
+        <input id="email" type="email" placeholder="tu@correo.com" autocomplete="email" inputmode="email">
+        <svg class="check-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="phone">Celular <span class="opt">(WhatsApp para tus beneficios)</span></label>
+      <div class="phone-row">
+        <div class="code-shell">
+          <span class="flag" id="flagShown">🇵🇪</span>
+          <select id="countryCode">
+            <option value="+51" data-flag="🇵🇪">+51</option>
+            <option value="+52" data-flag="🇲🇽">+52</option>
+            <option value="+57" data-flag="🇨🇴">+57</option>
+            <option value="+56" data-flag="🇨🇱">+56</option>
+            <option value="+593" data-flag="🇪🇨">+593</option>
+            <option value="+1" data-flag="🇺🇸">+1</option>
+          </select>
+        </div>
+        <div class="input-shell phone-input" id="shellPhone">
+          <input id="phone" type="tel" placeholder="987 654 321" autocomplete="tel" inputmode="numeric">
+          <svg class="check-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="dd">Fecha de nacimiento</label>
+      <div class="date-row">
+        <div class="input-shell dd"><input id="dd" placeholder="DD" inputmode="numeric" maxlength="2"></div>
+        <div class="input-shell mm"><input id="mm" placeholder="MM" inputmode="numeric" maxlength="2"></div>
+        <div class="input-shell yyyy"><input id="yyyy" placeholder="AAAA" inputmode="numeric" maxlength="4"></div>
+      </div>
+      <div class="hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg>
+        Te regalamos un beneficio exclusivo en tu mes de cumpleaños
+      </div>
+    </div>
+
+    <label class="terms">
+      <input type="checkbox" id="terms">
+      <span>Acepto los <a href="#">Términos y condiciones</a> y el aviso de privacidad de Goldbird.</span>
+    </label>
+
+    <button type="submit" class="cta" id="ctaBtn" disabled>
+      Crear mi Pasaporte y 1er Sello
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+  </form>
+
+  <div class="switch">¿Ya tienes cuenta? <a href="https://www.expandelab.app/login">Ingresa a tu pasaporte</a></div>
+
+  <div class="footnote">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    Protección encriptada SSL · ExpandeLab Architecture
   </div>
 
 </div>
 
-<!-- Script de Lógica Invertida "Sin DNI" -->
 <script>
-  function toggleSinDNI() {
-    const chkSinDNI = document.getElementById('chkSinDNI');
-    const inputDNI = document.getElementById('reg-dni');
-
-    if (chkSinDNI.checked) {
-      // Si MARCA "Sin DNI": Deshabilitar, quitar requerimiento y limpiar
-      inputDNI.disabled = true;
-      inputDNI.required = false;
-      inputDNI.value = "";
-    } else {
-      // Si DESMARCA "Sin DNI": Habilitar, exigir requerimiento y enfocar
-      inputDNI.disabled = false;
-      inputDNI.required = true;
-      inputDNI.focus();
-    }
+  const stampsEl = document.getElementById('stamps');
+  for(let i=0;i<10;i++){
+    const s = document.createElement('div');
+    s.className = 'stamp';
+    s.textContent = i < 1 ? '🎁' : (i+1);
+    stampsEl.appendChild(s);
   }
-</script>
+  const stampNodes = [...stampsEl.children];
 
+  const nameInput = document.getElementById('fname');
+  const emailInput = document.getElementById('email');
+  const phoneInput = document.getElementById('phone');
+  const dd = document.getElementById('dd'), mm = document.getElementById('mm'), yyyy = document.getElementById('yyyy');
+  const terms = document.getElementById('terms');
+  const cta = document.getElementById('ctaBtn');
+  const holderName = document.getElementById('holderName');
+  const progressCount = document.getElementById('progressCount');
+  const progressGift = document.getElementById('progressGift');
+
+  function emailValid(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+  function markShell(input, valid){
+    const shell = input.closest('.input-shell');
+    const check = shell.querySelector('.check-ok');
+    if(valid){ check.classList.add('show'); }
+    else{ check.classList.remove('show'); }
+  }
+
+  function updateState(){
+    const nameOk = nameInput.value.trim().length >= 2;
+    const emailOk = emailValid(emailInput.value.trim());
+    const phoneOk = phoneInput.value.replace(/\D/g,'').length >= 7;
+    const dateOk = dd.value.length===2 && mm.value.length===2 && yyyy.value.length===4;
+
+    markShell(nameInput, nameOk);
+    markShell(emailInput, emailOk);
+    markShell(phoneInput, phoneOk);
+
+    holderName.textContent = nameOk ? nameInput.value.trim() : 'socio';
+    holderName.classList.toggle('filled', nameOk);
+
+    const doneCount = [nameOk, emailOk, phoneOk, dateOk].filter(Boolean).length;
+    progressCount.textContent = doneCount;
+    progressGift.textContent = doneCount === 4 ? '¡listo para tu sello gratis!' : 'faltan para tu sello gratis';
+
+    const litStamps = Math.round((doneCount/4) * 10);
+    stampNodes.forEach((node, i) => node.classList.toggle('on', i < Math.max(litStamps,1) && doneCount>0 || i===0));
+
+    cta.disabled = !(nameOk && emailOk && phoneOk && dateOk && terms.checked);
+  }
+
+  [nameInput,emailInput,phoneInput,dd,mm,yyyy].forEach(el=> el.addEventListener('input', updateState));
+  terms.addEventListener('change', updateState);
+
+  updateState();
+
+  const countrySel = document.getElementById('countryCode');
+  const flagShown = document.getElementById('flagShown');
+  countrySel.addEventListener('change', ()=>{
+    flagShown.textContent = countrySel.selectedOptions[0].dataset.flag;
+  });
+
+  [dd,mm].forEach((el,idx)=>{
+    el.addEventListener('input', ()=>{
+      el.value = el.value.replace(/\D/g,'');
+      if(el.value.length===2){
+        (idx===0? mm: yyyy).focus();
+      }
+    });
+  });
+  yyyy.addEventListener('input', ()=> yyyy.value = yyyy.value.replace(/\D/g,''));
+  phoneInput.addEventListener('input', ()=> phoneInput.value = phoneInput.value.replace(/[^\d\s]/g,''));
+
+  document.getElementById('signupForm').addEventListener('submit', (e)=>{
+    e.preventDefault();
+    cta.textContent = '¡Pasaporte creado! 🎉';
+  });
+</script>
 </body>
 </html>
