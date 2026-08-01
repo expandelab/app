@@ -1,454 +1,606 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Goldbird — Crea tu Pasaporte Digital</title>
+
+<!--
+  ══════════════════════════════════════════════════════════════════
+  CONFIGURACIÓN REQUERIDA ANTES DE PUBLICAR — lee esto primero
+  ══════════════════════════════════════════════════════════════════
+
+  1) Rellena SUPABASE_URL y SUPABASE_ANON_KEY abajo (Project Settings
+     → API en tu dashboard de Supabase). El anon key es público por
+     diseño, es seguro tenerlo en el frontend.
+
+  2) En Supabase Dashboard → Authentication → Providers → Google:
+     pega tu Client ID y Client Secret. Supabase te da ahí mismo la
+     "Redirect URL" oficial (algo como
+     https://TU-PROYECTO.supabase.co/auth/v1/callback) — esa es la
+     que debes registrar en Google Cloud Console, NO la de tu sitio.
+
+  3) En Supabase Dashboard → Authentication → URL Configuration:
+     agrega https://www.expandelab.app/signup tanto en "Site URL"
+     como en "Redirect URLs".
+
+  4) En Supabase Dashboard → Authentication → Settings → Email:
+     DESACTIVA "Confirm email". Aquí la verificación de que el correo
+     le pertenece al usuario la hace Google (Opción 1), no un link de
+     confirmación por correo — dejar ambas activas duplica el paso y
+     rompe el flujo de linkIdentity() de más abajo.
+
+  5) Crea la tabla de perfiles con este SQL en el SQL Editor:
+
+     create table public.profiles (
+       id uuid references auth.users on delete cascade primary key,
+       full_name text,
+       phone text,
+       birthdate date,
+       tier text default 'bronce',
+       verified_via_google boolean default false,
+       created_at timestamptz default now()
+     );
+     alter table public.profiles enable row level security;
+     create policy "usuarios leen su propio perfil"
+       on public.profiles for select using (auth.uid() = id);
+     create policy "usuarios editan su propio perfil"
+       on public.profiles for update using (auth.uid() = id);
+     create policy "usuarios crean su propio perfil"
+       on public.profiles for insert with check (auth.uid() = id);
+
+  ══════════════════════════════════════════════════════════════════
+-->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
   :root{
-    --bg:#0a0a0d;
-    --bg-deep:#050506;
-    --card:#15151b;
-    --card-2:#1b1b22;
-    --line: rgba(212,175,55,.16);
+    --bg:#0b0a08;
+    --bg-alt:#15120c;
+    --card:#1c1812;
+    --card-border:#332a1c;
     --gold:#d4af37;
-    --gold-light:#f1d98b;
-    --gold-deep:#8a6d1f;
-    --gold-soft: rgba(212,175,55,.12);
-    --text:#f4f1e8;
-    --muted:#95939f;
-    --danger:#e2685c;
+    --gold-soft:#e8c766;
+    --bronze:#c97b3c;
+    --text:#f5f1e6;
+    --text-dim:#a89f8c;
+    --error:#e2574c;
+    --success:#6fbf73;
     --radius:18px;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
     background:
-      radial-gradient(90% 60% at 50% -10%, rgba(212,175,55,.10), transparent 60%),
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(212,175,55,.14), transparent 60%),
       var(--bg);
     color:var(--text);
-    font-family:'Inter',sans-serif;
+    font-family:'Inter',system-ui,sans-serif;
     min-height:100vh;
     display:flex;
-    justify-content:center;
-    padding:28px 0 60px;
-  }
-  ::selection{ background:var(--gold); color:#0a0a0d; }
-
-  .phone{
-    width:100%;
-    max-width:420px;
-    padding:0 18px;
-  }
-
-  /* ---------- top bar ---------- */
-  .brandbar{
-    display:flex;
     align-items:center;
-    gap:10px;
-    padding:6px 2px 22px;
+    justify-content:center;
+    padding:32px 16px;
   }
-  .brandbar .mark{
-    width:34px;height:34px;border-radius:10px;
-    background:linear-gradient(155deg,var(--gold-light),var(--gold) 55%,var(--gold-deep));
-    display:flex;align-items:center;justify-content:center;
-    font-family:'Fraunces',serif; font-weight:600; color:#161608; font-size:15px;
-    box-shadow:0 4px 14px rgba(212,175,55,.25);
-  }
-  .brandbar .name{ font-size:14.5px; font-weight:600; letter-spacing:.2px; }
-  .brandbar .name span{ color:var(--muted); font-weight:400; }
-  .brandbar .lock{
-    margin-left:auto;
-    display:flex; align-items:center; gap:5px;
-    font-size:10.5px; color:var(--muted);
-    font-family:'JetBrains Mono',monospace;
-  }
-  .brandbar .lock svg{ width:11px; height:11px; }
+  .wrap{ width:100%; max-width:440px; }
 
-  /* ---------- signature: living passport card ---------- */
+  /* ── Brand header ───────────────────────────────────────────── */
+  .brand{ display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+  .brand-left{ display:flex; align-items:center; gap:10px; }
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(135deg,var(--gold-soft),var(--bronze));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; color:#0b0a08; font-size:15px;
+  }
+  .brand-name{ font-size:13px; letter-spacing:.02em; color:var(--text-dim); }
+  .brand-name b{ color:var(--text); font-weight:600; }
+  .ssl-badge{ font-size:11px; color:var(--text-dim); border:1px solid var(--card-border); padding:4px 9px; border-radius:20px; }
+
+  /* ── Passport card (signature element) ─────────────────────── */
   .passport{
     position:relative;
-    border-radius:22px;
+    background:linear-gradient(160deg,#211c14,#161209);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
     padding:22px 22px 20px;
-    background:
-      radial-gradient(120% 140% at 100% 0%, rgba(212,175,55,.16), transparent 55%),
-      linear-gradient(155deg,#1c1c24,#101014 70%);
-    border:1px solid var(--line);
+    margin-bottom:22px;
     overflow:hidden;
-    box-shadow:0 20px 40px -18px rgba(0,0,0,.6);
   }
   .passport::before{
     content:"";
     position:absolute; inset:0;
-    background-image:
-      repeating-linear-gradient(115deg, rgba(255,255,255,.025) 0 1px, transparent 1px 26px);
+    background:linear-gradient(115deg, transparent 40%, rgba(212,175,55,.14) 48%, transparent 56%);
+    background-size:220% 220%;
+    animation:shimmer 6s ease-in-out infinite;
     pointer-events:none;
   }
-  .passport-top{
-    display:flex; justify-content:space-between; align-items:flex-start;
-    position:relative; z-index:1;
+  @keyframes shimmer{
+    0%,100%{ background-position:0% 0%; }
+    50%{ background-position:100% 100%; }
   }
-  .passport-eyebrow{
-    font-family:'JetBrains Mono',monospace;
-    font-size:10px; letter-spacing:.14em; text-transform:uppercase;
-    color:var(--gold-light); opacity:.85;
-  }
-  .passport-title{
-    font-family:'Fraunces',serif; font-size:20px; font-weight:500;
-    margin-top:4px; letter-spacing:.2px;
-  }
-  .passport-title .holder{
-    color:var(--muted); font-style:italic; font-weight:400;
-    transition:color .3s ease;
-  }
-  .passport-title .holder.filled{ color:var(--text); font-style:normal; }
-  .tier-chip{
-    font-size:10px; font-family:'JetBrains Mono',monospace;
-    letter-spacing:.06em;
-    background:var(--gold-soft); color:var(--gold-light);
-    border:1px solid var(--line);
-    padding:4px 9px; border-radius:999px; white-space:nowrap;
+  .passport-top{ display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1; }
+  .passport-title{ font-size:12px; color:var(--text-dim); }
+  .passport-hello{ font-family:'Fraunces',serif; font-size:17px; margin-top:2px; }
+  .tier-badge{
+    font-size:10.5px; font-weight:600; letter-spacing:.06em;
+    color:var(--bronze); border:1px solid rgba(201,123,60,.5);
+    padding:4px 10px; border-radius:20px; white-space:nowrap;
   }
 
-  .stamps{
-    display:grid; grid-template-columns:repeat(10,1fr);
-    gap:6px; margin-top:18px; position:relative; z-index:1;
-  }
+  .stamps{ display:flex; gap:10px; margin-top:18px; position:relative; z-index:1; }
   .stamp{
-    aspect-ratio:1; border-radius:8px;
-    border:1px dashed rgba(212,175,55,.35);
-    display:flex; align-items:center; justify-content:center;
-    font-size:11px; color:rgba(212,175,55,.4);
-    transition:all .45s cubic-bezier(.2,.9,.3,1);
+    width:38px;height:38px;border-radius:50%;
+    border:2px dashed var(--card-border);
+    display:flex;align-items:center;justify-content:center;
+    font-size:14px; color:var(--card-border);
+    transition:all .35s ease;
   }
-  .stamp.on{
-    border-style:solid;
-    background:linear-gradient(155deg,var(--gold-light),var(--gold));
-    color:#161608; font-weight:700;
-    box-shadow:0 0 0 3px rgba(212,175,55,.12);
-    transform:scale(1.03);
+  .stamp.filled{
+    border-style:solid; border-color:var(--gold-soft);
+    color:var(--gold-soft);
+    background:rgba(212,175,55,.1);
+    transform:scale(1.05);
   }
+  .stamps-caption{ font-size:12px; color:var(--text-dim); margin-top:10px; position:relative; z-index:1; }
+  .stamps-caption b{ color:var(--gold-soft); }
 
-  .passport-foot{
-    display:flex; justify-content:space-between; align-items:center;
-    margin-top:16px; position:relative; z-index:1;
-  }
-  .progress-label{
-    font-size:11px; color:var(--muted); font-family:'JetBrains Mono',monospace;
-  }
-  .progress-label b{ color:var(--gold-light); font-weight:600; }
-  .reward-note{
-    font-size:11px; color:var(--muted);
-  }
-
-  /* ---------- headline ---------- */
-  .headline{ margin:26px 2px 20px; }
-  .headline .eyebrow{
-    font-size:11.5px; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--gold-light); font-weight:600; display:flex; align-items:center; gap:7px;
-  }
-  .headline .eyebrow::before{
-    content:""; width:16px; height:1px; background:var(--gold);
-  }
-  .headline h1{
-    font-family:'Fraunces',serif; font-weight:500; font-size:27px;
-    line-height:1.15; margin:10px 0 8px; letter-spacing:.1px;
-  }
-  .headline p{
-    font-size:14px; line-height:1.5; color:var(--muted); margin:0;
-  }
-
-  /* ---------- form ---------- */
-  form{ margin-top:6px; }
-  .field{ margin-bottom:14px; }
-  .field label{
-    display:block; font-size:12px; color:var(--muted);
-    margin-bottom:7px; font-weight:500; letter-spacing:.1px;
-  }
-  .field label .opt{ color:#5b5964; font-weight:400; }
-
-  .input-shell{
-    display:flex; align-items:center; gap:10px;
+  /* ── Form card ──────────────────────────────────────────────── */
+  .form-card{
     background:var(--card);
-    border:1px solid rgba(255,255,255,.07);
-    border-radius:13px;
-    padding:0 14px;
-    height:52px;
-    transition:border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:26px;
   }
-  .input-shell:focus-within{
-    border-color:var(--gold);
-    box-shadow:0 0 0 3px rgba(212,175,55,.14);
-    background:var(--card-2);
+  .eyebrow{ font-size:11.5px; color:var(--gold-soft); letter-spacing:.06em; text-transform:uppercase; }
+  h1{
+    font-family:'Fraunces',serif; font-weight:600;
+    font-size:27px; line-height:1.15; margin:8px 0 8px;
   }
-  .input-shell.error{ border-color:var(--danger); }
-  .input-shell svg{ flex:none; width:17px; height:17px; color:var(--muted); }
-  .input-shell:focus-within svg{ color:var(--gold-light); }
-  .input-shell input{
-    all:unset; flex:1; color:var(--text); font-size:15px; font-family:'Inter',sans-serif;
-  }
-  .input-shell input::placeholder{ color:#5f5d68; }
-  .check-ok{ width:16px; height:16px; color:var(--gold-light); opacity:0; transition:opacity .2s ease; flex:none; }
-  .check-ok.show{ opacity:1; }
+  .sub{ font-size:13.5px; color:var(--text-dim); line-height:1.5; margin-bottom:22px; }
 
-  /* phone row */
+  label{ font-size:12.5px; color:var(--text-dim); display:block; margin:14px 0 6px; }
+  label:first-of-type{ margin-top:0; }
+  input[type="text"], input[type="email"], input[type="password"], input[type="date"], input[type="tel"]{
+    width:100%; background:var(--bg-alt); border:1px solid var(--card-border);
+    color:var(--text); padding:12px 13px; border-radius:11px; font-size:14.5px;
+    font-family:inherit; outline:none; transition:border-color .2s;
+  }
+  input:focus{ border-color:var(--gold-soft); }
+  input.invalid{ border-color:var(--error); }
+
   .phone-row{ display:flex; gap:8px; }
-  .code-shell{
-    width:112px; flex:none;
-    display:flex; align-items:center; gap:6px;
-    background:var(--card); border:1px solid rgba(255,255,255,.07);
-    border-radius:13px; height:52px; padding:0 10px 0 12px;
-    position:relative;
+  .phone-row select{
+    background:var(--bg-alt); border:1px solid var(--card-border); color:var(--text);
+    border-radius:11px; padding:0 8px; font-size:14px; width:104px;
   }
-  .code-shell:focus-within{ border-color:var(--gold); box-shadow:0 0 0 3px rgba(212,175,55,.14); }
-  .code-shell .flag{ font-size:16px; }
-  .code-shell select{
-    all:unset; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13.5px;
-    width:100%; cursor:pointer;
-  }
-  .code-shell::after{
-    content:"";
-    position:absolute; right:9px; top:50%; width:7px; height:7px;
-    border-right:1.5px solid var(--muted); border-bottom:1.5px solid var(--muted);
-    transform:translateY(-65%) rotate(45deg); pointer-events:none;
-  }
-  .phone-input{ flex:1; }
+  .phone-row input{ flex:1; }
 
-  /* date */
-  .date-row{ display:flex; gap:8px; }
-  .date-row .input-shell{ padding:0; justify-content:center; }
-  .date-row input{
-    text-align:center; font-family:'JetBrains Mono',monospace; letter-spacing:.03em;
-  }
-  .date-row .dd, .date-row .mm{ flex:0 0 68px; }
-  .date-row .yyyy{ flex:1; }
-  .hint{ font-size:11px; color:#6c6a76; margin-top:7px; display:flex; gap:6px; align-items:center; }
-  .hint svg{ width:12px; height:12px; flex:none; color:var(--gold-deep); }
+  .terms{ display:flex; align-items:flex-start; gap:9px; margin-top:16px; }
+  .terms input{ margin-top:3px; width:auto; }
+  .terms span{ font-size:12.5px; color:var(--text-dim); line-height:1.5; }
+  .terms a{ color:var(--gold-soft); text-decoration:none; }
 
-  /* terms */
-  .terms{
-    display:flex; align-items:flex-start; gap:10px;
-    margin:20px 2px 22px; font-size:12.5px; color:var(--muted); line-height:1.5;
-  }
-  .terms input{ margin-top:2px; accent-color: var(--gold); width:16px; height:16px; flex:none; }
-  .terms a{ color:var(--gold-light); text-decoration:none; border-bottom:1px solid rgba(241,217,139,.35); }
-
-  /* CTA */
-  .cta{
-    width:100%; height:56px; border:none; border-radius:14px;
-    background:linear-gradient(155deg,var(--gold-light),var(--gold) 55%,var(--gold-deep));
-    color:#161608; font-family:'Inter',sans-serif; font-weight:700; font-size:15px;
+  .btn{
+    width:100%; border:none; border-radius:12px; padding:13px 16px;
+    font-size:14.5px; font-weight:600; cursor:pointer;
+    font-family:inherit; transition:transform .15s, opacity .15s;
     display:flex; align-items:center; justify-content:center; gap:8px;
-    cursor:pointer; letter-spacing:.1px;
-    box-shadow:0 14px 30px -12px rgba(212,175,55,.45);
-    transition:transform .15s ease, box-shadow .15s ease, opacity .2s ease;
   }
-  .cta:active{ transform:scale(.98); }
-  .cta:disabled{ opacity:.45; cursor:not-allowed; box-shadow:none; }
-  .cta svg{ width:16px; height:16px; }
+  .btn:active{ transform:scale(.985); }
+  .btn:disabled{ opacity:.55; cursor:not-allowed; }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--gold-soft),var(--gold));
+    color:#171208; margin-top:20px;
+  }
+  .divider{ display:flex; align-items:center; gap:10px; margin:20px 0; }
+  .divider::before, .divider::after{ content:""; flex:1; height:1px; background:var(--card-border); }
+  .divider span{ font-size:11.5px; color:var(--text-dim); }
 
-  .switch{
-    text-align:center; margin-top:18px; font-size:13px; color:var(--muted);
+  .btn-google{
+    background:#fff; color:#1f1f1f;
   }
-  .switch a{ color:var(--gold-light); text-decoration:none; font-weight:600; }
+  .btn-google svg{ width:17px; height:17px; }
 
-  .footnote{
-    display:flex; align-items:center; justify-content:center; gap:6px;
-    margin-top:26px; font-size:10.5px; color:#54525d;
-    font-family:'JetBrains Mono',monospace;
+  .helper-note{ font-size:11.5px; color:var(--text-dim); text-align:center; margin-top:10px; line-height:1.5; }
+
+  .msg{
+    font-size:12.5px; border-radius:10px; padding:10px 12px; margin-top:14px;
+    display:none; line-height:1.5;
   }
-  .footnote svg{ width:11px; height:11px; }
+  .msg.show{ display:block; }
+  .msg.error{ background:rgba(226,87,76,.12); color:#ff9b93; border:1px solid rgba(226,87,76,.35); }
+  .msg.success{ background:rgba(111,191,115,.12); color:#a6e0a9; border:1px solid rgba(111,191,115,.35); }
+  .msg.info{ background:rgba(212,175,55,.1); color:var(--gold-soft); border:1px solid rgba(212,175,55,.3); }
+
+  .foot-link{ text-align:center; font-size:13px; color:var(--text-dim); margin-top:20px; }
+  .foot-link a{ color:var(--gold-soft); text-decoration:none; }
+  .footer-note{ text-align:center; font-size:11px; color:#5b5548; margin-top:18px; }
+
+  .spinner{
+    width:15px;height:15px;border-radius:50%;
+    border:2px solid rgba(0,0,0,.25); border-top-color:currentColor;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  /* Full-screen verifying overlay while returning from Google */
+  .overlay{
+    position:fixed; inset:0; background:rgba(11,10,8,.92);
+    display:none; align-items:center; justify-content:center; z-index:50;
+    flex-direction:column; gap:14px; text-align:center; padding:24px;
+  }
+  .overlay.show{ display:flex; }
+  .overlay .spinner{ width:26px;height:26px; border-width:3px; color:var(--gold-soft); }
+  .overlay p{ color:var(--text-dim); font-size:13.5px; max-width:280px; }
+
+  @media (prefers-reduced-motion: reduce){
+    .passport::before{ animation:none; }
+  }
 </style>
 </head>
 <body>
-<div class="phone">
 
-  <div class="brandbar">
-    <div class="mark">GB</div>
-    <div class="name">Goldbird <span>· Loyalty System</span></div>
-    <div class="lock">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-      SSL 256
+<div class="wrap">
+  <div class="brand">
+    <div class="brand-left">
+      <div class="brand-mark">GB</div>
+      <div class="brand-name"><b>Goldbird</b> · Loyalty System</div>
     </div>
+    <div class="ssl-badge">SSL 256</div>
   </div>
 
   <div class="passport">
     <div class="passport-top">
       <div>
-        <div class="passport-eyebrow">Pasaporte Digital</div>
-        <div class="passport-title">Hola, <span class="holder" id="holderName">socio</span></div>
+        <div class="passport-title">Pasaporte Digital</div>
+        <div class="passport-hello">Hola, socio</div>
       </div>
-      <div class="tier-chip">NIVEL BRONCE</div>
+      <div class="tier-badge">NIVEL BRONCE</div>
     </div>
-
-    <div class="stamps" id="stamps"></div>
-
-    <div class="passport-foot">
-      <div class="progress-label"><b id="progressCount">0</b>/4 datos · <span id="progressGift">faltan para tu sello gratis</span></div>
-      <div class="reward-note">🎁 1er sello gratis</div>
+    <div class="stamps" id="stamps">
+      <div class="stamp" data-field="fullName">1</div>
+      <div class="stamp" data-field="email">2</div>
+      <div class="stamp" data-field="phone">3</div>
+      <div class="stamp" data-field="birthdate">4</div>
     </div>
+    <div class="stamps-caption"><b id="stampCount">0</b>/4 datos · faltan para tu 🎁 1er sello gratis</div>
   </div>
 
-  <div class="headline">
+  <div class="form-card">
     <div class="eyebrow">Registro rápido · 30 segundos</div>
-    <h1>Crea tu Pasaporte&nbsp;Gold</h1>
-    <p>Completa tus datos para activar tu tarjeta digital y empezar a acumular recompensas en toda la red de aliados.</p>
-  </div>
+    <h1>Crea tu Pasaporte Gold</h1>
+    <p class="sub">Completa tus datos para activar tu tarjeta digital y empezar a acumular recompensas en toda la red de aliados.</p>
 
-  <form id="signupForm" novalidate>
+    <form id="signupForm" novalidate>
+      <label for="fullName">Nombre o apodo</label>
+      <input type="text" id="fullName" autocomplete="name" required />
 
-    <div class="field">
-      <label for="fname">Nombre o apodo</label>
-      <div class="input-shell" id="shellName">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/></svg>
-        <input id="fname" type="text" placeholder="¿Cómo te llamamos?" autocomplete="name" maxlength="40">
-        <svg class="check-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
-      </div>
-    </div>
-
-    <div class="field">
       <label for="email">Correo electrónico</label>
-      <div class="input-shell" id="shellEmail">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m4 7 8 6 8-6"/></svg>
-        <input id="email" type="email" placeholder="tu@correo.com" autocomplete="email" inputmode="email">
-        <svg class="check-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
-      </div>
-    </div>
+      <input type="email" id="email" autocomplete="email" required />
 
-    <div class="field">
-      <label for="phone">Celular <span class="opt">(WhatsApp para tus beneficios)</span></label>
+      <label for="phone">Celular (WhatsApp para tus beneficios)</label>
       <div class="phone-row">
-        <div class="code-shell">
-          <span class="flag" id="flagShown">🇵🇪</span>
-          <select id="countryCode">
-            <option value="+51" data-flag="🇵🇪">+51</option>
-            <option value="+52" data-flag="🇲🇽">+52</option>
-            <option value="+57" data-flag="🇨🇴">+57</option>
-            <option value="+56" data-flag="🇨🇱">+56</option>
-            <option value="+593" data-flag="🇪🇨">+593</option>
-            <option value="+1" data-flag="🇺🇸">+1</option>
-          </select>
-        </div>
-        <div class="input-shell phone-input" id="shellPhone">
-          <input id="phone" type="tel" placeholder="987 654 321" autocomplete="tel" inputmode="numeric">
-          <svg class="check-ok" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M20 6 9 17l-5-5"/></svg>
-        </div>
+        <select id="phoneCode">
+          <option value="+51" selected>🇵🇪 +51</option>
+          <option value="+1">🇺🇸 +1</option>
+          <option value="+52">🇲🇽 +52</option>
+          <option value="+57">🇨🇴 +57</option>
+          <option value="+56">🇨🇱 +56</option>
+          <option value="+593">🇪🇨 +593</option>
+          <option value="+54">🇦🇷 +54</option>
+          <option value="+55">🇧🇷 +55</option>
+          <option value="+591">🇧🇴 +591</option>
+          <option value="+595">🇵🇾 +595</option>
+          <option value="+598">🇺🇾 +598</option>
+          <option value="+58">🇻🇪 +58</option>
+          <option value="+502">🇬🇹 +502</option>
+          <option value="+503">🇸🇻 +503</option>
+          <option value="+504">🇭🇳 +504</option>
+          <option value="+505">🇳🇮 +505</option>
+          <option value="+506">🇨🇷 +506</option>
+          <option value="+507">🇵🇦 +507</option>
+          <option value="+809">🇩🇴 +809</option>
+        </select>
+        <input type="tel" id="phone" autocomplete="tel-national" required />
       </div>
-    </div>
 
-    <div class="field">
-      <label for="dd">Fecha de nacimiento</label>
-      <div class="date-row">
-        <div class="input-shell dd"><input id="dd" placeholder="DD" inputmode="numeric" maxlength="2"></div>
-        <div class="input-shell mm"><input id="mm" placeholder="MM" inputmode="numeric" maxlength="2"></div>
-        <div class="input-shell yyyy"><input id="yyyy" placeholder="AAAA" inputmode="numeric" maxlength="4"></div>
+      <label for="birthdate">Fecha de nacimiento</label>
+      <input type="date" id="birthdate" required />
+      <div class="helper-note" style="text-align:left;margin-top:6px;">Te regalamos un beneficio exclusivo en tu mes de cumpleaños.</div>
+
+      <label for="password">Crea una contraseña</label>
+      <input type="password" id="password" autocomplete="new-password" minlength="8" required />
+      <div class="helper-note" style="text-align:left;margin-top:6px;">Mínimo 8 caracteres. Te pediremos confirmar este correo con tu cuenta de Google en el siguiente paso.</div>
+
+      <div class="terms">
+        <input type="checkbox" id="terms" required />
+        <span>Acepto los <a href="#" target="_blank">Términos y condiciones</a> y el aviso de privacidad de Goldbird.</span>
       </div>
-      <div class="hint">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v5l3 2"/></svg>
-        Te regalamos un beneficio exclusivo en tu mes de cumpleaños
-      </div>
-    </div>
 
-    <label class="terms">
-      <input type="checkbox" id="terms">
-      <span>Acepto los <a href="#">Términos y condiciones</a> y el aviso de privacidad de Goldbird.</span>
-    </label>
+      <button type="submit" class="btn btn-primary" id="submitBtn">
+        Crear mi Pasaporte y 1er Sello
+      </button>
+    </form>
 
-    <button type="submit" class="cta" id="ctaBtn" disabled>
-      Crear mi Pasaporte y 1er Sello
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    <div class="divider"><span>O</span></div>
+
+    <button type="button" class="btn btn-google" id="googleBtn">
+      <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.4 0 10.3-2.1 14-5.5l-6.5-5.4C29.4 34.9 26.8 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.6l6.5 5.4C41 35.6 44 30.4 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+      Continuar con Google
     </button>
-  </form>
+    <div class="helper-note">Crea y verifica tu cuenta en un solo paso, sin contraseña.</div>
 
-  <div class="switch">¿Ya tienes cuenta? <a href="https://www.expandelab.app/login">Ingresa a tu pasaporte</a></div>
+    <div class="msg" id="formMsg"></div>
 
-  <div class="footnote">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-    Protección encriptada SSL · ExpandeLab Architecture
+    <div class="foot-link">¿Ya tienes cuenta? <a href="https://www.expandelab.app/login">Ingresa a tu pasaporte</a></div>
   </div>
 
+  <div class="footer-note">Protección encriptada SSL · ExpandeLab Architecture</div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="spinner"></div>
+  <p id="overlayText">Verificando tu cuenta con Google…</p>
 </div>
 
 <script>
-  const stampsEl = document.getElementById('stamps');
-  for(let i=0;i<10;i++){
-    const s = document.createElement('div');
-    s.className = 'stamp';
-    s.textContent = i < 1 ? '🎁' : (i+1);
-    stampsEl.appendChild(s);
-  }
-  const stampNodes = [...stampsEl.children];
+/* ══════════════════════════════════════════════════════════════
+   1) CONFIGURA TU PROYECTO SUPABASE AQUÍ
+   ══════════════════════════════════════════════════════════════ */
+const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
+const SUPABASE_ANON_KEY = "TU-ANON-KEY-PUBLICA";
 
-  const nameInput = document.getElementById('fname');
-  const emailInput = document.getElementById('email');
-  const phoneInput = document.getElementById('phone');
-  const dd = document.getElementById('dd'), mm = document.getElementById('mm'), yyyy = document.getElementById('yyyy');
-  const terms = document.getElementById('terms');
-  const cta = document.getElementById('ctaBtn');
-  const holderName = document.getElementById('holderName');
-  const progressCount = document.getElementById('progressCount');
-  const progressGift = document.getElementById('progressGift');
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  function emailValid(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+/* ── refs ─────────────────────────────────────────────────────── */
+const form        = document.getElementById('signupForm');
+const submitBtn    = document.getElementById('submitBtn');
+const googleBtn    = document.getElementById('googleBtn');
+const formMsg      = document.getElementById('formMsg');
+const overlay      = document.getElementById('overlay');
+const overlayText  = document.getElementById('overlayText');
+const stampCount   = document.getElementById('stampCount');
 
-  function markShell(input, valid){
-    const shell = input.closest('.input-shell');
-    const check = shell.querySelector('.check-ok');
-    if(valid){ check.classList.add('show'); }
-    else{ check.classList.remove('show'); }
-  }
+const fields = {
+  fullName:  document.getElementById('fullName'),
+  email:     document.getElementById('email'),
+  phone:     document.getElementById('phone'),
+  birthdate: document.getElementById('birthdate'),
+};
 
-  function updateState(){
-    const nameOk = nameInput.value.trim().length >= 2;
-    const emailOk = emailValid(emailInput.value.trim());
-    const phoneOk = phoneInput.value.replace(/\D/g,'').length >= 7;
-    const dateOk = dd.value.length===2 && mm.value.length===2 && yyyy.value.length===4;
+/* ── UI helpers ───────────────────────────────────────────────── */
+function showMsg(text, type){
+  formMsg.textContent = text;
+  formMsg.className = 'msg show ' + type;
+}
+function clearMsg(){
+  formMsg.className = 'msg';
+}
+function setLoading(btn, loading, label){
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? '<span class="spinner"></span> Procesando…'
+    : label;
+}
+function showOverlay(text){
+  overlayText.textContent = text;
+  overlay.classList.add('show');
+}
+function hideOverlay(){
+  overlay.classList.remove('show');
+}
 
-    markShell(nameInput, nameOk);
-    markShell(emailInput, emailOk);
-    markShell(phoneInput, phoneOk);
-
-    holderName.textContent = nameOk ? nameInput.value.trim() : 'socio';
-    holderName.classList.toggle('filled', nameOk);
-
-    const doneCount = [nameOk, emailOk, phoneOk, dateOk].filter(Boolean).length;
-    progressCount.textContent = doneCount;
-    progressGift.textContent = doneCount === 4 ? '¡listo para tu sello gratis!' : 'faltan para tu sello gratis';
-
-    const litStamps = Math.round((doneCount/4) * 10);
-    stampNodes.forEach((node, i) => node.classList.toggle('on', i < Math.max(litStamps,1) && doneCount>0 || i===0));
-
-    cta.disabled = !(nameOk && emailOk && phoneOk && dateOk && terms.checked);
-  }
-
-  [nameInput,emailInput,phoneInput,dd,mm,yyyy].forEach(el=> el.addEventListener('input', updateState));
-  terms.addEventListener('change', updateState);
-
-  updateState();
-
-  const countrySel = document.getElementById('countryCode');
-  const flagShown = document.getElementById('flagShown');
-  countrySel.addEventListener('change', ()=>{
-    flagShown.textContent = countrySel.selectedOptions[0].dataset.flag;
+/* ── live "stamps" progress (signature UX touch) ────────────────
+   Va llenando los 4 sellos del pasaporte a medida que el usuario
+   completa nombre, correo, celular y fecha de nacimiento. */
+function updateStamps(){
+  let filled = 0;
+  Object.entries(fields).forEach(([key, el]) => {
+    const dot = document.querySelector(`.stamp[data-field="${key}"]`);
+    const isFilled = el.value.trim().length > 0;
+    dot.classList.toggle('filled', isFilled);
+    if (isFilled) filled++;
   });
+  stampCount.textContent = filled;
+}
+Object.values(fields).forEach(el => el.addEventListener('input', updateStamps));
 
-  [dd,mm].forEach((el,idx)=>{
-    el.addEventListener('input', ()=>{
-      el.value = el.value.replace(/\D/g,'');
-      if(el.value.length===2){
-        (idx===0? mm: yyyy).focus();
+/* ══════════════════════════════════════════════════════════════
+   OPCIÓN 1 — correo + contraseña + verificación de Google
+   ------------------------------------------------------------
+   1. Se crea la cuenta con supabase.auth.signUp()
+   2. Inmediatamente se dispara linkIdentity('google') para que el
+      usuario confirme, con su propia cuenta de Google, que ese
+      correo le pertenece.
+   3. Al volver del redirect de Google, se compara el correo de la
+      identidad de Google vinculada contra el correo ingresado.
+      - Si coincide → cuenta queda verificada y activa.
+      - Si NO coincide → se desvincula esa identidad y se bloquea
+        la activación, pidiendo usar la cuenta de Google correcta.
+   ══════════════════════════════════════════════════════════════ */
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  clearMsg();
+
+  const fullName  = fields.fullName.value.trim();
+  const email     = fields.email.value.trim();
+  const phoneCode = document.getElementById('phoneCode').value;
+  const phone     = fields.phone.value.trim();
+  const birthdate = fields.birthdate.value;
+  const password  = document.getElementById('password').value;
+  const termsOk   = document.getElementById('terms').checked;
+
+  if (!fullName || !email || !phone || !birthdate || !password){
+    showMsg('Completa todos los campos para continuar.', 'error');
+    return;
+  }
+  if (password.length < 8){
+    showMsg('La contraseña debe tener al menos 8 caracteres.', 'error');
+    return;
+  }
+  if (!termsOk){
+    showMsg('Debes aceptar los términos y condiciones.', 'error');
+    return;
+  }
+
+  setLoading(submitBtn, true, 'Crear mi Pasaporte y 1er Sello');
+
+  // 1) Crear la cuenta
+  const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName,
+        phone: phoneCode + phone,
+        birthdate,
       }
-    });
+    }
   });
-  yyyy.addEventListener('input', ()=> yyyy.value = yyyy.value.replace(/\D/g,''));
-  phoneInput.addEventListener('input', ()=> phoneInput.value = phoneInput.value.replace(/[^\d\s]/g,''));
 
-  document.getElementById('signupForm').addEventListener('submit', (e)=>{
-    e.preventDefault();
-    cta.textContent = '¡Pasaporte creado! 🎉';
+  if (signUpError){
+    setLoading(submitBtn, false, 'Crear mi Pasaporte y 1er Sello');
+    showMsg(traducirError(signUpError.message), 'error');
+    return;
+  }
+
+  // Guardamos el perfil base (aún no verificado)
+  if (signUpData.user){
+    await supabase.from('profiles').upsert({
+      id: signUpData.user.id,
+      full_name: fullName,
+      phone: phoneCode + phone,
+      birthdate,
+      verified_via_google: false,
+    });
+  }
+
+  // Guardamos el correo pendiente de verificar para comparar tras el redirect
+  sessionStorage.setItem('gb_pending_email', email);
+  sessionStorage.setItem('gb_verify_flow', '1');
+
+  showMsg('Cuenta creada. Ahora confirma que este correo es tuyo con Google…', 'info');
+
+  // 2) Disparar verificación con Google (vincula identidad a la sesión actual)
+  const { error: linkError } = await supabase.auth.linkIdentity({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin + window.location.pathname + '?verify=1'
+    }
   });
+
+  if (linkError){
+    setLoading(submitBtn, false, 'Crear mi Pasaporte y 1er Sello');
+    showMsg('No pudimos abrir la verificación con Google: ' + linkError.message, 'error');
+  }
+  // Si no hay error, el navegador redirige a Google automáticamente.
+});
+
+/* ══════════════════════════════════════════════════════════════
+   OPCIÓN 2 — un clic con Google (sin clave, sin paso extra)
+   La sesión de Google ES la prueba de identidad, así que la
+   cuenta queda creada y verificada en el mismo paso.
+   ══════════════════════════════════════════════════════════════ */
+googleBtn.addEventListener('click', async () => {
+  clearMsg();
+  setLoading(googleBtn, true, 'Continuar con Google');
+  sessionStorage.setItem('gb_verify_flow', '0');
+
+  const { error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin + window.location.pathname + '?verify=1'
+    }
+  });
+
+  if (error){
+    setLoading(googleBtn, false, 'Continuar con Google');
+    showMsg('No pudimos conectar con Google: ' + error.message, 'error');
+  }
+});
+
+/* ══════════════════════════════════════════════════════════════
+   Manejo del regreso desde Google (para ambas opciones)
+   ══════════════════════════════════════════════════════════════ */
+async function handleReturnFromGoogle(){
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('verify') !== '1') return;
+
+  showOverlay('Verificando tu cuenta con Google…');
+
+  const flow = sessionStorage.getItem('gb_verify_flow'); // '1' = opción 1, '0' = opción 2
+  const { data: { session } } = await supabase.auth.getSession();
+
+  if (!session){
+    hideOverlay();
+    showMsg('No se pudo completar la verificación. Intenta de nuevo.', 'error');
+    cleanUrl();
+    return;
+  }
+
+  if (flow === '1'){
+    // Opción 1: comparar el correo de Google contra el correo ingresado
+    const pendingEmail = sessionStorage.getItem('gb_pending_email');
+    const { data: identitiesData } = await supabase.auth.getUserIdentities();
+    const googleIdentity = identitiesData?.identities?.find(i => i.provider === 'google');
+
+    const googleEmail = googleIdentity?.identity_data?.email;
+
+    if (googleEmail && pendingEmail && googleEmail.toLowerCase() === pendingEmail.toLowerCase()){
+      await supabase.from('profiles').update({ verified_via_google: true })
+        .eq('id', session.user.id);
+
+      hideOverlay();
+      showMsg('¡Listo! Tu correo quedó verificado y tu Pasaporte Gold está activo. 🎉', 'success');
+      celebrateStamps();
+    } else {
+      // No coincide: desvinculamos la identidad de Google y bloqueamos la activación
+      if (googleIdentity){
+        await supabase.auth.unlinkIdentity(googleIdentity);
+      }
+      hideOverlay();
+      showMsg('La cuenta de Google que usaste no coincide con el correo que ingresaste. Vuelve a intentarlo con la cuenta de Google asociada a ' + pendingEmail + '.', 'error');
+    }
+    sessionStorage.removeItem('gb_pending_email');
+  } else {
+    // Opción 2: la sesión de Google ya es la cuenta completa
+    const user = session.user;
+    await supabase.from('profiles').upsert({
+      id: user.id,
+      full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
+      verified_via_google: true,
+    });
+    hideOverlay();
+    showMsg('¡Cuenta creada con Google! Tu Pasaporte Gold ya está activo. 🎉', 'success');
+    celebrateStamps();
+  }
+
+  sessionStorage.removeItem('gb_verify_flow');
+  cleanUrl();
+}
+
+function celebrateStamps(){
+  document.querySelectorAll('.stamp').forEach(s => s.classList.add('filled'));
+  stampCount.textContent = '4';
+}
+
+function cleanUrl(){
+  const url = new URL(window.location.href);
+  url.searchParams.delete('verify');
+  window.history.replaceState({}, '', url.toString());
+}
+
+function traducirError(msg){
+  if (/already registered/i.test(msg)) return 'Ese correo ya tiene una cuenta. Intenta iniciar sesión.';
+  if (/password/i.test(msg)) return 'La contraseña no cumple los requisitos mínimos.';
+  return msg;
+}
+
+handleReturnFromGoogle();
 </script>
 </body>
 </html>
