@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Goldbird — Panel de Cliente</title>
+
+<!--
+  ══════════════════════════════════════════════════════════════════
+  CONFIGURACIÓN REQUERIDA — lee esto primero
+  ══════════════════════════════════════════════════════════════════
+
+  1) Rellena SUPABASE_URL / SUPABASE_ANON_KEY abajo (mismos valores
+     que usaste en signup.html).
+
+  2) Esta página asume que el usuario ya tiene sesión iniciada
+     (viene de signup.html o de /login). Si no hay sesión, redirige
+     automáticamente a /login.
+
+  3) Ejecuta este SQL adicional en Supabase (además del de
+     signup.html) para los comercios afiliados y la relación con
+     el usuario:
+
+     create table public.merchants (
+       id uuid primary key default gen_random_uuid(),
+       name text not null,
+       category text,
+       logo_emoji text default '🏪',
+       active boolean default true,
+       created_at timestamptz default now()
+     );
+     alter table public.merchants enable row level security;
+     create policy "cualquier usuario autenticado puede ver comercios activos"
+       on public.merchants for select using (active = true);
+
+     create table public.user_merchants (
+       user_id uuid references auth.users on delete cascade,
+       merchant_id uuid references public.merchants on delete cascade,
+       created_at timestamptz default now(),
+       primary key (user_id, merchant_id)
+     );
+     alter table public.user_merchants enable row level security;
+     create policy "usuarios ven sus propias afiliaciones"
+       on public.user_merchants for select using (auth.uid() = user_id);
+     create policy "usuarios crean sus propias afiliaciones"
+       on public.user_merchants for insert with check (auth.uid() = user_id);
+     create policy "usuarios eliminan sus propias afiliaciones"
+       on public.user_merchants for delete using (auth.uid() = user_id);
+
+     -- Primeros comercios afiliados (edita/agrega los reales):
+     insert into public.merchants (name, category, logo_emoji) values
+       ('Café Aurora', 'Cafetería', '☕'),
+       ('Panadería Trigo Dorado', 'Panadería', '🥐'),
+       ('Bistró Luna', 'Restaurante', '🍽️'),
+       ('FitZone Gym', 'Gimnasio', '💪'),
+       ('Spa Serenity', 'Belleza & Spa', '💆');
+
+  4) RLS ya garantiza que cada usuario solo ve su propia fila de
+     "profiles" y sus propias afiliaciones en "user_merchants" — por
+     eso esta misma página sirve para todos: cada quien ve solo lo
+     suyo, no hace falta generar un HTML distinto por usuario.
+  ══════════════════════════════════════════════════════════════════
+-->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#0b0a08;
+    --bg-alt:#15120c;
+    --card:#1c1812;
+    --card-border:#332a1c;
+    --gold:#d4af37;
+    --gold-soft:#e8c766;
+    --bronze:#c97b3c;
+    --text:#f5f1e6;
+    --text-dim:#a89f8c;
+    --error:#e2574c;
+    --success:#6fbf73;
+    --amber:#f2b23a;
+    --amber-bg:rgba(242,178,58,.1);
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(212,175,55,.14), transparent 60%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Inter',system-ui,sans-serif;
+    min-height:100vh;
+    padding-bottom:88px;
+  }
+  .container{ max-width:480px; margin:0 auto; padding:20px 16px 0; }
+
+  /* ── Header ─────────────────────────────────────────────────── */
+  header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .brand-left{ display:flex; align-items:center; gap:10px; }
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(135deg,var(--gold-soft),var(--bronze));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; color:#0b0a08; font-size:15px;
+  }
+  .brand-text{ line-height:1.25; }
+  .brand-text b{ font-size:14px; }
+  .brand-text span{ display:block; font-size:11px; color:var(--text-dim); }
+  .header-actions{ display:flex; align-items:center; gap:10px; }
+  .bell{
+    width:34px;height:34px;border-radius:50%;
+    border:1px solid var(--card-border); background:var(--card);
+    display:flex;align-items:center;justify-content:center; font-size:15px;
+    position:relative;
+  }
+  .bell::after{
+    content:""; position:absolute; top:6px; right:7px; width:6px;height:6px;
+    border-radius:50%; background:var(--error);
+  }
+  .logout-link{
+    font-size:12.5px; color:var(--text-dim); text-decoration:none;
+    border:1px solid var(--card-border); padding:7px 12px; border-radius:20px;
+    background:none; cursor:pointer; font-family:inherit;
+  }
+  .logout-link:hover{ color:var(--text); border-color:var(--gold-soft); }
+
+  /* ── Greeting ───────────────────────────────────────────────── */
+  .greeting{ margin-bottom:16px; }
+  .greeting .hi{ font-size:12.5px; color:var(--text-dim); }
+  .greeting h1{
+    font-family:'Fraunces',serif; font-weight:600; font-size:22px; margin:2px 0 0;
+  }
+
+  /* ── Reto del día ───────────────────────────────────────────── */
+  .challenge{
+    background:linear-gradient(135deg, rgba(212,175,55,.14), rgba(201,123,60,.06));
+    border:1px solid rgba(212,175,55,.35);
+    border-radius:16px; padding:16px; margin-bottom:18px;
+  }
+  .challenge-title{ font-size:13px; font-weight:600; color:var(--gold-soft); margin-bottom:4px; }
+  .challenge p{ font-size:13px; color:var(--text-dim); line-height:1.5; margin:0; }
+  .challenge b{ color:var(--text); }
+
+  /* ── Tabs ───────────────────────────────────────────────────── */
+  .tabs{
+    display:flex; justify-content:space-around;
+    position:fixed; bottom:0; left:0; right:0;
+    background:rgba(21,18,12,.92); backdrop-filter:blur(10px);
+    border-top:1px solid var(--card-border);
+    padding:9px 6px calc(9px + env(safe-area-inset-bottom));
+    z-index:20;
+  }
+  .tab-btn{
+    background:none; border:none; color:var(--text-dim);
+    font-family:inherit; font-size:10.5px; display:flex; flex-direction:column;
+    align-items:center; gap:3px; padding:5px 10px; cursor:pointer; border-radius:10px;
+  }
+  .tab-btn .ic{ font-size:19px; }
+  .tab-btn[aria-selected="true"]{ color:var(--gold-soft); background:rgba(212,175,55,.08); }
+
+  .panel{ display:none; }
+  .panel.active{ display:block; animation:fadeIn .25s ease; }
+  @keyframes fadeIn{ from{ opacity:0; transform:translateY(6px);} to{ opacity:1; transform:none; } }
+
+  /* ── Tarjeta panel (pasaporte) ─────────────────────────────── */
+  .passport{
+    position:relative;
+    background:linear-gradient(160deg,#211c14,#161209);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:22px; margin-bottom:16px; overflow:hidden;
+  }
+  .passport::before{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(115deg, transparent 40%, rgba(212,175,55,.14) 48%, transparent 56%);
+    background-size:220% 220%; animation:shimmer 6s ease-in-out infinite; pointer-events:none;
+  }
+  @keyframes shimmer{ 0%,100%{background-position:0% 0%;} 50%{background-position:100% 100%;} }
+  .passport-top{ display:flex; justify-content:space-between; align-items:flex-start; position:relative; z-index:1; }
+  .passport-title{ font-size:12px; color:var(--text-dim); }
+  .passport-name{ font-family:'Fraunces',serif; font-size:18px; margin-top:2px; }
+  .tier-badge{
+    font-size:10.5px; font-weight:600; letter-spacing:.06em; color:var(--bronze);
+    border:1px solid rgba(201,123,60,.5); padding:4px 10px; border-radius:20px; white-space:nowrap;
+  }
+  .points-row{ display:flex; gap:22px; margin-top:20px; position:relative; z-index:1; }
+  .points-item .num{ font-family:'Fraunces',serif; font-size:22px; color:var(--gold-soft); }
+  .points-item .lab{ font-size:11px; color:var(--text-dim); }
+  .code-chip{
+    margin-top:16px; display:inline-flex; align-items:center; gap:6px;
+    background:rgba(212,175,55,.1); border:1px solid rgba(212,175,55,.3);
+    padding:5px 10px; border-radius:8px; font-size:11.5px; color:var(--gold-soft);
+    position:relative; z-index:1;
+  }
+
+  .section-title{ font-size:13px; font-weight:600; color:var(--text-dim); margin:20px 0 10px; text-transform:uppercase; letter-spacing:.04em; }
+
+  /* ── Comercios ──────────────────────────────────────────────── */
+  .merchant-card{
+    display:flex; align-items:center; gap:12px;
+    background:var(--card); border:1px solid var(--card-border); border-radius:14px;
+    padding:13px 14px; margin-bottom:10px;
+  }
+  .merchant-emoji{
+    width:40px;height:40px;border-radius:11px; background:var(--bg-alt);
+    display:flex;align-items:center;justify-content:center; font-size:19px; flex:none;
+  }
+  .merchant-info{ flex:1; min-width:0; }
+  .merchant-info .name{ font-size:14px; font-weight:600; }
+  .merchant-info .cat{ font-size:11.5px; color:var(--text-dim); }
+  .affiliate-btn{
+    border:1px solid var(--card-border); background:none; color:var(--text-dim);
+    font-family:inherit; font-size:12px; font-weight:600; padding:7px 13px;
+    border-radius:20px; cursor:pointer; white-space:nowrap; transition:.15s;
+  }
+  .affiliate-btn.joined{
+    background:linear-gradient(135deg,var(--gold-soft),var(--gold));
+    color:#171208; border-color:transparent;
+  }
+
+  /* ── Mascota / Cupones (placeholders funcionales) ─────────────*/
+  .pet-card{
+    text-align:center; background:var(--card); border:1px solid var(--card-border);
+    border-radius:16px; padding:26px 20px;
+  }
+  .pet-emoji{ font-size:52px; }
+  .xp-bar{ height:8px; border-radius:6px; background:var(--bg-alt); margin:14px 0 6px; overflow:hidden; }
+  .xp-fill{ height:100%; background:linear-gradient(90deg,var(--gold-soft),var(--gold)); width:35%; }
+  .coupon{
+    display:flex; justify-content:space-between; align-items:center;
+    background:var(--card); border:1px dashed var(--card-border); border-radius:14px;
+    padding:13px 14px; margin-bottom:10px; font-size:13px;
+  }
+  .coupon b{ color:var(--gold-soft); }
+
+  /* ── Perfil ─────────────────────────────────────────────────── */
+  .review-banner{
+    display:none; background:var(--amber-bg); border:1px solid rgba(242,178,58,.4);
+    color:var(--amber); font-size:12.5px; padding:11px 13px; border-radius:12px;
+    margin-bottom:16px; line-height:1.5;
+  }
+  .review-banner.show{ display:block; }
+  .field{ margin-bottom:14px; }
+  .field label{
+    font-size:12px; color:var(--text-dim); display:flex; align-items:center; gap:6px; margin-bottom:6px;
+  }
+  .field label .tag{
+    font-size:9.5px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+    color:#171208; background:var(--amber); padding:2px 6px; border-radius:6px; display:none;
+  }
+  .field.needs-review label{ color:var(--amber); }
+  .field.needs-review label .tag{ display:inline-block; }
+  .field.needs-review input{ border-color:var(--amber); background:var(--amber-bg); color:var(--amber); }
+  .field input{
+    width:100%; background:var(--bg-alt); border:1px solid var(--card-border);
+    color:var(--text); padding:12px 13px; border-radius:11px; font-size:14px;
+    font-family:inherit; outline:none; transition:border-color .2s;
+  }
+  .field input:focus{ border-color:var(--gold-soft); }
+
+  .btn{
+    width:100%; border:none; border-radius:12px; padding:13px 16px;
+    font-size:14.5px; font-weight:600; cursor:pointer; font-family:inherit;
+  }
+  .btn-primary{ background:linear-gradient(135deg,var(--gold-soft),var(--gold)); color:#171208; margin-top:6px; }
+  .msg{ font-size:12.5px; border-radius:10px; padding:10px 12px; margin-top:12px; display:none; }
+  .msg.show{ display:block; }
+  .msg.success{ background:rgba(111,191,115,.12); color:#a6e0a9; border:1px solid rgba(111,191,115,.35); }
+  .msg.error{ background:rgba(226,87,76,.12); color:#ff9b93; border:1px solid rgba(226,87,76,.35); }
+  .msg.info{ background:rgba(212,175,55,.1); color:var(--gold-soft); border:1px solid rgba(212,175,55,.3); }
+
+  .skeleton{ opacity:.5; filter:blur(1px); pointer-events:none; }
+
+  /* ── Overlay de bienvenida (sonido + visual) ─────────────────── */
+  .welcome-overlay{
+    position:fixed; inset:0; z-index:100; display:none;
+    align-items:center; justify-content:center; padding:24px;
+    background:radial-gradient(ellipse at 50% 30%, rgba(212,175,55,.18), rgba(11,10,8,.96) 65%);
+  }
+  .welcome-overlay.show{ display:flex; }
+  #confettiCanvas{ position:fixed; inset:0; z-index:101; pointer-events:none; }
+  .welcome-card{
+    position:relative; z-index:102; text-align:center; max-width:340px;
+    background:var(--card); border:1px solid rgba(212,175,55,.4);
+    border-radius:22px; padding:34px 26px; animation:popIn .5s cubic-bezier(.2,1.4,.4,1);
+  }
+  @keyframes popIn{ from{ opacity:0; transform:scale(.85) translateY(10px);} to{opacity:1; transform:none;} }
+  .welcome-icon{ font-size:44px; margin-bottom:6px; }
+  .welcome-card h2{ font-family:'Fraunces',serif; font-size:23px; margin:6px 0 10px; }
+  .welcome-card p{ font-size:13.5px; color:var(--text-dim); line-height:1.6; margin:0 0 22px; }
+  .welcome-card .name-hi{ color:var(--gold-soft); font-weight:600; }
+  .welcome-cta{
+    background:linear-gradient(135deg,var(--gold-soft),var(--gold)); color:#171208;
+    border:none; border-radius:12px; padding:13px 24px; font-size:14.5px; font-weight:700;
+    cursor:pointer; font-family:inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .passport::before{ animation:none; }
+    .welcome-card{ animation:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="brand-left">
+      <div class="brand-mark">GB</div>
+      <div class="brand-text"><b>Gold Bird</b><span>App Cliente</span></div>
+    </div>
+    <div class="header-actions">
+      <div class="bell" aria-label="Notificaciones">🔔</div>
+      <button class="logout-link" id="logoutBtn">Salir</button>
+    </div>
+  </header>
+
+  <div class="greeting">
+    <div class="hi">Hola de nuevo,</div>
+    <h1 id="greetingName">socio</h1>
+  </div>
+
+  <div class="challenge">
+    <div class="challenge-title">🎯 Reto del día</div>
+    <p>Compra en una cafetería afiliada — <b>+60 XP · +3 plumas</b>. Revisa la pestaña Mascota para reclamarlo.</p>
+  </div>
+
+  <!-- ── Panel: Tarjeta ─────────────────────────────────────────── -->
+  <section class="panel active" id="panel-tarjeta">
+    <div class="passport">
+      <div class="passport-top">
+        <div>
+          <div class="passport-title">Pasaporte Digital</div>
+          <div class="passport-name" id="cardName">—</div>
+        </div>
+        <div class="tier-badge" id="cardTier">NIVEL BRONCE</div>
+      </div>
+      <div class="points-row">
+        <div class="points-item"><div class="num" id="cardPoints">0</div><div class="lab">Puntos</div></div>
+        <div class="points-item"><div class="num" id="cardFeathers">0</div><div class="lab">Plumas</div></div>
+      </div>
+      <div class="code-chip" id="cardCode" style="display:none;">🪪 <span id="cardCodeText"></span></div>
+    </div>
+  </section>
+
+  <!-- ── Panel: Comercios ───────────────────────────────────────── -->
+  <section class="panel" id="panel-comercios">
+    <div class="section-title">Comercios afiliados</div>
+    <p style="font-size:12.5px;color:var(--text-dim);margin:-4px 0 14px;">Elige a cuáles quieres afiliarte para acumular beneficios ahí.</p>
+    <div id="merchantList"><div class="skeleton">Cargando comercios…</div></div>
+  </section>
+
+  <!-- ── Panel: Mascota ─────────────────────────────────────────── -->
+  <section class="panel" id="panel-mascota">
+    <div class="pet-card">
+      <div class="pet-emoji">🐦</div>
+      <div style="font-family:'Fraunces',serif;font-size:17px;margin-top:8px;">Tu mascota Goldbird</div>
+      <div class="xp-bar"><div class="xp-fill"></div></div>
+      <div style="font-size:12px;color:var(--text-dim);">35 / 100 XP para el próximo nivel</div>
+    </div>
+  </section>
+
+  <!-- ── Panel: Cupones ─────────────────────────────────────────── -->
+  <section class="panel" id="panel-cupones">
+    <div class="section-title">Tus cupones</div>
+    <div class="coupon"><span>Café Aurora — 2x1 en bebidas calientes</span><b>Usar</b></div>
+    <div class="coupon"><span>Bistró Luna — 15% en tu próxima visita</span><b>Usar</b></div>
+  </section>
+
+  <!-- ── Panel: Perfil ──────────────────────────────────────────── -->
+  <section class="panel" id="panel-perfil">
+    <div class="review-banner" id="reviewBanner">
+      Te registraste con Google, así que aún nos faltan algunos datos tuyos. Los campos en <b>amarillo</b> están listos para que los completes o corrijas.
+    </div>
+
+    <form id="profileForm">
+      <div class="field" id="field-fullName">
+        <label for="pFullName">Nombre o apodo <span class="tag">Editar</span></label>
+        <input type="text" id="pFullName" />
+      </div>
+      <div class="field" id="field-email">
+        <label for="pEmail">Correo electrónico <span class="tag">Editar</span></label>
+        <input type="email" id="pEmail" disabled />
+      </div>
+      <div class="field" id="field-phone">
+        <label for="pPhone">Celular <span class="tag">Editar</span></label>
+        <input type="tel" id="pPhone" placeholder="+51 999 999 999" />
+      </div>
+      <div class="field" id="field-birthdate">
+        <label for="pBirthdate">Fecha de nacimiento <span class="tag">Editar</span></label>
+        <input type="date" id="pBirthdate" />
+      </div>
+      <div class="field" id="field-document">
+        <label for="pDocument">Documento de identidad <span class="tag">Editar</span></label>
+        <input type="text" id="pDocument" placeholder="Digítalo aquí" />
+      </div>
+
+      <button type="submit" class="btn btn-primary" id="saveProfileBtn">Guardar cambios</button>
+      <div class="msg" id="profileMsg"></div>
+    </form>
+  </section>
+</div>
+
+<nav class="tabs" role="tablist" aria-label="Secciones de la app">
+  <button class="tab-btn" role="tab" aria-selected="true" data-panel="tarjeta"><span class="ic">🎟️</span>Tarjeta</button>
+  <button class="tab-btn" role="tab" aria-selected="false" data-panel="comercios"><span class="ic">🏪</span>Comercios</button>
+  <button class="tab-btn" role="tab" aria-selected="false" data-panel="mascota"><span class="ic">🐦</span>Mascota</button>
+  <button class="tab-btn" role="tab" aria-selected="false" data-panel="cupones"><span class="ic">🏷️</span>Cupones</button>
+  <button class="tab-btn" role="tab" aria-selected="false" data-panel="perfil"><span class="ic">👤</span>Perfil</button>
+</nav>
+
+<!-- ── Bienvenida: efecto visual + sonoro ──────────────────────── -->
+<canvas id="confettiCanvas"></canvas>
+<div class="welcome-overlay" id="welcomeOverlay">
+  <div class="welcome-card">
+    <div class="welcome-icon">🎉</div>
+    <h2>¡Bienvenido, <span class="name-hi" id="welcomeName">socio</span>!</h2>
+    <p>Ya estás listo para mejorar tu experiencia en tus comercios favoritos.</p>
+    <button class="welcome-cta" id="welcomeCta">Comenzar</button>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   1) CONFIGURA TU PROYECTO SUPABASE AQUÍ (mismos valores que signup.html)
+   ══════════════════════════════════════════════════════════════ */
+const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
+const SUPABASE_ANON_KEY = "TU-ANON-KEY-PUBLICA";
+const gbSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = null;
+let currentProfile = null;
+
+/* ── Tabs ─────────────────────────────────────────────────────── */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.setAttribute('aria-selected', 'false'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.setAttribute('aria-selected', 'true');
+    document.getElementById('panel-' + btn.dataset.panel).classList.add('active');
+  });
+});
+
+/* ── Logout ───────────────────────────────────────────────────── */
+document.getElementById('logoutBtn').addEventListener('click', async () => {
+  await gbSupabase.auth.signOut();
+  window.location.href = '/login';
+});
+
+/* ══════════════════════════════════════════════════════════════
+   Cargar sesión + perfil del usuario logueado
+   (RLS en Supabase garantiza que cada quien solo ve su propia fila,
+   por eso esta misma página sirve para todos los usuarios)
+   ══════════════════════════════════════════════════════════════ */
+async function init(){
+  const params = new URLSearchParams(window.location.search);
+
+  // Modo de vista previa: abre user.html?demo=1 para ver el diseño
+  // con datos de ejemplo, sin necesitar una sesión real de Supabase.
+  // Útil solo para revisar/probar el maquetado; en producción no
+  // se usa, el flujo real siempre viene de signup.html o /login.
+  if (params.get('demo') === '1'){
+    currentUser = { id: 'demo', email: 'demo@goldbird.app' };
+    currentProfile = {
+      full_name: 'Ana Torres',
+      phone: '+51 987 654 321',
+      birthdate: '1996-04-12',
+      document_id: null,
+      customer_code: 'USR+00000042',
+      tier: 'bronce',
+      needs_profile_review: true,
+    };
+    renderGreeting();
+    renderCard();
+    renderProfileForm();
+    document.getElementById('merchantList').innerHTML =
+      '<div class="msg show info" style="display:block;">Modo demo: conecta Supabase para ver comercios reales.</div>';
+    maybeShowWelcome();
+    return;
+  }
+
+  const { data: { session } } = await gbSupabase.auth.getSession();
+  if (!session){
+    window.location.href = '/login';
+    return;
+  }
+  currentUser = session.user;
+
+  const { data: profile, error } = await gbSupabase
+    .from('profiles')
+    .select('*')
+    .eq('id', currentUser.id)
+    .single();
+
+  if (error || !profile){
+    console.error('No se pudo cargar el perfil', error);
+    return;
+  }
+  currentProfile = profile;
+
+  renderGreeting();
+  renderCard();
+  renderProfileForm();
+  loadMerchants();
+  maybeShowWelcome();
+}
+
+function renderGreeting(){
+  const name = currentProfile.full_name || 'socio';
+  document.getElementById('greetingName').textContent = name;
+  document.getElementById('cardName').textContent = name;
+  document.getElementById('welcomeName').textContent = name;
+}
+
+function renderCard(){
+  document.getElementById('cardTier').textContent = 'NIVEL ' + (currentProfile.tier || 'bronce').toUpperCase();
+  if (currentProfile.customer_code){
+    document.getElementById('cardCode').style.display = 'inline-flex';
+    document.getElementById('cardCodeText').textContent = currentProfile.customer_code;
+  }
+}
+
+/* ── Perfil: resaltado amarillo para cuentas creadas por Google ──
+   Si needs_profile_review = true (seteado en el registro por Google,
+   ver signup.html), TODOS los campos del perfil se muestran en
+   amarillo para invitar a completarlos/editarlos. Al guardar, se
+   apaga la bandera y el perfil vuelve a su estilo normal. */
+function renderProfileForm(){
+  document.getElementById('pFullName').value  = currentProfile.full_name || '';
+  document.getElementById('pEmail').value     = currentUser.email || '';
+  document.getElementById('pPhone').value     = currentProfile.phone || '';
+  document.getElementById('pBirthdate').value = currentProfile.birthdate || '';
+  document.getElementById('pDocument').value  = currentProfile.document_id || '';
+
+  const needsReview = !!currentProfile.needs_profile_review;
+  document.getElementById('reviewBanner').classList.toggle('show', needsReview);
+  ['fullName','email','phone','birthdate','document'].forEach(key => {
+    document.getElementById('field-' + key).classList.toggle('needs-review', needsReview);
+  });
+}
+
+document.getElementById('profileForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('saveProfileBtn');
+  const msg = document.getElementById('profileMsg');
+  btn.disabled = true;
+  btn.textContent = 'Guardando…';
+
+  const { error } = await gbSupabase.from('profiles').update({
+    full_name: document.getElementById('pFullName').value.trim(),
+    phone: document.getElementById('pPhone').value.trim(),
+    birthdate: document.getElementById('pBirthdate').value || null,
+    document_id: document.getElementById('pDocument').value.trim() || null,
+    needs_profile_review: false,
+  }).eq('id', currentUser.id);
+
+  btn.disabled = false;
+  btn.textContent = 'Guardar cambios';
+
+  if (error){
+    msg.textContent = 'No se pudo guardar: ' + error.message;
+    msg.className = 'msg show error';
+    return;
+  }
+  currentProfile.needs_profile_review = false;
+  renderProfileForm();
+  renderGreeting();
+  msg.textContent = 'Perfil actualizado ✓';
+  msg.className = 'msg show success';
+});
+
+/* ══════════════════════════════════════════════════════════════
+   Comercios afiliados — el usuario elige a cuáles afiliarse
+   ══════════════════════════════════════════════════════════════ */
+async function loadMerchants(){
+  const list = document.getElementById('merchantList');
+
+  const [{ data: merchants, error: mErr }, { data: myAffiliations, error: aErr }] = await Promise.all([
+    gbSupabase.from('merchants').select('*').eq('active', true).order('name'),
+    gbSupabase.from('user_merchants').select('merchant_id').eq('user_id', currentUser.id),
+  ]);
+
+  if (mErr || !merchants){
+    list.innerHTML = '<div class="msg show error">No se pudieron cargar los comercios.</div>';
+    return;
+  }
+
+  const joinedIds = new Set((myAffiliations || []).map(a => a.merchant_id));
+  list.innerHTML = '';
+
+  merchants.forEach(m => {
+    const joined = joinedIds.has(m.id);
+    const row = document.createElement('div');
+    row.className = 'merchant-card';
+    row.innerHTML = `
+      <div class="merchant-emoji">${m.logo_emoji || '🏪'}</div>
+      <div class="merchant-info">
+        <div class="name">${m.name}</div>
+        <div class="cat">${m.category || ''}</div>
+      </div>
+      <button class="affiliate-btn ${joined ? 'joined' : ''}" data-id="${m.id}">
+        ${joined ? 'Afiliado ✓' : 'Afiliarme'}
+      </button>`;
+    list.appendChild(row);
+  });
+
+  list.querySelectorAll('.affiliate-btn').forEach(btn => {
+    btn.addEventListener('click', () => toggleAffiliation(btn));
+  });
+}
+
+async function toggleAffiliation(btn){
+  const merchantId = btn.dataset.id;
+  const isJoined = btn.classList.contains('joined');
+  btn.disabled = true;
+
+  if (isJoined){
+    const { error } = await gbSupabase.from('user_merchants')
+      .delete().eq('user_id', currentUser.id).eq('merchant_id', merchantId);
+    if (!error){
+      btn.classList.remove('joined');
+      btn.textContent = 'Afiliarme';
+    }
+  } else {
+    const { error } = await gbSupabase.from('user_merchants')
+      .insert({ user_id: currentUser.id, merchant_id: merchantId });
+    if (!error){
+      btn.classList.add('joined');
+      btn.textContent = 'Afiliado ✓';
+    }
+  }
+  btn.disabled = false;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   Bienvenida: efecto visual (confeti) + sonoro (acorde ascendente)
+   Se dispara cuando llega ?welcome=1 (redirigido desde signup.html
+   justo después de crear/verificar la cuenta).
+   ══════════════════════════════════════════════════════════════ */
+function maybeShowWelcome(){
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('welcome') !== '1') return;
+
+  document.getElementById('welcomeOverlay').classList.add('show');
+
+  const url = new URL(window.location.href);
+  url.searchParams.delete('welcome');
+  window.history.replaceState({}, '', url.toString());
+}
+
+document.getElementById('welcomeCta').addEventListener('click', () => {
+  playWelcomeChime();
+  burstConfetti();
+  setTimeout(() => {
+    document.getElementById('welcomeOverlay').classList.remove('show');
+  }, 900);
+});
+
+function playWelcomeChime(){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const notes = [523.25, 659.25, 783.99]; // Do - Mi - Sol
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      const start = ctx.currentTime + i * 0.12;
+      gain.gain.setValueAtTime(0, start);
+      gain.gain.linearRampToValueAtTime(0.18, start + 0.03);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.5);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(start);
+      osc.stop(start + 0.55);
+    });
+  } catch(e){ /* audio no soportado, seguimos sin sonido */ }
+}
+
+function burstConfetti(){
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const colors = ['#d4af37', '#e8c766', '#c97b3c', '#f5f1e6'];
+  const pieces = Array.from({ length: 90 }, () => ({
+    x: canvas.width / 2,
+    y: canvas.height * 0.35,
+    vx: (Math.random() - 0.5) * 12,
+    vy: Math.random() * -9 - 3,
+    size: Math.random() * 6 + 4,
+    color: colors[Math.floor(Math.random() * colors.length)],
+    rot: Math.random() * Math.PI,
+    vr: (Math.random() - 0.5) * 0.3,
+  }));
+
+  let frame = 0;
+  function tick(){
+    frame++;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.vy += 0.28;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+      ctx.restore();
+    });
+    if (frame < 110){
+      requestAnimationFrame(tick);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+  tick();
+}
+
+init();
+</script>
+</body>
+</html>
