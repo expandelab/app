@@ -1,312 +1,390 @@
 <!DOCTYPE html>
-<html lang="es" class="dark scroll-smooth">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Goldbird — Pasaporte Digital & Acceso al Sistema</title>
-    
-    <!-- Fuentes Enterprise -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace'],
-                    },
-                    colors: {
-                        gold: {
-                            400: '#F4E7C4',
-                            500: '#E8C874',
-                            600: '#C9A227',
-                            accent: '#FACC15',
-                        },
-                        brand: {
-                            accent: '#bef264', // Lime neón de ExpandeLab
-                            500: '#22c55e',
-                        },
-                        dark: {
-                            bg: '#05070B',
-                            card: '#0D1117',
-                            surface: '#14171F',
-                            border: 'rgba(255, 255, 255, 0.08)'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    
-    <style>
-        body {
-            background-color: #05070B;
-            color: #f3f4f6;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            overflow-x: hidden;
-        }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Goldbird — Pasaporte Digital & Acceso al Sistema</title>
 
-        .glow-bg-gold {
-            position: absolute;
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(201, 162, 39, 0.12) 0%, rgba(190, 242, 100, 0.03) 40%, rgba(0,0,0,0) 70%);
-            top: -200px;
-            left: -200px;
-            z-index: 0;
-            pointer-events: none;
-        }
+<!--
+  ══════════════════════════════════════════════════════════════════
+  CONFIGURACIÓN — mismos SUPABASE_URL / SUPABASE_ANON_KEY que
+  signup.html y panel.html. Google ya debe estar configurado en
+  Supabase (Authentication → Providers → Google) como se detalló
+  en signup.html; no hace falta nada adicional para este botón.
+  ══════════════════════════════════════════════════════════════════
+-->
 
-        .glow-card {
-            background-color: #0D1117;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-        .glow-card:hover {
-            border-color: rgba(232, 200, 116, 0.3);
-            box-shadow: 0 0 35px rgba(201, 162, 39, 0.08);
-            transform: translateY(-2px);
-        }
+<style>
+  :root{
+    --bg:#0b0a08; --bg-alt:#15120c; --card:#1c1812; --card-border:#332a1c;
+    --gold:#d4af37; --gold-soft:#e8c766; --bronze:#c97b3c;
+    --text:#f5f1e6; --text-dim:#a89f8c;
+    --error:#e2574c; --success:#6fbf73;
+    --radius:18px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(212,175,55,.14), transparent 60%),
+      var(--bg);
+    color:var(--text); font-family:'Inter',system-ui,sans-serif; min-height:100vh;
+  }
+  .layout{ display:flex; min-height:100vh; }
 
-        .gradient-gold-text {
-            background: linear-gradient(135deg, #FFFFFF 20%, #E8C874 70%, #bef264 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+  /* ── Panel izquierdo: marca / marketing ────────────────────── */
+  .brand-panel{
+    flex:1.1; padding:44px 40px; display:flex; flex-direction:column; justify-content:space-between;
+    background:linear-gradient(180deg, rgba(212,175,55,.05), transparent 40%);
+  }
+  .brand-top .brand-left{ display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+  .brand-mark{
+    width:34px;height:34px;border-radius:9px;
+    background:linear-gradient(135deg,var(--gold-soft),var(--bronze));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; color:#0b0a08; font-size:15px;
+  }
+  .brand-top .name{ font-size:14px; font-weight:600; }
+  .brand-top .powered{ font-size:11.5px; color:var(--text-dim); margin:2px 0 0 44px; }
 
-        .btn-gold {
-            background-color: #E8C874;
-            color: #05070B;
-            transition: all 0.25s ease;
-            font-weight: 700;
-            border: 1px solid #E8C874;
-            box-shadow: 0 0 20px rgba(232, 200, 116, 0.2);
-        }
+  .tagline{
+    font-size:10.5px; letter-spacing:.1em; color:var(--gold-soft); margin:38px 0 12px;
+    text-transform:uppercase;
+  }
+  .brand-panel h1{
+    font-family:'Fraunces',serif; font-weight:600; font-size:clamp(26px,3.4vw,38px);
+    line-height:1.18; margin:0 0 16px; max-width:480px;
+  }
+  .brand-panel h1 b{ color:var(--gold-soft); font-weight:600; }
+  .brand-panel p{ font-size:14.5px; color:var(--text-dim); line-height:1.7; max-width:440px; margin:0 0 30px; }
 
-        .btn-gold:hover {
-            background-color: #FACC15;
-            box-shadow: 0 0 30px rgba(250, 204, 21, 0.4);
-            transform: translateY(-1px);
-        }
+  .feature-chip{
+    display:flex; align-items:center; gap:12px;
+    background:var(--card); border:1px solid var(--card-border); border-radius:14px;
+    padding:13px 16px; margin-bottom:10px; max-width:420px;
+  }
+  .feature-chip .ic{ font-size:20px; }
+  .feature-chip .fc-name{ font-size:13.5px; font-weight:600; }
+  .feature-chip .fc-sub{ font-size:11.5px; color:var(--text-dim); }
+  .feature-chip .fc-tag{
+    margin-left:auto; font-size:10px; font-weight:700; letter-spacing:.04em;
+    color:var(--gold-soft); border:1px solid rgba(212,175,55,.35); padding:3px 8px; border-radius:20px;
+    white-space:nowrap;
+  }
 
-        .grid-pattern {
-            background-size: 36px 36px;
-            background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
-        }
+  .brand-footer{ font-size:11.5px; color:#5b5548; line-height:1.7; }
+  .brand-footer a{ color:var(--text-dim); text-decoration:none; }
 
-        .badge-chip {
-            background: rgba(232, 200, 116, 0.1);
-            border: 1px solid rgba(232, 200, 116, 0.25);
-            color: #E8C874;
-        }
-    </style>
+  /* ── Panel derecho: login card ─────────────────────────────── */
+  .login-panel{
+    flex:1; display:flex; align-items:center; justify-content:center;
+    padding:40px 24px; background:var(--bg-alt);
+    border-left:1px solid var(--card-border);
+  }
+  .login-card{ width:100%; max-width:380px; }
+  .login-card h2{ font-family:'Fraunces',serif; font-weight:600; font-size:24px; margin:0 0 6px; }
+  .login-card .sub{ font-size:13px; color:var(--text-dim); margin:0 0 22px; }
+
+  .role-tabs{ display:flex; gap:8px; background:var(--card); border:1px solid var(--card-border); border-radius:12px; padding:4px; margin-bottom:22px; }
+  .role-tab{
+    flex:1; text-align:center; padding:9px 8px; border-radius:9px; font-size:12.5px; font-weight:600;
+    color:var(--text-dim); cursor:pointer; background:none; border:none; font-family:inherit;
+  }
+  .role-tab[aria-selected="true"]{ background:linear-gradient(135deg,var(--gold-soft),var(--gold)); color:#171208; }
+
+  label{ font-size:12.5px; color:var(--text-dim); display:block; margin:14px 0 6px; }
+  label:first-of-type{ margin-top:0; }
+  input[type="text"], input[type="password"], input[type="email"]{
+    width:100%; background:var(--card); border:1px solid var(--card-border);
+    color:var(--text); padding:12px 13px; border-radius:11px; font-size:14.5px;
+    font-family:inherit; outline:none; transition:border-color .2s;
+  }
+  input:focus{ border-color:var(--gold-soft); }
+
+  .forgot{ text-align:right; margin-top:8px; }
+  .forgot a{ font-size:12px; color:var(--text-dim); text-decoration:none; }
+  .forgot a:hover{ color:var(--gold-soft); }
+
+  .btn{
+    width:100%; border:none; border-radius:12px; padding:13px 16px;
+    font-size:14.5px; font-weight:600; cursor:pointer; font-family:inherit;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:transform .15s, opacity .15s;
+  }
+  .btn:active{ transform:scale(.985); }
+  .btn:disabled{ opacity:.55; cursor:not-allowed; }
+  .btn-primary{ background:linear-gradient(135deg,var(--gold-soft),var(--gold)); color:#171208; margin-top:20px; }
+
+  .divider{ display:flex; align-items:center; gap:10px; margin:20px 0; }
+  .divider::before, .divider::after{ content:""; flex:1; height:1px; background:var(--card-border); }
+  .divider span{ font-size:11.5px; color:var(--text-dim); }
+
+  .btn-google{ background:#fff; color:#1f1f1f; }
+  .btn-google svg{ width:17px; height:17px; }
+
+  .msg{ font-size:12.5px; border-radius:10px; padding:10px 12px; margin-top:14px; display:none; line-height:1.5; }
+  .msg.show{ display:block; }
+  .msg.error{ background:rgba(226,87,76,.12); color:#ff9b93; border:1px solid rgba(226,87,76,.35); }
+  .msg.success{ background:rgba(111,191,115,.12); color:#a6e0a9; border:1px solid rgba(111,191,115,.35); }
+
+  .spinner{ width:15px;height:15px;border-radius:50%; border:2px solid rgba(0,0,0,.25); border-top-color:currentColor; animation:spin .7s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .signup-link{ text-align:center; font-size:13px; color:var(--text-dim); margin-top:20px; }
+  .signup-link a{ color:var(--gold-soft); text-decoration:none; }
+
+  .demo-box{
+    margin-top:26px; border-top:1px dashed var(--card-border); padding-top:18px;
+  }
+  .demo-box .lab{ font-size:11.5px; color:var(--text-dim); line-height:1.6; margin-bottom:10px; }
+  .demo-links{ display:flex; gap:8px; }
+  .demo-btn{
+    flex:1; text-align:center; font-size:12px; color:var(--text-dim); text-decoration:none;
+    border:1px solid var(--card-border); border-radius:10px; padding:9px 8px;
+  }
+  .demo-btn:hover{ border-color:var(--gold-soft); color:var(--gold-soft); }
+
+  .ssl-note{ text-align:center; font-size:11px; color:#5b5548; margin-top:22px; }
+
+  .merchant-note{
+    background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.25);
+    border-radius:12px; padding:14px; font-size:12.5px; color:var(--text-dim); line-height:1.6;
+  }
+
+  @media (max-width: 880px){
+    .layout{ flex-direction:column; }
+    .brand-panel{ padding:32px 22px; }
+    .login-panel{ border-left:none; border-top:1px solid var(--card-border); }
+  }
+</style>
 </head>
-<body class="grid-pattern antialiased min-h-screen flex items-center justify-center">
+<body>
 
-    <div class="glow-bg-gold"></div>
+<div class="layout">
+  <!-- ── Panel izquierdo ─────────────────────────────────────── -->
+  <div class="brand-panel">
+    <div class="brand-top">
+      <div class="brand-left">
+        <div class="brand-mark">GB</div>
+        <div class="name">Goldbird · Loyalty System</div>
+      </div>
+      <div class="powered">Una solución de ExpandeLab</div>
 
-    <div class="w-full min-h-screen flex flex-col lg:flex-row relative z-10">
-        
-        <!-- ================= LADO IZQUIERDO: Branding & Experiencia de Fidelización ================= -->
-        <div class="flex-1 order-2 lg:order-1 p-6 sm:p-8 md:p-14 lg:p-16 flex flex-col justify-between border-t lg:border-t-0 lg:border-r border-white/10 bg-[#05070B]/90 backdrop-blur-xl">
-            
-            <!-- Branding Header conAtribución a ExpandeLab -->
-            <div class="flex items-center flex-wrap gap-3 justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gold-500/10 border border-gold-500/30 flex items-center justify-center font-extrabold text-gold-500 text-lg shadow-lg">
-                        GB
-                    </div>
-                    <div>
-                        <span class="text-xl font-extrabold text-white tracking-tight flex items-center gap-1">
-                            Goldbird <span class="text-gold-500">.</span>
-                        </span>
-                        <span class="text-[11px] text-slate-400 font-mono block -mt-1">Loyalty System</span>
-                    </div>
-                </div>
+      <div class="tagline">Sistema B2C de fidelización integral</div>
+      <h1>Premia la lealtad. <br><b>Eleva la experiencia.</b></h1>
+      <p>A través de tu pasaporte digital serás nuestro socio preferencial: obtén recompensas exclusivas, beneficios inmediatos y descuentos directos en cada consumo dentro de nuestra red de establecimientos aliados.</p>
 
-                <!-- Atribución ExpandeLab -->
-                <div class="flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand-accent/20 bg-brand-accent/5 text-xs font-mono">
-                    <span class="text-slate-400">Una solución de</span>
-                    <span class="text-brand-accent font-bold tracking-wide">Expande<span class="text-white">Lab</span></span>
-                </div>
-            </div>
-
-            <!-- Hero Narrative -->
-            <div class="my-12 lg:my-auto max-w-xl">
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full badge-chip text-xs font-mono font-semibold mb-6">
-                    <span class="w-2 h-2 rounded-full bg-gold-accent animate-pulse"></span>
-                    SISTEMA B2C DE FIDELIZACIÓN INTEGRAL
-                </div>
-
-                <h1 class="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-[1.18] mb-6">
-                    Premia la lealtad. <br>
-                    <span class="gradient-gold-text">Eleva la experiencia.</span>
-                </h1>
-
-                <p class="text-slate-300 text-base md:text-lg leading-relaxed mb-8">
-                    A través de tu <strong class="text-gold-400 font-semibold">pasaporte digital</strong> serás nuestro socio preferencial: obtén recompensas exclusivas, beneficios inmediatos y descuentos directos en cada consumo realizado dentro de nuestra red de establecimientos aliados.
-                </p>
-
-                <!-- Bento Status Cards -->
-                <div class="space-y-4">
-                    <div class="glow-card p-4 rounded-2xl flex items-center justify-between">
-                        <div class="flex items-center gap-3.5">
-                            <div class="w-10 h-10 rounded-xl bg-gold-500/10 border border-gold-500/20 flex items-center justify-center text-gold-500">
-                                💳
-                            </div>
-                            <div>
-                                <div class="text-white font-bold text-sm">Pasaporte Digital de Socio</div>
-                                <div class="text-slate-400 text-xs mt-0.5">Acumulación automática por consumo directo</div>
-                            </div>
-                        </div>
-                        <span class="text-[11px] badge-chip font-mono px-2.5 py-1 rounded-full font-bold">● ACTIVO</span>
-                    </div>
-
-                    <div class="glow-card p-4 rounded-2xl flex items-center justify-between">
-                        <div class="flex items-center gap-3.5">
-                            <div class="w-10 h-10 rounded-xl bg-brand-accent/10 border border-brand-accent/20 flex items-center justify-center text-brand-accent">
-                                🏪
-                            </div>
-                            <div>
-                                <div class="text-white font-bold text-sm">Ecosistema de Establecimientos Aliados</div>
-                                <div class="text-slate-400 text-xs mt-0.5">Beneficios en tiempo real con código QR seguro</div>
-                            </div>
-                        </div>
-                        <span class="text-[11px] text-brand-accent bg-brand-accent/10 border border-brand-accent/20 font-mono px-2.5 py-1 rounded-full font-bold">RED B2C</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer Branding -->
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500 font-mono border-t border-white/5 pt-6">
-                <div>© 2026 Goldbird Loyalty. Todos los derechos reservados.</div>
-                <div class="text-slate-400">Powered by <span class="text-brand-accent font-semibold">ExpandeLab Core</span></div>
-            </div>
+      <div class="feature-chip">
+        <div class="ic">💳</div>
+        <div>
+          <div class="fc-name">Pasaporte Digital de Socio</div>
+          <div class="fc-sub">Acumulación automática por consumo directo</div>
         </div>
-
-        <!-- ================= LADO DERECHO: Formulario Auth UX ================= -->
-        <div class="w-full order-1 lg:order-2 lg:w-[500px] bg-[#0D1117] p-6 sm:p-8 md:p-14 flex flex-col justify-between border-l border-white/5">
-            
-            <!-- Top Action -->
-            <div class="flex justify-end mb-8">
-                <a href="https://goldbird.vercel.app/" target="_blank" rel="noopener noreferrer" class="text-xs text-slate-400 hover:text-gold-500 transition-colors flex items-center gap-1.5 font-mono">
-                    <span>← Volver al sitio web</span>
-                </a>
-            </div>
-
-            <!-- Auth Box Container -->
-            <div class="my-auto max-w-sm mx-auto w-full">
-                <div class="mb-8">
-                    <h2 class="text-2xl md:text-3xl font-extrabold text-white tracking-tight">Bienvenido</h2>
-                    <p class="text-slate-400 text-xs md:text-sm mt-2">Ingresa a tu pasaporte digital o administra tu comercio.</p>
-                </div>
-
-                <!-- Selector de Rol (Cliente vs Comercio) -->
-                <div class="flex bg-[#14171F] p-1 rounded-xl border border-white/10 mb-8">
-                    <button class="flex-1 py-2.5 rounded-lg text-xs font-bold transition-all text-slate-900 bg-gold-500 shadow-md" id="btn-client" onclick="switchRole('client')">
-                        Soy Socio / Cliente
-                    </button>
-                    <button class="flex-1 py-2.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all" id="btn-merchant" onclick="switchRole('merchant')">
-                        Soy Comercio
-                    </button>
-                </div>
-
-                <!-- Formulario Login -->
-                <form onsubmit="event.preventDefault();" class="space-y-5">
-                    <div>
-                        <label class="block text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold mb-2" id="label-identity">
-                            Correo o Teléfono del Socio
-                        </label>
-                        <div class="relative">
-                            <svg class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"/></svg>
-                            <input type="text" id="input-identity" placeholder="socio@goldbird.com o +51 900 000 000" class="w-full bg-[#14171F] border border-white/10 text-white text-sm rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:border-gold-500 transition-colors placeholder:text-slate-600" required>
-                        </div>
-                    </div>
-
-                    <div>
-                        <div class="flex justify-between items-center mb-2">
-                            <label class="text-[11px] font-mono uppercase tracking-wider text-slate-400 font-semibold">
-                                Contraseña / PIN Digital
-                            </label>
-                            <a href="#" class="text-[11px] text-gold-500 hover:underline">¿Olvidaste tu PIN?</a>
-                        </div>
-                        <div class="relative">
-                            <svg class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                            <input type="password" placeholder="••••••••" class="w-full bg-[#14171F] border border-white/10 text-white text-sm rounded-xl pl-11 pr-4 py-3 focus:outline-none focus:border-gold-500 transition-colors placeholder:text-slate-600" required>
-                        </div>
-                    </div>
-
-                    <button type="submit" id="submit-btn" class="w-full btn-gold py-3.5 rounded-xl text-sm font-extrabold flex items-center justify-center gap-2 mt-4">
-                        <span>Ingresar a mi Pasaporte →</span>
-                    </button>
-                </form>
-
-                <div class="mt-8 pt-6 border-t border-white/5 text-center text-xs text-slate-400">
-                    ¿Aún no tienes tu Pasaporte Digital? <br>
-                    <a href="signup" class="text-gold-500 font-bold hover:underline inline-block mt-1">Regístrate como socio en 30 segundos</a>
-                </div>
-
-                <!-- ============ MODO DE PRUEBA (demo, sin autenticación real) ============ -->
-                <div class="mt-8 rounded-2xl border-2 border-dashed border-amber-400/40 bg-amber-400/[0.06] p-5">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="text-[10px] font-mono font-extrabold tracking-widest uppercase bg-amber-400 text-black px-2 py-1 rounded">Modo de prueba</span>
-                        <span class="text-[11px] text-amber-200/70 font-mono">sin credenciales · datos de ejemplo</span>
-                    </div>
-                    <p class="text-[12px] text-slate-400 leading-relaxed mb-4">
-                        Explora el producto sin crear una cuenta. Estos accesos abren los entornos con datos de muestra, que se reinician automáticamente cada 3 minutos.
-                    </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <a href="user" class="group flex items-center justify-center gap-2 py-3 rounded-xl border border-amber-400/30 bg-amber-400/10 hover:bg-amber-400/20 text-amber-200 text-xs font-bold transition-all">
-                            <span>🧪</span><span>Probar como Socio/Cliente</span>
-                        </a>
-                        <a href="merchant" class="group flex items-center justify-center gap-2 py-3 rounded-xl border border-amber-400/30 bg-amber-400/10 hover:bg-amber-400/20 text-amber-200 text-xs font-bold transition-all">
-                            <span>🧪</span><span>Probar como Comercio</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Footer auxiliar -->
-            <div class="mt-8 text-center text-[11px] text-slate-600 font-mono">
-                Protección Encriptada SSL 256-bit • ExpandeLab Architecture
-            </div>
+        <div class="fc-tag">● ACTIVO</div>
+      </div>
+      <div class="feature-chip">
+        <div class="ic">🏪</div>
+        <div>
+          <div class="fc-name">Ecosistema de Establecimientos Aliados</div>
+          <div class="fc-sub">Beneficios en tiempo real con código QR seguro</div>
         </div>
-
+        <div class="fc-tag">RED B2C</div>
+      </div>
     </div>
 
-    <!-- Script para micro-interacciones de Roles -->
-    <script>
-        function switchRole(role) {
-            const isClient = role === 'client';
-            const btnClient = document.getElementById('btn-client');
-            const btnMerchant = document.getElementById('btn-merchant');
-            const submitBtn = document.getElementById('submit-btn');
-            const labelIdentity = document.getElementById('label-identity');
-            const inputIdentity = document.getElementById('input-identity');
+    <div class="brand-footer">
+      © 2026 Goldbird Loyalty. Todos los derechos reservados.<br>
+      Powered by ExpandeLab Core<br>
+      <a href="https://goldbird.vercel.app/">← Volver al sitio web</a>
+    </div>
+  </div>
 
-            if (isClient) {
-                btnClient.className = "flex-1 py-2.5 rounded-lg text-xs font-bold transition-all text-slate-900 bg-gold-500 shadow-md";
-                btnMerchant.className = "flex-1 py-2.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all";
-                submitBtn.innerHTML = "<span>Ingresar a mi Pasaporte →</span>";
-                labelIdentity.textContent = "Correo o Teléfono del Socio";
-                inputIdentity.placeholder = "socio@goldbird.com o +51 900 000 000";
-            } else {
-                btnMerchant.className = "flex-1 py-2.5 rounded-lg text-xs font-bold transition-all text-slate-900 bg-gold-500 shadow-md";
-                btnClient.className = "flex-1 py-2.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all";
-                submitBtn.innerHTML = "<span>Acceder a Panel Comercio →</span>";
-                labelIdentity.textContent = "Correo Corporativo del Comercio";
-                inputIdentity.placeholder = "admin@tucomercio.com";
-            }
-        }
-    </script>
+  <!-- ── Panel derecho: login ────────────────────────────────── -->
+  <div class="login-panel">
+    <div class="login-card">
+      <h2>Bienvenido</h2>
+      <p class="sub">Ingresa a tu pasaporte digital o administra tu comercio.</p>
+
+      <div class="role-tabs" role="tablist">
+        <button class="role-tab" role="tab" aria-selected="true" data-role="socio">Soy Socio / Cliente</button>
+        <button class="role-tab" role="tab" aria-selected="false" data-role="comercio">Soy Comercio</button>
+      </div>
+
+      <!-- ── Login Socio/Cliente ──────────────────────────────── -->
+      <div id="panel-socio">
+        <form id="loginForm">
+          <label for="loginEmail">Correo del socio</label>
+          <input type="email" id="loginEmail" autocomplete="username" required />
+
+          <label for="loginPassword">Contraseña / PIN Digital</label>
+          <input type="password" id="loginPassword" autocomplete="current-password" required />
+          <div class="forgot"><a href="#">¿Olvidaste tu PIN?</a></div>
+
+          <button type="submit" class="btn btn-primary" id="loginBtn">Ingresar a mi Pasaporte →</button>
+        </form>
+
+        <div class="divider"><span>O</span></div>
+
+        <!-- ══ Botón pedido: Ingresar con Google ══ -->
+        <button type="button" class="btn btn-google" id="googleLoginBtn">
+          <svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.4 0 10.3-2.1 14-5.5l-6.5-5.4C29.4 34.9 26.8 36 24 36c-5.3 0-9.7-3.3-11.3-8l-6.6 5.1C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.2 5.6l6.5 5.4C41 35.6 44 30.4 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+          Ingresar con Google
+        </button>
+
+        <div class="msg" id="loginMsg"></div>
+
+        <div class="signup-link">¿Aún no tienes tu Pasaporte Digital? <a href="https://www.expandelab.app/signup">Regístrate como socio en 30 segundos</a></div>
+      </div>
+
+      <!-- ── Login Comercio (placeholder, fuera del alcance actual) ── -->
+      <div id="panel-comercio" style="display:none;">
+        <div class="merchant-note">
+          El acceso para comercios aliados se habilita cuando des de alta el primer comercio. Mientras tanto, usa el acceso de prueba de abajo para explorar ese panel.
+        </div>
+      </div>
+
+      <div class="demo-box">
+        <div class="lab">Modo de prueba sin credenciales · datos de ejemplo. Explora el producto sin crear una cuenta; se reinicia cada 3 minutos.</div>
+        <div class="demo-links">
+          <a class="demo-btn" href="https://www.expandelab.app/panel?demo=1">🧪 Probar como Socio/Cliente</a>
+          <a class="demo-btn" href="https://www.expandelab.app/merchant">🧪 Probar como Comercio</a>
+        </div>
+      </div>
+
+      <div class="ssl-note">Protección Encriptada SSL 256-bit · ExpandeLab Architecture</div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════════════
+   CONFIGURA TU PROYECTO SUPABASE AQUÍ (mismos valores que las otras páginas)
+   ══════════════════════════════════════════════════════════════ */
+const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
+const SUPABASE_ANON_KEY = "TU-ANON-KEY-PUBLICA";
+const gbSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const loginForm      = document.getElementById('loginForm');
+const loginBtn       = document.getElementById('loginBtn');
+const googleLoginBtn = document.getElementById('googleLoginBtn');
+const loginMsg       = document.getElementById('loginMsg');
+
+function showMsg(text, type){
+  loginMsg.textContent = text;
+  loginMsg.className = 'msg show ' + type;
+}
+function setLoading(btn, loading, label){
+  btn.disabled = loading;
+  btn.innerHTML = loading ? '<span class="spinner"></span> Ingresando…' : label;
+}
+
+/* ── Tabs Socio / Comercio ────────────────────────────────────── */
+document.querySelectorAll('.role-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.role-tab').forEach(t => t.setAttribute('aria-selected', 'false'));
+    tab.setAttribute('aria-selected', 'true');
+    const isSocio = tab.dataset.role === 'socio';
+    document.getElementById('panel-socio').style.display = isSocio ? 'block' : 'none';
+    document.getElementById('panel-comercio').style.display = isSocio ? 'none' : 'block';
+  });
+});
+
+/* ══════════════════════════════════════════════════════════════
+   Ingreso con correo + contraseña
+   ══════════════════════════════════════════════════════════════ */
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+
+  setLoading(loginBtn, true, 'Ingresar a mi Pasaporte →');
+
+  const { error } = await gbSupabase.auth.signInWithPassword({ email, password });
+
+  setLoading(loginBtn, false, 'Ingresar a mi Pasaporte →');
+
+  if (error){
+    showMsg(traducirError(error.message), 'error');
+    return;
+  }
+  window.location.href = '/panel';
+});
+
+/* ══════════════════════════════════════════════════════════════
+   Ingresar con Google
+   ------------------------------------------------------------
+   Si es la primera vez que este correo entra (no tiene fila en
+   "profiles"), lo tratamos como un registro nuevo: se le crea el
+   perfil, needs_profile_review queda en true (para que el panel
+   resalte sus datos en amarillo) y ve la bienvenida. Si ya existe,
+   entra directo a su panel sin la bienvenida.
+   ══════════════════════════════════════════════════════════════ */
+googleLoginBtn.addEventListener('click', async () => {
+  setLoading(googleLoginBtn, true, 'Ingresar con Google');
+  const { error } = await gbSupabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin + window.location.pathname + '?googleReturn=1'
+    }
+  });
+  if (error){
+    setLoading(googleLoginBtn, false, 'Ingresar con Google');
+    showMsg('No pudimos conectar con Google: ' + error.message, 'error');
+  }
+});
+
+async function handleGoogleReturn(){
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('googleReturn') !== '1') return;
+
+  showMsg('Verificando tu acceso con Google…', 'success');
+
+  let session = null;
+  for (let i = 0; i < 5 && !session; i++){
+    const { data } = await gbSupabase.auth.getSession();
+    session = data.session;
+    if (!session) await new Promise(r => setTimeout(r, 400));
+  }
+  if (!session) return;
+
+  const { data: existingProfile } = await gbSupabase
+    .from('profiles').select('id').eq('id', session.user.id).maybeSingle();
+
+  if (!existingProfile){
+    // Primera vez con este correo: se crea el perfil, igual que en
+    // la Opción 2 del registro.
+    await gbSupabase.from('profiles').upsert({
+      id: session.user.id,
+      full_name: session.user.user_metadata?.full_name || session.user.user_metadata?.name || '',
+      verified_via_google: true,
+      needs_profile_review: true,
+    });
+    window.location.href = '/panel?welcome=1';
+  } else {
+    window.location.href = '/panel';
+  }
+}
+
+/* Si ya hay una sesión activa al entrar a /login, no tiene sentido
+   pedir login otra vez. */
+async function redirectIfAlreadyLoggedIn(){
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('googleReturn') === '1') return; // ese caso lo maneja handleGoogleReturn
+  const { data: { session } } = await gbSupabase.auth.getSession();
+  if (session) window.location.href = '/panel';
+}
+
+function traducirError(msg){
+  if (/invalid login credentials/i.test(msg)) return 'Correo o contraseña incorrectos.';
+  return msg;
+}
+
+handleGoogleReturn();
+redirectIfAlreadyLoggedIn();
+</script>
 </body>
 </html>
