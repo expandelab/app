@@ -37,6 +37,9 @@
        full_name text,
        phone text,
        birthdate date,
+       document_id text,
+       needs_auto_code boolean default false,
+       customer_code text unique,
        tier text default 'bronce',
        verified_via_google boolean default false,
        created_at timestamptz default now()
@@ -48,6 +51,24 @@
        on public.profiles for update using (auth.uid() = id);
      create policy "usuarios crean su propio perfil"
        on public.profiles for insert with check (auth.uid() = id);
+
+     -- Generación del código automático "USR+00000001" en el backend
+     -- (evita colisiones que sí podrían darse generándolo en el navegador):
+     create sequence public.customer_code_seq start 1;
+
+     create or replace function public.assign_customer_code()
+     returns trigger as $$
+     begin
+       if new.needs_auto_code is true and new.customer_code is null then
+         new.customer_code := 'USR+' || lpad(nextval('public.customer_code_seq')::text, 8, '0');
+       end if;
+       return new;
+     end;
+     $$ language plpgsql security definer;
+
+     create trigger trg_assign_customer_code
+       before insert on public.profiles
+       for each row execute function public.assign_customer_code();
 
   ══════════════════════════════════════════════════════════════════
 -->
@@ -179,6 +200,43 @@
   }
   .phone-row input{ flex:1; }
 
+  /* ── Sección final: ID de Cliente ──────────────────────────── */
+  .id-section{
+    margin-top:22px; padding-top:18px;
+    border-top:1px dashed var(--card-border);
+  }
+  .id-section-head{ margin-bottom:12px; }
+  .id-section-sub{ font-size:12.5px; color:var(--text-dim); margin:4px 0 0; }
+
+  .no-doc-row{ display:flex; align-items:center; gap:9px; margin-top:12px; }
+  .no-doc-row input{ width:auto; accent-color:var(--gold-soft); cursor:pointer; }
+  .no-doc-label{ font-size:13px; color:var(--text); margin:0; cursor:pointer; }
+
+  .id-help{ margin-top:10px; }
+  .id-help-default{
+    display:block; font-size:12px; color:var(--text-dim); line-height:1.55;
+  }
+  .id-code-preview{
+    display:none;
+    align-items:center; gap:8px; flex-wrap:wrap;
+    background:rgba(212,175,55,.08); border:1px solid rgba(212,175,55,.3);
+    border-radius:10px; padding:10px 12px; margin-top:8px;
+    font-size:12px; color:var(--gold-soft); line-height:1.5;
+  }
+  .id-code-preview.show{ display:flex; }
+  .id-code-dot{
+    width:7px;height:7px;border-radius:50%; background:var(--gold-soft); flex:none;
+    box-shadow:0 0 0 3px rgba(212,175,55,.18);
+  }
+  .id-code-preview code{
+    background:rgba(212,175,55,.16); color:var(--gold-soft);
+    padding:2px 8px; border-radius:6px; font-family:'Inter',monospace; font-weight:600;
+    letter-spacing:.02em;
+  }
+  #documentId.is-disabled{
+    opacity:.45; text-decoration:line-through; pointer-events:none;
+  }
+
   .terms{ display:flex; align-items:flex-start; gap:9px; margin-top:16px; }
   .terms input{ margin-top:3px; width:auto; }
   .terms span{ font-size:12.5px; color:var(--text-dim); line-height:1.5; }
@@ -272,7 +330,7 @@
 
   <div class="form-card">
     <div class="eyebrow">Registro rápido · 30 segundos</div>
-    <h1>Crea tu Pasaporte Gold</h1>
+    <h1>Crea tu pasaporte Goldbird</h1>
     <p class="sub">Completa tus datos para activar tu tarjeta digital y empezar a acumular recompensas en toda la red de aliados.</p>
 
     <form id="signupForm" novalidate>
@@ -315,6 +373,37 @@
       <label for="password">Crea una contraseña</label>
       <input type="password" id="password" autocomplete="new-password" minlength="8" required />
       <div class="helper-note" style="text-align:left;margin-top:6px;">Mínimo 8 caracteres. Te pediremos confirmar este correo con tu cuenta de Google en el siguiente paso.</div>
+
+      <div class="id-section" role="group" aria-labelledby="idSectionTitle">
+        <div class="id-section-head">
+          <span class="eyebrow" id="idSectionTitle">Tu identificación</span>
+          <p class="id-section-sub">Con esto activamos el seguimiento de tus puntos y sellos.</p>
+        </div>
+
+        <label for="documentId">Documento de identidad</label>
+        <input
+          type="text"
+          id="documentId"
+          inputmode="numeric"
+          placeholder="Digítalo aquí"
+          aria-describedby="noDocHelp"
+          autocomplete="off"
+        />
+
+        <div class="no-doc-row">
+          <input type="checkbox" id="noDocument" />
+          <label for="noDocument" class="no-doc-label">No tengo documento de identidad</label>
+        </div>
+
+        <div class="id-help" id="noDocHelp">
+          <span class="id-help-default">¿No tienes documento? Marca la casilla y te asignamos un código automático para el seguimiento de tus puntos.</span>
+          <div class="id-code-preview" id="idCodePreview">
+            <span class="id-code-dot"></span>
+            <span>Se generará un código automático para el seguimiento de tus puntos</span>
+            <code id="idCodeExample">Ej: USR+00000001</code>
+          </div>
+        </div>
+      </div>
 
       <div class="terms">
         <input type="checkbox" id="terms" required />
@@ -371,6 +460,37 @@ const fields = {
   phone:     document.getElementById('phone'),
   birthdate: document.getElementById('birthdate'),
 };
+
+const documentId    = document.getElementById('documentId');
+const noDocument     = document.getElementById('noDocument');
+const idCodePreview  = document.getElementById('idCodePreview');
+const idCodeExample  = document.getElementById('idCodeExample');
+
+/* ── Sección ID de Cliente: documento o código automático ────────
+   Si el usuario marca "no tengo documento", desactivamos el campo
+   de texto y mostramos una vista previa del formato de código que
+   se le asignará. El código FINAL y único se genera en el backend
+   (ver nota SQL al inicio del archivo) para evitar colisiones; esto
+   es solo una vista previa del formato para dar confianza al
+   usuario en el momento del registro. */
+function previewCustomerCode(){
+  const n = Math.floor(Math.random() * 99999999) + 1;
+  return 'USR+' + String(n).padStart(8, '0');
+}
+
+noDocument.addEventListener('change', () => {
+  const checked = noDocument.checked;
+  documentId.classList.toggle('is-disabled', checked);
+  documentId.disabled = checked;
+  documentId.required = !checked;
+  if (checked){
+    documentId.value = '';
+    idCodeExample.textContent = 'Ej: ' + previewCustomerCode();
+    idCodePreview.classList.add('show');
+  } else {
+    idCodePreview.classList.remove('show');
+  }
+});
 
 /* ── UI helpers ───────────────────────────────────────────────── */
 function showMsg(text, type){
@@ -432,10 +552,17 @@ form.addEventListener('submit', async (e) => {
   const phone     = fields.phone.value.trim();
   const birthdate = fields.birthdate.value;
   const password  = document.getElementById('password').value;
+  const noDocChecked = noDocument.checked;
+  const docValue  = documentId.value.trim();
   const termsOk   = document.getElementById('terms').checked;
 
   if (!fullName || !email || !phone || !birthdate || !password){
     showMsg('Completa todos los campos para continuar.', 'error');
+    return;
+  }
+  if (!noDocChecked && !docValue){
+    showMsg('Ingresa tu documento de identidad o marca la casilla si no tienes uno.', 'error');
+    documentId.focus();
     return;
   }
   if (password.length < 8){
@@ -458,6 +585,7 @@ form.addEventListener('submit', async (e) => {
         full_name: fullName,
         phone: phoneCode + phone,
         birthdate,
+        document_id: noDocChecked ? null : docValue,
       }
     }
   });
@@ -475,6 +603,8 @@ form.addEventListener('submit', async (e) => {
       full_name: fullName,
       phone: phoneCode + phone,
       birthdate,
+      document_id: noDocChecked ? null : docValue,
+      needs_auto_code: noDocChecked,
       verified_via_google: false,
     });
   }
