@@ -612,7 +612,6 @@ form.addEventListener('submit', async (e) => {
 
   // Guardamos el correo pendiente de verificar para comparar tras el redirect
   sessionStorage.setItem('gb_pending_email', email);
-  sessionStorage.setItem('gb_verify_flow', '1');
 
   showMsg('Cuenta creada. Ahora confirma que este correo es tuyo con Google…', 'info');
 
@@ -639,7 +638,7 @@ form.addEventListener('submit', async (e) => {
 googleBtn.addEventListener('click', async () => {
   clearMsg();
   setLoading(googleBtn, true, 'Continuar con Google');
-  sessionStorage.setItem('gb_verify_flow', '0');
+  sessionStorage.removeItem('gb_pending_email'); // por si quedó de un intento previo con el formulario
 
   const { error } = await gbSupabase.auth.signInWithOAuth({
     provider: 'google',
@@ -663,34 +662,48 @@ async function handleReturnFromGoogle(){
 
   showOverlay('Verificando tu cuenta con Google…');
 
-  const flow = sessionStorage.getItem('gb_verify_flow'); // '1' = opción 1, '0' = opción 2
-  const { data: { session } } = await gbSupabase.auth.getSession();
+  // Justo después del redirect de Google, supabase-js todavía puede
+  // estar procesando el token de la URL en segundo plano. Reintentamos
+  // getSession() un par de veces en vez de rendirnos al primer intento,
+  // para no mostrar un falso "no se pudo verificar".
+  let session = null;
+  for (let i = 0; i < 5 && !session; i++){
+    const { data } = await gbSupabase.auth.getSession();
+    session = data.session;
+    if (!session) await new Promise(r => setTimeout(r, 400));
+  }
 
   if (!session){
     hideOverlay();
     showMsg('No se pudo completar la verificación. Intenta de nuevo.', 'error');
+    sessionStorage.removeItem('gb_pending_email');
     cleanUrl();
     return;
   }
 
-  if (flow === '1'){
+  // La señal confiable de "vengo de la Opción 1" es que exista un
+  // correo pendiente de verificar (solo el formulario lo guarda).
+  // Si no existe, es Opción 2 sin ambigüedad, sin depender de una
+  // bandera aparte que podría quedar desincronizada.
+  const pendingEmail = sessionStorage.getItem('gb_pending_email');
+
+  if (pendingEmail){
     // Opción 1: comparar el correo de Google contra el correo ingresado
-    const pendingEmail = sessionStorage.getItem('gb_pending_email');
     const { data: identitiesData } = await gbSupabase.auth.getUserIdentities();
     const googleIdentity = identitiesData?.identities?.find(i => i.provider === 'google');
 
     const googleEmail = googleIdentity?.identity_data?.email;
 
-    if (googleEmail && pendingEmail && googleEmail.toLowerCase() === pendingEmail.toLowerCase()){
+    if (googleEmail && googleEmail.toLowerCase() === pendingEmail.toLowerCase()){
       await gbSupabase.from('profiles').update({
         verified_via_google: true,
         needs_profile_review: false, // ya dio todos sus datos manualmente
       }).eq('id', session.user.id);
 
       hideOverlay();
-      showMsg('¡Listo! Tu correo quedó verificado y tu cuenta está activa. Ahora inicia sesión para entrar a tu panel.', 'success');
+      showMsg('¡Listo! Tu correo quedó verificado y tu Pasaporte Gold está activo. 🎉', 'success');
       celebrateStamps();
-      goToLogin();
+      goToPanelWelcome();
     } else {
       // No coincide: desvinculamos la identidad de Google y bloqueamos la activación
       if (googleIdentity){
@@ -720,23 +733,14 @@ async function handleReturnFromGoogle(){
     goToPanelWelcome();
   }
 
-  sessionStorage.removeItem('gb_verify_flow');
   cleanUrl();
 }
 
-/* Escenario 1 (correo + contraseña): NO lo dejamos con sesión activa
-   automáticamente. Cerramos su sesión y lo mandamos a /login para
-   que entre con sus propias credenciales — de ahí /login debe
-   redirigir a /panel tras un signInWithPassword() exitoso. */
-async function goToLogin(){
-  await gbSupabase.auth.signOut();
-  setTimeout(() => {
-    window.location.href = '/login';
-  }, 1400);
-}
 
-/* Escenario 2 (botón Google): el login con Google YA es la sesión,
-   así que va directo al panel con la bienvenida. */
+/* Ambos escenarios (formulario+Google, o botón directo de Google)
+   terminan en /panel con la bienvenida — el usuario ya queda con
+   sesión activa apenas se verifica su identidad, sin pedirle
+   iniciar sesión de nuevo. */
 function goToPanelWelcome(){
   setTimeout(() => {
     window.location.href = '/panel?welcome=1';
