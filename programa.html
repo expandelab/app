@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Ruta del Emprendedor — Workshop semi-intensivo · 6 meses</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0C0E;
+    --panel:#15171B;
+    --panel-2:#1B1E23;
+    --line:#2A2D33;
+    --ink:#EDEAE2;
+    --ink-dim:#9A9CA3;
+    --muted:#8C8E95;
+    --gold:#D9A441;
+    --gold-dim:#8A6E30;
+    --green:#3E7A54;
+    --green-dim:#274A34;
+    --radius:14px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter', sans-serif;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{ background:var(--gold); color:#0B0C0E; }
+  h1,h2,h3,h4{ font-family:'Fraunces', serif; font-weight:500; letter-spacing:-0.01em; }
+  .mono{ font-family:'JetBrains Mono', monospace; }
+  a{ color:inherit; text-decoration:none; }
+  img{ max-width:100%; display:block; }
+  .wrap{ max-width:1180px; margin:0 auto; padding:0 32px; }
+  @media(max-width:640px){ .wrap{ padding:0 20px; } }
+
+  /* -------- reveal -------- */
+  .reveal{ opacity:0; transform:translateY(18px); transition:opacity .8s ease, transform .8s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  /* -------- nav -------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(11,12,14,0.75);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(255,255,255,0.06);
+  }
+  nav.wrap{ display:flex; align-items:center; justify-content:space-between; height:76px; }
+  .logo{ display:flex; align-items:center; gap:10px; font-family:'Fraunces', serif; font-size:19px; font-weight:600; letter-spacing:-0.01em; }
+  .logo .dot{ width:8px; height:8px; border-radius:50%; background:var(--gold); box-shadow:0 0 12px var(--gold); }
+  .nav-links{ display:flex; gap:36px; font-size:14.5px; color:var(--muted); }
+  .nav-links a:hover{ color:var(--ink); }
+  .nav-cta{ display:flex; align-items:center; gap:20px; }
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    padding:12px 22px; border-radius:9px; font-size:14.5px; font-weight:600;
+    cursor:pointer; border:1px solid transparent; transition:all .2s ease; white-space:nowrap;
+  }
+  .btn-primary{ background:var(--gold); color:#171106; }
+  .btn-primary:hover{ background:#E8B458; transform:translateY(-1px); }
+  .btn-ghost{ border-color:var(--line); color:var(--ink); background:transparent; }
+  .btn-ghost:hover{ border-color:var(--muted); }
+  .menu-toggle{ display:none; }
+  @media(max-width:900px){
+    .nav-links{ display:none; }
+    .menu-toggle{ display:block; background:none; border:1px solid var(--line); color:var(--ink); border-radius:8px; padding:8px 12px; }
+  }
+
+  /* -------- hero -------- */
+  .hero{
+    position:relative; padding:190px 0 110px; overflow:hidden;
+    background:
+      radial-gradient(ellipse 900px 500px at 18% -10%, rgba(217,164,65,0.16), transparent 60%),
+      radial-gradient(ellipse 700px 500px at 85% 10%, rgba(62,122,84,0.14), transparent 60%);
+  }
+  .hero-grid{
+    position:absolute; inset:0; z-index:0; pointer-events:none;
+    background-image:
+      linear-gradient(to right, rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size:56px 56px;
+    -webkit-mask-image:radial-gradient(ellipse 900px 500px at 30% 10%, black 0%, transparent 75%);
+    mask-image:radial-gradient(ellipse 900px 500px at 30% 10%, black 0%, transparent 75%);
+  }
+  .orb{ position:absolute; border-radius:50%; filter:blur(60px); pointer-events:none; z-index:0; }
+  .orb-1{ width:420px; height:420px; top:-140px; left:-80px; background:radial-gradient(circle, rgba(217,164,65,0.22), transparent 70%); will-change:transform; }
+  .orb-2{ width:340px; height:340px; top:60px; right:-100px; background:radial-gradient(circle, rgba(62,122,84,0.20), transparent 70%); will-change:transform; }
+  .hero-path{ position:absolute; inset:0; z-index:0; opacity:0.5; pointer-events:none; }
+  .hero-path path{ stroke-dasharray:6 10; animation:dashmove 3.5s linear infinite; }
+  @keyframes dashmove{ to{ stroke-dashoffset:-160; } }
+  .path-dot{
+    position:absolute; inset:0; width:9px; height:9px; border-radius:50%;
+    background:var(--gold); box-shadow:0 0 14px 3px rgba(217,164,65,0.7);
+    offset-path:path("M -50 420 C 150 420, 200 200, 400 210 S 650 380, 850 260 S 1100 60, 1250 90");
+    offset-rotate:0deg; animation:travel 7s linear infinite; z-index:0; pointer-events:none;
+  }
+  @keyframes travel{ 0%{ offset-distance:0%; opacity:0; } 6%{ opacity:1; } 94%{ opacity:1; } 100%{ offset-distance:100%; opacity:0; } }
+  @supports not (offset-path: path("M0 0")){ .path-dot{ display:none; } }
+  .status-bar{
+    position:relative; z-index:1; display:inline-flex; align-items:center; gap:10px;
+    font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted);
+    border:1px solid var(--line); border-radius:100px; padding:6px 14px; margin-bottom:22px;
+  }
+  .status-bar .dotp{ width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 1.6s infinite; }
+  @media (prefers-reduced-motion: reduce){
+    .orb-1, .orb-2, .hero-path path, .path-dot{ animation:none !important; }
+  }
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:9px;
+    font-family:'JetBrains Mono', monospace; font-size:12.5px; letter-spacing:0.06em;
+    color:var(--gold); border:1px solid rgba(217,164,65,0.35); background:rgba(217,164,65,0.06);
+    padding:7px 14px; border-radius:100px; margin-bottom:26px;
+  }
+  .eyebrow .pulse{ width:6px; height:6px; border-radius:50%; background:var(--gold); animation:pulse 1.8s infinite; }
+  @keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:0.25;} }
+  .hero h1{
+    position:relative; z-index:1;
+    font-size:clamp(38px, 5.6vw, 68px); line-height:1.05; max-width:820px; color:var(--ink);
+  }
+  .hero h1 em{ font-style:italic; color:var(--gold); }
+  .hero p.sub{
+    position:relative; z-index:1;
+    font-size:18px; line-height:1.6; color:var(--muted); max-width:600px; margin-top:26px;
+  }
+  .hero-cta{ position:relative; z-index:1; display:flex; gap:16px; margin-top:38px; flex-wrap:wrap; }
+  .hero-facts{
+    position:relative; z-index:1;
+    display:grid; grid-template-columns:repeat(4,1fr); gap:0;
+    margin-top:70px; border-top:1px solid var(--line); padding-top:28px; max-width:900px;
+  }
+  .hero-facts div{ border-left:1px solid var(--line); padding-left:20px; }
+  .hero-facts div:first-child{ border-left:none; padding-left:0; }
+  .hero-facts .num{ font-family:'JetBrains Mono', monospace; font-size:26px; color:var(--ink); font-weight:600; }
+  .hero-facts .lbl{ font-size:12.5px; color:var(--muted); margin-top:6px; }
+  @media(max-width:760px){
+    .hero{ padding:150px 0 70px; }
+    .hero-facts{ grid-template-columns:repeat(2,1fr); row-gap:24px; }
+    .hero-facts div:nth-child(3){ border-left:none; padding-left:0; }
+  }
+
+  /* -------- section shell -------- */
+  section{ padding:110px 0; position:relative; }
+  .section-head{ max-width:640px; margin-bottom:60px; }
+  .section-head .tag{
+    font-family:'JetBrains Mono', monospace; font-size:12.5px; letter-spacing:0.08em;
+    color:var(--gold); text-transform:uppercase; margin-bottom:16px; display:block;
+  }
+  .section-head h2{ font-size:clamp(28px,3.4vw,42px); color:var(--ink); line-height:1.15; }
+  .section-head p{ color:var(--muted); font-size:16.5px; line-height:1.6; margin-top:16px; }
+  .divider{ height:1px; background:var(--line); border:none; }
+
+  /* -------- posicionamiento strip -------- */
+  .strip{ border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:46px 0; background:var(--panel); }
+  .strip .wrap{ display:flex; gap:48px; flex-wrap:wrap; justify-content:space-between; }
+  .strip-item{ flex:1; min-width:220px; }
+  .strip-item .x{ color:#B5583F; font-size:13px; font-family:'JetBrains Mono',monospace; }
+  .strip-item .ok{ color:var(--green); font-size:13px; font-family:'JetBrains Mono',monospace; }
+  .strip-item p{ margin-top:10px; font-size:15.5px; color:var(--ink); line-height:1.5; }
+
+  /* -------- ruta / curriculum -------- */
+  .ruta{ position:relative; }
+  .ruta-line{
+    position:absolute; left:39px; top:8px; bottom:8px; width:1px;
+    background:linear-gradient(to bottom, var(--gold-dim), var(--line) 90%);
+  }
+  @media(max-width:700px){ .ruta-line{ left:23px; } }
+  .modulo{
+    display:grid; grid-template-columns:80px 1fr; gap:0; position:relative; padding:34px 0;
+    border-bottom:1px solid var(--line);
+  }
+  .modulo:last-child{ border-bottom:none; }
+  @media(max-width:700px){ .modulo{ grid-template-columns:48px 1fr; } }
+  .modulo .num{
+    font-family:'JetBrains Mono', monospace; font-size:15px; color:var(--gold);
+    width:40px; height:40px; border-radius:50%; border:1px solid var(--gold-dim);
+    display:flex; align-items:center; justify-content:center; background:var(--bg); z-index:1;
+    position:relative;
+  }
+  .modulo-body{ display:grid; grid-template-columns:1.1fr 1.6fr 1fr; gap:32px; align-items:start; }
+  @media(max-width:900px){ .modulo-body{ grid-template-columns:1fr; gap:14px; } }
+  .modulo-body h3{ font-size:21px; color:var(--ink); line-height:1.25; }
+  .modulo-body h3 span{ display:block; font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--muted); font-weight:400; margin-bottom:8px; letter-spacing:0.04em; }
+  .modulo-body .desc{ font-size:15px; color:var(--muted); line-height:1.6; }
+  .modulo-body .quote{
+    font-family:'Fraunces', serif; font-style:italic; font-size:16px; color:var(--gold);
+    border-left:2px solid var(--gold-dim); padding-left:16px; line-height:1.5;
+  }
+
+  /* -------- metodologia -------- */
+  .metodo-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; }
+  @media(max-width:900px){ .metodo-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:560px){ .metodo-grid{ grid-template-columns:1fr; } }
+  .metodo-item{ background:var(--panel); padding:32px 26px; }
+  .metodo-item .step{ font-family:'JetBrains Mono', monospace; color:var(--muted); font-size:13px; }
+  .metodo-item h4{ margin-top:14px; font-size:18px; color:var(--ink); }
+  .metodo-item p{ margin-top:10px; font-size:14.5px; color:var(--muted); line-height:1.55; }
+
+  /* -------- entregables -------- */
+  .deliv-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+  @media(max-width:900px){ .deliv-grid{ grid-template-columns:repeat(2,1fr); } }
+  @media(max-width:560px){ .deliv-grid{ grid-template-columns:1fr; } }
+  .deliv-card{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:26px; transition:border-color .2s ease, transform .2s ease; }
+  .deliv-card:hover{ border-color:var(--gold-dim); transform:translateY(-3px); }
+  .deliv-card .ic{ width:38px; height:38px; border-radius:9px; background:var(--panel-2); display:flex; align-items:center; justify-content:center; margin-bottom:18px; }
+  .deliv-card h4{ font-size:16.5px; color:var(--ink); }
+  .deliv-card p{ font-size:14px; color:var(--muted); margin-top:8px; line-height:1.5; }
+
+  /* -------- tablero -------- */
+  .tablero{ background:var(--panel); border:1px solid var(--line); border-radius:20px; padding:44px; position:relative; overflow:hidden; }
+  .tablero:before{ content:""; position:absolute; inset:0; background:radial-gradient(ellipse 500px 300px at 90% 0%, rgba(217,164,65,0.08), transparent 70%); pointer-events:none; }
+  .tablero-top{ display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:34px; }
+  .live-badge{ display:inline-flex; align-items:center; gap:8px; font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--green); }
+  .live-badge .dotp{ width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 1.5s infinite; }
+  .kpi-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:12px; overflow:hidden; position:relative; z-index:1; }
+  @media(max-width:800px){ .kpi-grid{ grid-template-columns:repeat(2,1fr); } }
+  .kpi{ background:var(--bg); padding:26px 22px; }
+  .kpi .lbl{ font-size:12.5px; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; }
+  .kpi .val{ font-family:'JetBrains Mono',monospace; font-size:28px; color:var(--ink); margin-top:10px; font-weight:600; }
+  .kpi .val.up{ color:var(--green); }
+  .kpi .sub{ font-size:12.5px; color:var(--muted); margin-top:6px; }
+  .tablero-note{ font-size:13px; color:var(--muted); margin-top:22px; font-style:italic; }
+
+  /* -------- dash (results dashboard mockup) -------- */
+  .dash{ background:var(--panel); border:1px solid var(--line); border-radius:20px; overflow:hidden; }
+  .dash-top{ display:flex; align-items:center; justify-content:space-between; padding:20px 28px; border-bottom:1px solid var(--line); flex-wrap:wrap; gap:12px; }
+  .dash-brand{ display:flex; align-items:center; gap:10px; font-size:15px; font-weight:600; color:var(--ink); }
+  .dash-brand .dot{ width:8px; height:8px; border-radius:50%; background:var(--gold); box-shadow:0 0 10px var(--gold); }
+  .filter-row{ display:flex; gap:10px; padding:16px 28px; border-bottom:1px solid var(--line); flex-wrap:wrap; align-items:center; }
+  .pill{ font-family:'JetBrains Mono', monospace; font-size:11.5px; padding:7px 14px; border-radius:100px; border:1px solid var(--line); color:var(--muted); white-space:nowrap; }
+  .pill.active{ background:var(--gold); color:#171106; border-color:var(--gold); font-weight:600; }
+  .dash-body{ display:grid; grid-template-columns:340px 1fr; gap:1px; background:var(--line); }
+  @media(max-width:900px){ .dash-body{ grid-template-columns:1fr; } }
+  .dash-col{ background:var(--panel); display:flex; flex-direction:column; }
+  .dash-card{ padding:26px 28px; border-bottom:1px solid var(--line); }
+  .dash-col:last-child .dash-card:last-child, .dash-col:first-child .dash-card:last-child{ border-bottom:none; }
+  .card-label{ font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+  .metric-big{ font-family:'JetBrains Mono', monospace; font-size:32px; color:var(--ink); font-weight:600; display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .trend{ font-size:12px; padding:3px 9px; border-radius:6px; font-family:'JetBrains Mono', monospace; }
+  .trend.up{ color:var(--green); background:rgba(62,122,84,0.14); }
+  .submetrics{ display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-top:24px; }
+  .submetrics .lbl{ font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:0.04em; }
+  .submetrics .v{ font-family:'JetBrains Mono', monospace; font-size:15.5px; color:var(--ink); margin-top:6px; }
+  .donut-wrap{ display:flex; gap:22px; align-items:center; flex-wrap:wrap; }
+  .donut-seg{ transition:stroke-dashoffset 1.1s cubic-bezier(.16,1,.3,1); }
+  .donut-legend{ display:flex; flex-direction:column; gap:9px; flex:1; min-width:160px; }
+  .donut-legend div{ font-size:12.5px; color:var(--muted); display:flex; align-items:center; gap:8px; }
+  .donut-legend b{ margin-left:auto; color:var(--ink); font-family:'JetBrains Mono', monospace; font-weight:600; }
+  .donut-legend .d{ width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .ai-card{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; }
+  .switch{ width:42px; height:24px; border-radius:100px; background:var(--panel-2); border:1px solid var(--line); position:relative; flex-shrink:0; cursor:pointer; transition:all .25s ease; }
+  .switch .knob{ position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:var(--muted); transition:all .25s ease; }
+  .switch.on{ background:rgba(62,122,84,0.25); border-color:var(--green); }
+  .switch.on .knob{ left:20px; background:var(--green); }
+  .line-chart{ width:100%; height:auto; overflow:visible; }
+  .line-ingresos, .line-gastos{ stroke-dasharray:100; stroke-dashoffset:100; transition:stroke-dashoffset 1.6s cubic-bezier(.16,1,.3,1); }
+  .line-proyeccion{ stroke-dasharray:100; stroke-dashoffset:100; opacity:0; transition:stroke-dashoffset 1s ease, opacity .3s ease; }
+  .line-dots circle{ opacity:0; transition:opacity .4s ease; transition-delay:1.3s; }
+  .dash.in .line-ingresos, .dash.in .line-gastos{ stroke-dashoffset:0; }
+  .dash.in .line-dots circle{ opacity:1; }
+  .dash.in .donut-seg{ /* offsets set via JS */ }
+  .chart-axis{ display:flex; justify-content:space-between; font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--muted); margin-top:6px; padding:0 4px; }
+  .tabs{ display:flex; gap:6px; text-transform:none; letter-spacing:0; }
+  .tab{ font-size:11.5px; padding:4px 10px; border-radius:6px; color:var(--muted); }
+  .tab.active{ background:var(--panel-2); color:var(--ink); }
+  .rank-list .rank-item{ padding:12px 0; border-bottom:1px solid var(--line); }
+  .rank-list .rank-item:last-child{ border-bottom:none; }
+  .rank-top{ display:flex; justify-content:space-between; font-size:13.5px; color:var(--ink); margin-bottom:8px; }
+  .rank-top .n{ font-family:'JetBrains Mono', monospace; color:var(--muted); margin-right:8px; }
+  .bar-track{ height:6px; border-radius:100px; background:var(--panel-2); overflow:hidden; }
+  .bar-fill{ height:100%; border-radius:100px; background:var(--gold); width:0%; transition:width 1.2s cubic-bezier(.16,1,.3,1); }
+  @media (prefers-reduced-motion: reduce){
+    .donut-seg, .line-ingresos, .line-gastos, .line-proyeccion, .line-dots circle, .bar-fill{ transition:none !important; }
+  }
+
+  /* -------- instructor -------- */
+  .instructor{ display:grid; grid-template-columns:260px 1fr; gap:48px; align-items:center; }
+  @media(max-width:760px){ .instructor{ grid-template-columns:1fr; } }
+  .instructor .photo{ width:100%; aspect-ratio:1; border-radius:16px; background:linear-gradient(160deg, var(--panel-2), var(--panel)); border:1px solid var(--line); display:flex; align-items:center; justify-content:center; color:var(--muted); font-family:'JetBrains Mono',monospace; font-size:13px; text-align:center; padding:20px; }
+  .instructor h3{ font-size:24px; color:var(--ink); }
+  .instructor .role{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--gold); margin-top:6px; }
+  .instructor p.bio{ margin-top:18px; color:var(--muted); font-size:15.5px; line-height:1.65; }
+  .cred-list{ display:flex; flex-wrap:wrap; gap:10px; margin-top:22px; }
+  .cred{ font-family:'JetBrains Mono', monospace; font-size:12px; color:var(--gold); border:1px solid rgba(217,164,65,0.3); background:rgba(217,164,65,0.06); padding:7px 13px; border-radius:100px; }
+
+  /* -------- testimonios -------- */
+  .test-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+  @media(max-width:900px){ .test-grid{ grid-template-columns:1fr; } }
+  .test-card{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:28px; display:flex; flex-direction:column; justify-content:space-between; min-height:220px; }
+  .test-card p.q{ font-family:'Fraunces',serif; font-style:italic; font-size:16.5px; color:var(--ink); line-height:1.55; }
+  .test-card .who{ margin-top:20px; display:flex; align-items:center; gap:10px; }
+  .test-card .avatar{ width:34px; height:34px; border-radius:50%; background:var(--panel-2); border:1px solid var(--line); }
+  .test-card .name{ font-size:13.5px; color:var(--ink); font-weight:600; }
+  .test-card .role{ font-size:12.5px; color:var(--muted); }
+
+  /* -------- pricing -------- */
+  .price-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:24px; }
+  @media(max-width:800px){ .price-grid{ grid-template-columns:1fr; } }
+  .price-card{ background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:38px; position:relative; }
+  .price-card.featured{ border-color:var(--gold-dim); background:linear-gradient(160deg, rgba(217,164,65,0.05), var(--panel)); }
+  .price-tag{ position:absolute; top:-13px; right:32px; background:var(--gold); color:#171106; font-size:12px; font-weight:700; padding:5px 12px; border-radius:100px; font-family:'JetBrains Mono',monospace; }
+  .price-card .tier{ font-family:'JetBrains Mono',monospace; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; }
+  .price-card h3{ font-size:24px; margin-top:10px; color:var(--ink); }
+  .price-card .amount{ font-family:'JetBrains Mono',monospace; font-size:38px; margin-top:18px; color:var(--ink); }
+  .price-card .amount span{ font-size:14px; color:var(--muted); font-family:'Inter',sans-serif; }
+  .price-card ul{ list-style:none; margin-top:24px; display:flex; flex-direction:column; gap:12px; }
+  .price-card li{ font-size:14.5px; color:var(--muted); display:flex; gap:10px; align-items:flex-start; }
+  .price-card li:before{ content:"✓"; color:var(--green); font-weight:700; }
+  .price-card .btn{ width:100%; margin-top:28px; }
+
+  /* -------- faq -------- */
+  .faq-item{ border-bottom:1px solid var(--line); }
+  .faq-q{ display:flex; justify-content:space-between; align-items:center; padding:24px 0; cursor:pointer; font-size:16.5px; color:var(--ink); }
+  .faq-q .plus{ font-family:'JetBrains Mono',monospace; color:var(--gold); font-size:20px; transition:transform .25s ease; flex-shrink:0; margin-left:20px; }
+  .faq-item.open .plus{ transform:rotate(45deg); }
+  .faq-a{ max-height:0; overflow:hidden; transition:max-height .3s ease; }
+  .faq-a p{ padding-bottom:24px; color:var(--muted); font-size:15px; line-height:1.6; max-width:640px; }
+
+  /* -------- final cta -------- */
+  .final-cta{
+    text-align:center; padding:100px 0; position:relative;
+    background:radial-gradient(ellipse 700px 400px at 50% 0%, rgba(217,164,65,0.12), transparent 70%);
+    border-top:1px solid var(--line);
+  }
+  .final-cta h2{ font-size:clamp(30px,4.4vw,50px); max-width:700px; margin:0 auto; color:var(--ink); }
+  .final-cta p{ color:var(--muted); font-size:16.5px; margin-top:18px; }
+  .final-cta .hero-cta{ justify-content:center; margin-top:36px; }
+
+  footer{ border-top:1px solid var(--line); padding:60px 0 30px; }
+  .foot-grid{ display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:32px; }
+  @media(max-width:700px){ .foot-grid{ grid-template-columns:1fr 1fr; } }
+  .foot-grid h5{ font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:16px; }
+  .foot-grid a{ display:block; font-size:14px; color:var(--ink); opacity:0.75; margin-bottom:10px; }
+  .foot-grid a:hover{ opacity:1; }
+  .foot-bottom{ display:flex; justify-content:space-between; margin-top:50px; padding-top:24px; border-top:1px solid var(--line); font-size:13px; color:var(--muted); flex-wrap:wrap; gap:10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="logo"><span class="dot"></span>LA RUTA DEL EMPRENDEDOR</div>
+    <div class="nav-links">
+      <a href="#ruta">Bloques</a>
+      <a href="#metodologia">Metodología</a>
+      <a href="#tablero">Resultados</a>
+      <a href="#precios">Inversión</a>
+      <a href="#faq">Preguntas</a>
+    </div>
+    <div class="nav-cta">
+      <a href="#precios" class="btn btn-primary">Reservar cupo</a>
+    </div>
+  </nav>
+</header>
+
+<section class="hero" id="hero">
+  <div class="hero-grid"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <svg class="hero-path" viewBox="0 0 1200 500" preserveAspectRatio="none">
+    <path d="M -50 420 C 150 420, 200 200, 400 210 S 650 380, 850 260 S 1100 60, 1250 90"
+          fill="none" stroke="#D9A441" stroke-width="1.2" opacity="0.45"/>
+  </svg>
+  <div class="path-dot"></div>
+  <div class="wrap">
+    <div class="status-bar"><span class="dotp"></span>CUPOS ABIERTOS — BATCH 2026 · LIMA, PERÚ</div>
+    <div class="eyebrow"><span class="pulse"></span>WORKSHOP SEMI-INTENSIVO · 6 MESES</div>
+    <h1 class="reveal">Construye un negocio con números que se sostienen,<br> no con <em>suerte.</em></h1>
+    <p class="sub reveal">Un programa de 6 meses para fundadores y dueños de pyme en Latinoamérica que quieren pasar de la intuición a un modelo validado, rentable y medible — con mentoría 1:1, frameworks aplicados y control financiero real.</p>
+    <div class="hero-cta reveal">
+      <a href="#precios" class="btn btn-primary">Reservar mi cupo</a>
+      <a href="#ruta" class="btn btn-ghost">Ver el currículum completo</a>
+    </div>
+    <div class="hero-facts reveal">
+      <div><div class="num" data-count="6">0</div><div class="lbl">meses de programa</div></div>
+      <div><div class="num" data-count="6">0</div><div class="lbl">bloques temáticos</div></div>
+      <div><div class="num" data-fixed="1:1">1:1</div><div class="lbl">mentoría mensual</div></div>
+      <div><div class="num" data-count="100" data-suffix="%">0%</div><div class="lbl">orientado a ejecución</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="strip">
+  <div class="wrap">
+    <div class="strip-item"><span class="x">✕ NO ES</span><p>Otro curso de motivación con frases genéricas y cero seguimiento.</p></div>
+    <div class="strip-item"><span class="ok">✓ SÍ ES</span><p>Un sistema de 6 meses con entregables, mentoría real y control de tus números.</p></div>
+    <div class="strip-item"><span class="x">✕ NO ES</span><p>Teoría de emprendimiento desconectada de tu flujo de caja.</p></div>
+    <div class="strip-item"><span class="ok">✓ SÍ ES</span><p>Estrategia, ventas e IA aplicada, medidos en EBITDA y cashflow.</p></div>
+  </div>
+</div>
+
+<section id="ruta" class="ruta">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="tag">Bloques · 01–06</span>
+      <h2>La ruta, bloque por bloque.</h2>
+      <p>Seis bloques mensuales, cada uno con un entregable concreto. El orden importa: defines a quién le vendes antes de atraerlo, atraes antes de venderle, y validas y mides antes de automatizar.</p>
+    </div>
+
+    <div class="modulo reveal">
+      <div class="num">01</div>
+      <div class="modulo-body">
+        <h3><span>Mes 1</span>Propuesta de valor</h3>
+        <p class="desc">Buyer persona, dolor real y diferenciación. Defines a quién le vendes y por qué te elige a ti, no al competidor más barato.</p>
+        <p class="quote">"Deja de competir por precio; compite por valor."</p>
+      </div>
+    </div>
+
+    <div class="modulo reveal">
+      <div class="num">02</div>
+      <div class="modulo-body">
+        <h3><span>Mes 2</span>Estrategia de marketing &amp; atracción</h3>
+        <p class="desc">Storytelling de marca, pauta digital y construcción de audiencias. Creas un sistema de atracción continua para posicionarte en el mercado y generar un flujo constante de clientes potenciales calificados.</p>
+        <p class="quote">"No busques clientes; crea una marca a la que los clientes quieran llegar."</p>
+      </div>
+    </div>
+
+    <div class="modulo reveal">
+      <div class="num">03</div>
+      <div class="modulo-body">
+        <h3><span>Mes 3</span>Sistema de ventas &amp; conversión</h3>
+        <p class="desc">Arquitectura de funnels, procesos de cierre y fidelización. Diseñas un embudo optimizado que transforma desconocidos en compradores recurrentes y embajadores de tu marca.</p>
+        <p class="quote">"El marketing genera la oportunidad, pero la venta cierra el crecimiento."</p>
+      </div>
+    </div>
+
+    <div class="modulo reveal">
+      <div class="num">04</div>
+      <div class="modulo-body">
+        <h3><span>Mes 4</span>Frameworks ágiles</h3>
+        <p class="desc">Lean Startup, experimentos y pivots. Validas antes de invertir: experimentos baratos, resultados medibles, decisiones con datos.</p>
+        <p class="quote">"Falla rápido, barato, y aprende en el proceso."</p>
+      </div>
+    </div>
+
+    <div class="modulo reveal">
+      <div class="num">05</div>
+      <div class="modulo-body">
+        <h3><span>Mes 5</span>Finanzas y reporting</h3>
+        <p class="desc">Estructura de costos, cashflow y los KPIs que de verdad mueven tu negocio. Sales con tu propio tablero de control mensual.</p>
+        <p class="quote">"La claridad en los números es libertad de decisión."</p>
+      </div>
+    </div>
+
+    <div class="modulo reveal">
+      <div class="num">06</div>
+      <div class="modulo-body">
+        <h3><span>Mes 6</span>IA para negocios</h3>
+        <p class="desc">No-code y automatización aplicados a tu operación. Delegas lo repetitivo para enfocar tu tiempo en decisiones, no en tareas.</p>
+        <p class="quote">"Haz que la tecnología trabaje para ti."</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="metodologia">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="tag">Metodología</span>
+      <h2>Cómo funciona cada mes.</h2>
+      <p>Semi-intensivo significa ritmo sostenible: suficiente estructura para avanzar, suficiente espacio para aplicarlo en tu propio negocio.</p>
+    </div>
+    <div class="metodo-grid reveal">
+      <div class="metodo-item">
+        <div class="step">01 / Diagnóstico</div>
+        <h4>Punto de partida</h4>
+        <p>Evalúas dónde está tu negocio hoy frente al bloque del mes, antes de avanzar en contenido nuevo.</p>
+      </div>
+      <div class="metodo-item">
+        <div class="step">02 / Sesión en vivo</div>
+        <h4>Quincenal</h4>
+        <p>Dos sesiones en vivo al mes, con acceso a la grabación si no puedes asistir en el horario.</p>
+      </div>
+      <div class="metodo-item">
+        <div class="step">03 / Mentoría 1:1</div>
+        <h4>Mensual</h4>
+        <p>Una sesión individual para aplicar el framework del mes directamente a tu caso, no a un ejemplo genérico.</p>
+      </div>
+      <div class="metodo-item">
+        <div class="step">04 / Entregable</div>
+        <h4>Fin de mes</h4>
+        <p>Cierras cada bloque con un artefacto de negocio real: canvas, tablero, funnel o flujo automatizado.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="entregables">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="tag">Qué te llevas</span>
+      <h2>Herramientas, no solo apuntes.</h2>
+      <p>Cada bloque termina en algo que usas al día siguiente en tu negocio.</p>
+    </div>
+    <div class="deliv-grid reveal">
+      <div class="deliv-card">
+        <div class="ic">📊</div>
+        <h4>Toolbox financiero</h4>
+        <p>Plantilla de estructura de costos, cashflow y tablero de KPIs, lista para tu operación.</p>
+      </div>
+      <div class="deliv-card">
+        <div class="ic">🧭</div>
+        <h4>Canvas de validación</h4>
+        <p>Frameworks de Lean Startup y buyer persona listos para trabajar en Notion o Figma.</p>
+      </div>
+      <div class="deliv-card">
+        <div class="ic">🤝</div>
+        <h4>Comunidad privada</h4>
+        <p>Espacio de networking con otros fundadores en distintas etapas del mismo camino.</p>
+      </div>
+      <div class="deliv-card">
+        <div class="ic">📜</div>
+        <h4>Certificación</h4>
+        <p>Constancia de finalización del programa, compartible en LinkedIn.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tablero">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="tag">Resultados</span>
+      <h2>Así se ve tu tablero al mes 6.</h2>
+      <p>El bloque de Finanzas y Reporting existe para esto: que dejes de administrar tu negocio "a ojo" y empieces a leerlo en números.</p>
+    </div>
+
+    <div class="dash reveal">
+      <div class="dash-top">
+        <div class="dash-brand"><span class="dot"></span>Tu negocio — <span style="color:var(--muted); font-weight:400;">ejemplo ilustrativo</span></div>
+        <div class="live-badge"><span class="dotp"></span>ACTUALIZADO CADA MES</div>
+      </div>
+
+      <div class="filter-row">
+        <span class="pill mono" style="color:var(--muted); border:none; padding-left:0;">FILTRAR TABLERO:</span>
+        <span class="pill active">Mostrar todo</span>
+        <span class="pill">Mejor margen: Marketing &amp; atracción</span>
+        <span class="pill">Menor esfuerzo: IA para negocios</span>
+      </div>
+
+      <div class="dash-body">
+        <div class="dash-col">
+          <div class="dash-card">
+            <div class="card-label">Ingresos proyectados · mes 6</div>
+            <div class="metric-big"><span class="count-money" data-target="42.8" data-decimals="1" data-prefix="S/ " data-suffix="K">S/ 0K</span><span class="trend up">▲ 186%</span></div>
+            <div class="submetrics">
+              <div><div class="lbl">Margen EBITDA</div><div class="v">18.4% <span style="color:var(--green);">▲</span></div></div>
+              <div><div class="lbl">Ticket promedio</div><div class="v">S/ 265 <span style="color:var(--green);">▲</span></div></div>
+              <div><div class="lbl">Clientes activos</div><div class="v">96 <span style="color:var(--green);">▲</span></div></div>
+              <div><div class="lbl">Horas automatizadas</div><div class="v">12 h/sem <span style="color:var(--green);">▲</span></div></div>
+            </div>
+          </div>
+
+          <div class="dash-card">
+            <div class="card-label">Ingresos por canal</div>
+            <div class="donut-wrap">
+              <svg viewBox="0 0 130 130" width="128" height="128" class="donut-svg">
+                <circle cx="65" cy="65" r="52" fill="none" stroke="var(--panel-2)" stroke-width="16"/>
+                <circle class="donut-seg" cx="65" cy="65" r="52" fill="none" stroke="#D9A441" stroke-width="16"
+                  stroke-dasharray="326.7" stroke-dashoffset="326.7" data-pct="38" transform="rotate(-90 65 65)" stroke-linecap="butt"/>
+                <circle class="donut-seg" cx="65" cy="65" r="52" fill="none" stroke="#3E7A54" stroke-width="16"
+                  stroke-dasharray="326.7" stroke-dashoffset="326.7" data-pct="24" data-offset-pct="38" transform="rotate(-90 65 65)" stroke-linecap="butt"/>
+                <circle class="donut-seg" cx="65" cy="65" r="52" fill="none" stroke="#5B87B0" stroke-width="16"
+                  stroke-dasharray="326.7" stroke-dashoffset="326.7" data-pct="20" data-offset-pct="62" transform="rotate(-90 65 65)" stroke-linecap="butt"/>
+                <circle class="donut-seg" cx="65" cy="65" r="52" fill="none" stroke="#8B6FB0" stroke-width="16"
+                  stroke-dasharray="326.7" stroke-dashoffset="326.7" data-pct="12" data-offset-pct="82" transform="rotate(-90 65 65)" stroke-linecap="butt"/>
+                <circle class="donut-seg" cx="65" cy="65" r="52" fill="none" stroke="#6B6E76" stroke-width="16"
+                  stroke-dasharray="326.7" stroke-dashoffset="326.7" data-pct="6" data-offset-pct="94" transform="rotate(-90 65 65)" stroke-linecap="butt"/>
+                <text x="65" y="61" text-anchor="middle" fill="var(--muted)" font-size="8" font-family="JetBrains Mono, monospace">TOTAL</text>
+                <text x="65" y="75" text-anchor="middle" fill="var(--ink)" font-size="11.5" font-weight="600" font-family="JetBrains Mono, monospace">S/42.8K</text>
+              </svg>
+              <div class="donut-legend">
+                <div><span class="d" style="background:#D9A441;"></span>Ventas directas <b>38%</b></div>
+                <div><span class="d" style="background:#3E7A54;"></span>Recurrente / suscripción <b>24%</b></div>
+                <div><span class="d" style="background:#5B87B0;"></span>Redes &amp; pauta digital <b>20%</b></div>
+                <div><span class="d" style="background:#8B6FB0;"></span>Referidos <b>12%</b></div>
+                <div><span class="d" style="background:#6B6E76;"></span>Marketplace <b>6%</b></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dash-card ai-card">
+            <div style="flex:1;">
+              <div class="card-label" style="margin-bottom:6px;">Simulador de escenarios IA</div>
+              <p style="font-size:13px; color:var(--muted); line-height:1.5;">Bloque 06 — proyecta tu crecimiento activando automatización.</p>
+            </div>
+            <div class="switch" id="aiSwitch"><div class="knob"></div></div>
+          </div>
+        </div>
+
+        <div class="dash-col">
+          <div class="dash-card">
+            <div class="card-label">
+              <span>Vista general — ingresos, gastos y margen</span>
+              <span style="display:flex; gap:14px; text-transform:none; letter-spacing:0;">
+                <span style="color:var(--gold);">● Ingresos</span>
+                <span style="color:var(--muted);">- - Gastos</span>
+                <span style="color:var(--green);" id="projLegend">···· Proyección IA</span>
+              </span>
+            </div>
+            <svg viewBox="0 0 560 220" class="line-chart">
+              <line x1="0" y1="20" x2="560" y2="20" stroke="var(--line)" stroke-width="1"/>
+              <line x1="0" y1="80" x2="560" y2="80" stroke="var(--line)" stroke-width="1"/>
+              <line x1="0" y1="140" x2="560" y2="140" stroke="var(--line)" stroke-width="1"/>
+              <line x1="0" y1="200" x2="560" y2="200" stroke="var(--line)" stroke-width="1"/>
+              <path class="line-gastos" d="M10,175 L114,168 L218,172 L322,178 L426,182 L550,186" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 5" pathLength="100"/>
+              <path class="line-ingresos" d="M10,192 L114,150 L218,120 L322,95 L426,60 L550,30" fill="none" stroke="#D9A441" stroke-width="2.5" pathLength="100"/>
+              <path class="line-proyeccion" d="M550,30 L560,-6" fill="none" stroke="#3E7A54" stroke-width="2.5" stroke-dasharray="3 5" pathLength="100"/>
+              <g class="line-dots">
+                <circle cx="10" cy="192" r="3.5" fill="#D9A441"/>
+                <circle cx="114" cy="150" r="3.5" fill="#D9A441"/>
+                <circle cx="218" cy="120" r="3.5" fill="#D9A441"/>
+                <circle cx="322" cy="95" r="3.5" fill="#D9A441"/>
+                <circle cx="426" cy="60" r="3.5" fill="#D9A441"/>
+                <circle cx="550" cy="30" r="3.5" fill="#D9A441"/>
+              </g>
+            </svg>
+            <div class="chart-axis">
+              <span>Mes 1</span><span>Mes 2</span><span>Mes 3</span><span>Mes 4</span><span>Mes 5</span><span>Mes 6</span>
+            </div>
+          </div>
+
+          <div class="dash-card">
+            <div class="card-label">
+              <span>Contribución por bloque</span>
+              <span class="tabs"><span class="tab active">Bloques</span><span class="tab">Meses</span></span>
+            </div>
+            <div class="rank-list">
+              <div class="rank-item"><div class="rank-top"><span><span class="n">01</span>Marketing &amp; atracción</span><span>28%</span></div><div class="bar-track"><div class="bar-fill" data-w="28"></div></div></div>
+              <div class="rank-item"><div class="rank-top"><span><span class="n">02</span>Ventas &amp; conversión</span><span>24%</span></div><div class="bar-track"><div class="bar-fill" data-w="24"></div></div></div>
+              <div class="rank-item"><div class="rank-top"><span><span class="n">03</span>Finanzas y reporting</span><span>20%</span></div><div class="bar-track"><div class="bar-fill" data-w="20"></div></div></div>
+              <div class="rank-item"><div class="rank-top"><span><span class="n">04</span>Propuesta de valor</span><span>14%</span></div><div class="bar-track"><div class="bar-fill" data-w="14"></div></div></div>
+              <div class="rank-item"><div class="rank-top"><span><span class="n">05</span>IA para negocios</span><span>9%</span></div><div class="bar-track"><div class="bar-fill" data-w="9"></div></div></div>
+              <div class="rank-item"><div class="rank-top"><span><span class="n">06</span>Frameworks ágiles</span><span>5%</span></div><div class="bar-track"><div class="bar-fill" data-w="5"></div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="tablero-note" style="padding:0 28px 24px;">*Valores de ejemplo para ilustrar el tipo de tablero que construyes en el programa. Tus números dependerán de tu negocio. Activa el simulador para ver una proyección ilustrativa con IA aplicada.</p>
+    </div>
+  </div>
+</section>
+
+<section id="instructor">
+  <div class="wrap">
+    <div class="instructor reveal">
+      <div class="photo">[ foto de David Libón ]</div>
+      <div>
+        <span class="tag" style="display:block;margin-bottom:12px;">Quién lo dicta</span>
+        <h3>David Libón</h3>
+        <div class="role">Economista · Fundador, ExpandeLab</div>
+        <p class="bio">Economista con más de 12 años de trayectoria en sectores clave como banca, seguros, telecomunicaciones y Fintech. Fundador de ExpandeLab, consultora IA First especializada en el escalamiento de negocios y automatización. Experto en estrategia digital para negocios tradicionales y startups, con foco en la implementación de ecosistemas en Notion y sistemas de IA para negocios.</p>
+        <div class="cred-list">
+          <span class="cred">Red de mentores, Madrid Emprende</span>
+          <span class="cred">Mentor, INNOVUG Guayaquil</span>
+          <span class="cred">Coach de emprendimiento, Hult Prize</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="testimonios">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="tag">Prueba social</span>
+      <h2>Lo que dicen los fundadores.</h2>
+      <p>Reemplaza estos tres espacios con testimonios reales de tus alumnos, idealmente con un resultado concreto.</p>
+    </div>
+    <div class="test-grid reveal">
+      <div class="test-card">
+        <p class="q">"[Cita del alumno destacando un resultado concreto, por ejemplo cerrar sus primeros clientes B2B en un mes.]"</p>
+        <div class="who"><div class="avatar"></div><div><div class="name">[Nombre]</div><div class="role">[Rubro / negocio]</div></div></div>
+      </div>
+      <div class="test-card">
+        <p class="q">"[Cita sobre cómo el bloque de finanzas le dio claridad en su flujo de caja.]"</p>
+        <div class="who"><div class="avatar"></div><div><div class="name">[Nombre]</div><div class="role">[Rubro / negocio]</div></div></div>
+      </div>
+      <div class="test-card">
+        <p class="q">"[Cita sobre cómo automatizó parte de su operación con el bloque de IA aplicada.]"</p>
+        <div class="who"><div class="avatar"></div><div><div class="name">[Nombre]</div><div class="role">[Rubro / negocio]</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="precios">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="tag">Inversión</span>
+      <h2>Un solo programa, dos formas de tomarlo.</h2>
+      <p>Pago único, sin cuotas escondidas.</p>
+    </div>
+    <div class="price-grid reveal">
+      <div class="price-card">
+        <div class="tier">Individual</div>
+        <h3>Fundador</h3>
+        <div class="amount">$35<span> USD / pago único</span></div>
+        <ul>
+          <li>6 meses de programa completo</li>
+          <li>Sesiones en vivo quincenales + grabaciones</li>
+          <li>1 mentoría 1:1 al mes</li>
+          <li>Toolbox financiero y canvas de validación</li>
+          <li>Comunidad privada de fundadores</li>
+          <li>Certificación de finalización</li>
+        </ul>
+        <a href="#" class="btn btn-ghost">Reservar cupo</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-tag">Más elegido</div>
+        <div class="tier">Equipo fundador</div>
+        <h3>Fundador + socio</h3>
+        <div class="amount">$55<span> USD / pago único</span></div>
+        <ul>
+          <li>Todo lo del plan Individual, para 2 personas</li>
+          <li>2 mentorías 1:1 al mes (una por persona)</li>
+          <li>Revisión conjunta del tablero de KPIs</li>
+          <li>Prioridad en cupos de mentoría</li>
+          <li>Acceso a sesiones de bloques anteriores</li>
+          <li>Certificación de finalización para ambos</li>
+        </ul>
+        <a href="#" class="btn btn-primary">Reservar cupo</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="section-head reveal">
+      <span class="tag">Preguntas frecuentes</span>
+      <h2>Antes de que preguntes.</h2>
+    </div>
+    <div class="reveal">
+      <div class="faq-item">
+        <div class="faq-q">¿Necesito experiencia previa emprendiendo?<span class="plus">+</span></div>
+        <div class="faq-a"><p>No. El programa está diseñado tanto para quien ya tiene un negocio en marcha como para quien está validando una idea. El bloque 1 y 2 nivelan a todos antes de entrar en finanzas y ventas.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Qué pasa si no puedo asistir a una sesión en vivo?<span class="plus">+</span></div>
+        <div class="faq-a"><p>Todas las sesiones quedan grabadas y disponibles dentro de la plataforma durante todo el programa.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Cuánto tiempo debo dedicarle por semana?<span class="plus">+</span></div>
+        <div class="faq-a"><p>Entre 3 y 5 horas semanales: sesión en vivo, trabajo aplicado a tu negocio y, una vez al mes, tu mentoría 1:1.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿El programa aplica a cualquier rubro?<span class="plus">+</span></div>
+        <div class="faq-a"><p>Sí. Los frameworks son de negocio, no de industria — se ajustan en la mentoría 1:1 a tu caso específico, sea e-commerce, servicios o producto.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-q">¿Hay algún tipo de garantía?<span class="plus">+</span></div>
+        <div class="faq-a"><p>[Define aquí tu política de garantía o reprogramación, si aplica.]</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final-cta">
+  <div class="wrap">
+    <h2 class="reveal">¿Listo para construir tu negocio con números claros?</h2>
+    <p class="reveal">Cupos limitados por batch para mantener la mentoría 1:1 real.</p>
+    <div class="hero-cta reveal">
+      <a href="#precios" class="btn btn-primary">Reservar mi cupo</a>
+      <a href="#" class="btn btn-ghost">Hablar con el equipo</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="logo" style="margin-bottom:14px;"><span class="dot"></span>LA RUTA DEL EMPRENDEDOR</div>
+        <p style="color:var(--muted); font-size:14px; max-width:280px; line-height:1.6;">Workshop semi-intensivo de 6 meses para fundadores y pymes en Latinoamérica.</p>
+      </div>
+      <div>
+        <h5>Programa</h5>
+        <a href="#ruta">Bloques</a>
+        <a href="#metodologia">Metodología</a>
+        <a href="#tablero">Resultados</a>
+      </div>
+      <div>
+        <h5>Empresa</h5>
+        <a href="#">Sobre nosotros</a>
+        <a href="#">Contacto</a>
+      </div>
+      <div>
+        <h5>Contacto</h5>
+        <a href="#">WhatsApp</a>
+        <a href="#">Instagram</a>
+        <a href="#">LinkedIn</a>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 La Ruta del Emprendedor. Todos los derechos reservados.</span>
+      <span>Un programa de ExpandeLab</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('in');
+        if (e.target.classList.contains('dash')) {
+          e.target.querySelectorAll('.bar-fill').forEach(bar=>{
+            bar.style.width = (bar.dataset.w || 0) + '%';
+          });
+        }
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+  revealEls.forEach(el=>io.observe(el));
+
+  // faq accordion
+  document.querySelectorAll('.faq-item').forEach(item=>{
+    const q = item.querySelector('.faq-q');
+    const a = item.querySelector('.faq-a');
+    q.addEventListener('click', ()=>{
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(o=>{
+        o.classList.remove('open');
+        o.querySelector('.faq-a').style.maxHeight = null;
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        a.style.maxHeight = a.scrollHeight + 'px';
+      }
+    });
+  });
+
+  // reduced motion respect
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) {
+    document.querySelectorAll('.reveal').forEach(el=>el.classList.add('in'));
+  }
+
+  // count-up numbers in hero facts
+  const counters = document.querySelectorAll('.num[data-count]');
+  const countIo = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const el = entry.target;
+        const target = parseFloat(el.dataset.count);
+        const suffix = el.dataset.suffix || '';
+        if (prefersReduced) { el.textContent = target + suffix; countIo.unobserve(el); return; }
+        let start = 0;
+        const duration = 1100;
+        const startTime = performance.now();
+        function step(now){
+          const progress = Math.min((now - startTime) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const value = Math.round(target * eased);
+          el.textContent = value + suffix;
+          if (progress < 1) requestAnimationFrame(step);
+          else el.textContent = target + suffix;
+        }
+        requestAnimationFrame(step);
+        countIo.unobserve(el);
+      }
+    });
+  }, { threshold: 0.4 });
+  counters.forEach(el=>countIo.observe(el));
+
+  // count-up for money-style metrics (decimals + prefix), e.g. dashboard "S/ 42.8K"
+  const moneyCounters = document.querySelectorAll('.count-money[data-target]');
+  const moneyIo = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const el = entry.target;
+        const target = parseFloat(el.dataset.target);
+        const decimals = parseInt(el.dataset.decimals || '0', 10);
+        const prefix = el.dataset.prefix || '';
+        const suffix = el.dataset.suffix || '';
+        const render = v => prefix + v.toFixed(decimals) + suffix;
+        if (prefersReduced) { el.textContent = render(target); moneyIo.unobserve(el); return; }
+        const duration = 1300;
+        const startTime = performance.now();
+        function step(now){
+          const progress = Math.min((now - startTime) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          el.textContent = render(target * eased);
+          if (progress < 1) requestAnimationFrame(step);
+          else el.textContent = render(target);
+        }
+        requestAnimationFrame(step);
+        moneyIo.unobserve(el);
+      }
+    });
+  }, { threshold: 0.4 });
+  moneyCounters.forEach(el=>moneyIo.observe(el));
+
+  // build donut chart arcs from data attributes
+  const circumference = 2 * Math.PI * 52;
+  document.querySelectorAll('.donut-seg').forEach(seg=>{
+    const pct = parseFloat(seg.dataset.pct || '0');
+    const offsetPct = parseFloat(seg.dataset.offsetPct || '0');
+    const arcLen = (pct / 100) * circumference;
+    const gapLen = circumference - arcLen;
+    seg.setAttribute('stroke-dasharray', `${arcLen} ${gapLen}`);
+    seg.setAttribute('stroke-dashoffset', `${-(offsetPct / 100) * circumference}`);
+  });
+
+  // AI scenario simulator toggle — reveals the projected growth segment on the chart
+  const aiSwitch = document.getElementById('aiSwitch');
+  if (aiSwitch) {
+    aiSwitch.addEventListener('click', ()=>{
+      const on = aiSwitch.classList.toggle('on');
+      const proj = document.querySelector('.line-proyeccion');
+      const legend = document.getElementById('projLegend');
+      if (proj) {
+        proj.style.opacity = on ? '1' : '0';
+        proj.style.strokeDashoffset = on ? '0' : '100';
+      }
+      if (legend) legend.style.color = on ? 'var(--green)' : 'var(--muted)';
+    });
+  }
+
+  // ambient drift + subtle mouse parallax on hero orbs (single rAF loop, no CSS/JS transform conflict)
+  if (!prefersReduced) {
+    const heroSection = document.getElementById('hero');
+    const orb1 = document.querySelector('.orb-1');
+    const orb2 = document.querySelector('.orb-2');
+    if (heroSection && orb1 && orb2) {
+      let mx = 0, my = 0;
+      heroSection.addEventListener('mousemove', (e)=>{
+        const r = heroSection.getBoundingClientRect();
+        mx = (e.clientX - r.left) / r.width - 0.5;
+        my = (e.clientY - r.top) / r.height - 0.5;
+      });
+      function driftLoop(t){
+        const s = t / 1000;
+        const drift1x = Math.sin(s / 4.5) * 36, drift1y = Math.cos(s / 5.2) * 30;
+        const drift2x = Math.cos(s / 4.0) * 28, drift2y = Math.sin(s / 4.8) * 26;
+        orb1.style.transform = `translate(${drift1x + mx*30}px, ${drift1y + my*30}px)`;
+        orb2.style.transform = `translate(${drift2x + mx*-24}px, ${drift2y + my*24}px)`;
+        requestAnimationFrame(driftLoop);
+      }
+      requestAnimationFrame(driftLoop);
+    }
+  }
+</script>
+
+</body>
+</html>
