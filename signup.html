@@ -688,9 +688,9 @@ async function handleReturnFromGoogle(){
       }).eq('id', session.user.id);
 
       hideOverlay();
-      showMsg('¡Listo! Tu correo quedó verificado y tu Pasaporte Gold está activo. 🎉', 'success');
+      showMsg('¡Listo! Tu correo quedó verificado y tu cuenta está activa. Ahora inicia sesión para entrar a tu panel.', 'success');
       celebrateStamps();
-      goToWelcome();
+      goToLogin();
     } else {
       // No coincide: desvinculamos la identidad de Google y bloqueamos la activación
       if (googleIdentity){
@@ -717,16 +717,29 @@ async function handleReturnFromGoogle(){
     hideOverlay();
     showMsg('¡Cuenta creada con Google! Tu Pasaporte Gold ya está activo. 🎉', 'success');
     celebrateStamps();
-    goToWelcome();
+    goToPanelWelcome();
   }
 
   sessionStorage.removeItem('gb_verify_flow');
   cleanUrl();
 }
 
-function goToWelcome(){
+/* Escenario 1 (correo + contraseña): NO lo dejamos con sesión activa
+   automáticamente. Cerramos su sesión y lo mandamos a /login para
+   que entre con sus propias credenciales — de ahí /login debe
+   redirigir a /panel tras un signInWithPassword() exitoso. */
+async function goToLogin(){
+  await gbSupabase.auth.signOut();
   setTimeout(() => {
-    window.location.href = '/user?welcome=1';
+    window.location.href = '/login';
+  }, 1400);
+}
+
+/* Escenario 2 (botón Google): el login con Google YA es la sesión,
+   así que va directo al panel con la bienvenida. */
+function goToPanelWelcome(){
+  setTimeout(() => {
+    window.location.href = '/panel?welcome=1';
   }, 1400);
 }
 
