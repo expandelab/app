@@ -40,6 +40,7 @@
        document_id text,
        needs_auto_code boolean default false,
        customer_code text unique,
+       needs_profile_review boolean default false,
        tier text default 'bronce',
        verified_via_google boolean default false,
        created_at timestamptz default now()
@@ -681,12 +682,15 @@ async function handleReturnFromGoogle(){
     const googleEmail = googleIdentity?.identity_data?.email;
 
     if (googleEmail && pendingEmail && googleEmail.toLowerCase() === pendingEmail.toLowerCase()){
-      await gbSupabase.from('profiles').update({ verified_via_google: true })
-        .eq('id', session.user.id);
+      await gbSupabase.from('profiles').update({
+        verified_via_google: true,
+        needs_profile_review: false, // ya dio todos sus datos manualmente
+      }).eq('id', session.user.id);
 
       hideOverlay();
       showMsg('¡Listo! Tu correo quedó verificado y tu Pasaporte Gold está activo. 🎉', 'success');
       celebrateStamps();
+      goToWelcome();
     } else {
       // No coincide: desvinculamos la identidad de Google y bloqueamos la activación
       if (googleIdentity){
@@ -697,20 +701,33 @@ async function handleReturnFromGoogle(){
     }
     sessionStorage.removeItem('gb_pending_email');
   } else {
-    // Opción 2: la sesión de Google ya es la cuenta completa
+    // Opción 2: la sesión de Google ya es la cuenta completa.
+    // Solo tenemos nombre/correo de Google — el resto del perfil
+    // (celular, fecha de nacimiento, documento) queda pendiente,
+    // por eso needs_profile_review queda en true: el dashboard
+    // mostrará esos campos resaltados para que el usuario los
+    // complete.
     const user = session.user;
     await gbSupabase.from('profiles').upsert({
       id: user.id,
       full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
       verified_via_google: true,
+      needs_profile_review: true,
     });
     hideOverlay();
     showMsg('¡Cuenta creada con Google! Tu Pasaporte Gold ya está activo. 🎉', 'success');
     celebrateStamps();
+    goToWelcome();
   }
 
   sessionStorage.removeItem('gb_verify_flow');
   cleanUrl();
+}
+
+function goToWelcome(){
+  setTimeout(() => {
+    window.location.href = '/user?welcome=1';
+  }, 1400);
 }
 
 function celebrateStamps(){
