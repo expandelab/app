@@ -354,7 +354,7 @@
 const SUPABASE_URL = "https://TU-PROYECTO.supabase.co";
 const SUPABASE_ANON_KEY = "TU-ANON-KEY-PUBLICA";
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const gbSupabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 /* ── refs ─────────────────────────────────────────────────────── */
 const form        = document.getElementById('signupForm');
@@ -450,7 +450,7 @@ form.addEventListener('submit', async (e) => {
   setLoading(submitBtn, true, 'Crear mi Pasaporte y 1er Sello');
 
   // 1) Crear la cuenta
-  const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+  const { data: signUpData, error: signUpError } = await gbSupabase.auth.signUp({
     email,
     password,
     options: {
@@ -470,7 +470,7 @@ form.addEventListener('submit', async (e) => {
 
   // Guardamos el perfil base (aún no verificado)
   if (signUpData.user){
-    await supabase.from('profiles').upsert({
+    await gbSupabase.from('profiles').upsert({
       id: signUpData.user.id,
       full_name: fullName,
       phone: phoneCode + phone,
@@ -486,7 +486,7 @@ form.addEventListener('submit', async (e) => {
   showMsg('Cuenta creada. Ahora confirma que este correo es tuyo con Google…', 'info');
 
   // 2) Disparar verificación con Google (vincula identidad a la sesión actual)
-  const { error: linkError } = await supabase.auth.linkIdentity({
+  const { error: linkError } = await gbSupabase.auth.linkIdentity({
     provider: 'google',
     options: {
       redirectTo: window.location.origin + window.location.pathname + '?verify=1'
@@ -510,7 +510,7 @@ googleBtn.addEventListener('click', async () => {
   setLoading(googleBtn, true, 'Continuar con Google');
   sessionStorage.setItem('gb_verify_flow', '0');
 
-  const { error } = await supabase.auth.signInWithOAuth({
+  const { error } = await gbSupabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
       redirectTo: window.location.origin + window.location.pathname + '?verify=1'
@@ -533,7 +533,7 @@ async function handleReturnFromGoogle(){
   showOverlay('Verificando tu cuenta con Google…');
 
   const flow = sessionStorage.getItem('gb_verify_flow'); // '1' = opción 1, '0' = opción 2
-  const { data: { session } } = await supabase.auth.getSession();
+  const { data: { session } } = await gbSupabase.auth.getSession();
 
   if (!session){
     hideOverlay();
@@ -545,13 +545,13 @@ async function handleReturnFromGoogle(){
   if (flow === '1'){
     // Opción 1: comparar el correo de Google contra el correo ingresado
     const pendingEmail = sessionStorage.getItem('gb_pending_email');
-    const { data: identitiesData } = await supabase.auth.getUserIdentities();
+    const { data: identitiesData } = await gbSupabase.auth.getUserIdentities();
     const googleIdentity = identitiesData?.identities?.find(i => i.provider === 'google');
 
     const googleEmail = googleIdentity?.identity_data?.email;
 
     if (googleEmail && pendingEmail && googleEmail.toLowerCase() === pendingEmail.toLowerCase()){
-      await supabase.from('profiles').update({ verified_via_google: true })
+      await gbSupabase.from('profiles').update({ verified_via_google: true })
         .eq('id', session.user.id);
 
       hideOverlay();
@@ -560,7 +560,7 @@ async function handleReturnFromGoogle(){
     } else {
       // No coincide: desvinculamos la identidad de Google y bloqueamos la activación
       if (googleIdentity){
-        await supabase.auth.unlinkIdentity(googleIdentity);
+        await gbSupabase.auth.unlinkIdentity(googleIdentity);
       }
       hideOverlay();
       showMsg('La cuenta de Google que usaste no coincide con el correo que ingresaste. Vuelve a intentarlo con la cuenta de Google asociada a ' + pendingEmail + '.', 'error');
@@ -569,7 +569,7 @@ async function handleReturnFromGoogle(){
   } else {
     // Opción 2: la sesión de Google ya es la cuenta completa
     const user = session.user;
-    await supabase.from('profiles').upsert({
+    await gbSupabase.from('profiles').upsert({
       id: user.id,
       full_name: user.user_metadata?.full_name || user.user_metadata?.name || '',
       verified_via_google: true,
