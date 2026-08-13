@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>ExpandeLab · Cotizaciones Pagadas 2026</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-0:#05070B; --bg-sidebar:#08090d; --panel:#0b0d13; --panel-2:#0e1017;
+    --line:#1d212c; --line-soft:#161a23;
+    --text-hi:#f4f5f7; --text-mid:#9aa0ae; --text-low:#565c6c;
+    --gold:#d9b25c; --lime:#c7f22d; --green:#4ade80; --red:#f87171;
+    --blue:#6fa8ff; --purple:#b98cf2; --gray:#7b8394; --otros:#33384a;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    background:
+      radial-gradient(900px 420px at 20% -8%, #d9b25c0d, transparent 60%),
+      radial-gradient(800px 420px at 100% 0%, #c7f22d09, transparent 60%),
+      var(--bg-0);
+    color:var(--text-hi);
+    font-family:'Plus Jakarta Sans',sans-serif;
+    margin:0;
+    overflow-x:hidden;
+  }
+  .disp{font-family:'Space Grotesk',sans-serif;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .eyebrow{font-family:'JetBrains Mono',monospace; letter-spacing:.12em; text-transform:uppercase; font-size:10.5px; color:var(--text-low); font-weight:600;}
+  .up{color:var(--green);} .down{color:var(--red);}
+  ::selection{background:#d9b25c33;}
+  .scroll-thin::-webkit-scrollbar{height:6px; width:6px;}
+  .scroll-thin::-webkit-scrollbar-thumb{background:#242835; border-radius:10px;}
+  .no-scrollbar::-webkit-scrollbar{display:none;}
+  .no-scrollbar{-ms-overflow-style:none; scrollbar-width:none;}
+
+  /* ---- APP SHELL ---- */
+  .shell{display:flex; min-height:100vh;}
+  .sidebar{
+    width:76px; flex-shrink:0; background:var(--bg-sidebar); border-right:1px solid var(--line);
+    display:flex; flex-direction:column; align-items:center; padding:20px 0; gap:6px;
+  }
+  .sb-logo{
+    width:38px; height:38px; border:1px solid var(--gold); border-radius:8px;
+    display:flex; align-items:center; justify-content:center; margin-bottom:24px;
+    color:var(--gold); font-family:'Space Grotesk'; font-weight:700; font-size:15px; flex-shrink:0;
+  }
+  .sb-item{
+    width:44px; height:44px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+    color:var(--text-low); cursor:pointer; transition:.15s; position:relative; flex-shrink:0;
+  }
+  .sb-item:hover{ color:var(--text-hi); background:#12141c; }
+  .sb-item.active{ color:#0d0f16; background:var(--lime); }
+  .sb-item svg{width:19px; height:19px;}
+  .sb-spacer{flex:1;}
+  .sb-avatar{width:32px; height:32px; border-radius:8px; background:linear-gradient(135deg,var(--gold),#8a6a2a); display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk'; font-weight:700; font-size:12px; color:#12100a; flex-shrink:0;}
+  .sb-close{display:none;}
+
+  .main{flex:1; min-width:0; display:flex; flex-direction:column;}
+
+  /* TOPBAR */
+  .topbar{
+    height:60px; border-bottom:1px solid var(--line); background:#07080cdd; backdrop-filter:blur(6px);
+    display:flex; align-items:center; justify-content:space-between; padding:0 20px; gap:14px;
+    position:sticky; top:0; z-index:20;
+  }
+  .crumbs{font-family:'JetBrains Mono'; font-size:11.5px; color:var(--text-low); display:flex; align-items:center; gap:7px; white-space:nowrap; overflow:hidden;}
+  .crumbs b{color:var(--text-hi); font-weight:600;}
+  .hamburger{
+    display:none; width:36px; height:36px; align-items:center; justify-content:center;
+    border:1px solid var(--line); border-radius:7px; cursor:pointer; color:var(--text-mid); flex-shrink:0;
+    background:var(--panel-2);
+  }
+  .hamburger svg{width:18px;height:18px;}
+
+  /* FILTER BAR */
+  .filterbar{
+    display:flex; align-items:center; gap:8px; overflow-x:auto; padding-bottom:2px; margin-bottom:20px;
+  }
+  .filterbar .fb-sep{width:1px; height:22px; background:var(--line); flex-shrink:0;}
+  select.fselect{
+    background:var(--panel-2); color:var(--text-hi); border:1px solid var(--line);
+    border-radius:7px; padding:8px 30px 8px 12px; font-size:12px; outline:none; cursor:pointer;
+    max-width:230px; flex-shrink:0; appearance:none; -webkit-appearance:none; font-family:'JetBrains Mono';
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'><path d='M1 1L5 5L9 1' stroke='%239aa0ae' stroke-width='1.5' stroke-linecap='round'/></svg>");
+    background-repeat:no-repeat; background-position:right 11px center;
+  }
+  select.fselect:focus{border-color:var(--gold);}
+
+  .chip{
+    border:1px solid var(--line); border-radius:7px; padding:8px 14px; font-size:11.5px; font-family:'JetBrains Mono';
+    color:var(--text-mid); white-space:nowrap; cursor:pointer; transition:.15s; background:var(--panel-2); flex-shrink:0;
+    font-weight:600; letter-spacing:.02em;
+  }
+  .chip:hover{border-color:#333849; color:var(--text-hi);}
+  .chip.active{background:var(--lime); color:#0d0f16; border-color:var(--lime);}
+  .chip.active.risk-active{background:var(--red); border-color:var(--red); color:#1a0d0d;}
+
+  /* CONTENT */
+  .content{padding:20px 20px 40px; max-width:1500px; width:100%; margin:0 auto;}
+  @media (min-width:768px){ .content{padding:28px 28px 40px;} }
+
+  /* TECH PANEL */
+  .tpanel{ position:relative; background:var(--panel); border:1px solid var(--line); border-radius:8px; }
+  .tpanel::before, .tpanel::after{ content:''; position:absolute; width:9px; height:9px; pointer-events:none; }
+  .tpanel::before{ top:-1px; left:-1px; border-top:1px solid var(--gold); border-left:1px solid var(--gold); border-top-left-radius:8px; }
+  .tpanel::after{ bottom:-1px; right:-1px; border-bottom:1px solid var(--gold); border-right:1px solid var(--gold); border-bottom-right-radius:8px; }
+  .tpanel-head{ display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid var(--line-soft); gap:10px; flex-wrap:wrap; }
+  .tpanel-body{padding:18px;}
+  .tpanel-tag{ font-family:'JetBrains Mono'; font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; color:#0d0f16; background:var(--lime); padding:2px 7px; border-radius:4px; font-weight:700; }
+
+  .stat-card{ background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:16px 18px; position:relative; overflow:hidden; cursor:default; }
+  .stat-card .glow{position:absolute; top:-30px; right:-30px; width:100px; height:100px; border-radius:50%; filter:blur(30px); opacity:.35; pointer-events:none;}
+
+  .bar-track{background:#12141b; border-radius:5px; overflow:hidden; border:1px solid var(--line-soft);}
+
+  .flag{border:1px solid #f8717133; background:linear-gradient(180deg,#f871710a,transparent); border-radius:8px;}
+  .flag.ok{border-color:#4ade8033; background:linear-gradient(180deg,#4ade800a,transparent);}
+
+  .fade-in{animation:fadeIn .22s ease;}
+  @keyframes fadeIn{from{opacity:0; transform:translateY(3px);} to{opacity:1; transform:translateY(0);}}
+
+  table thead th{font-family:'JetBrains Mono';}
+  tbody tr{transition:background .1s;}
+  tbody tr:hover{background:#0f1119;}
+
+  /* KPI tooltip */
+  .has-tip{position:relative; cursor:help;}
+  .has-tip .tip-ic{
+    display:inline-flex; align-items:center; justify-content:center; width:13px; height:13px; border-radius:50%;
+    border:1px solid var(--text-low); color:var(--text-low); font-size:9px; font-family:'JetBrains Mono'; margin-left:5px;
+  }
+  .has-tip::after{
+    content:attr(data-tip); position:absolute; left:0; bottom:calc(100% + 8px); width:max-content; max-width:220px;
+    background:#15171f; border:1px solid var(--line); color:var(--text-mid); font-size:11px; font-family:'Plus Jakarta Sans';
+    padding:8px 10px; border-radius:7px; line-height:1.4; opacity:0; pointer-events:none; transform:translateY(4px);
+    transition:.15s; z-index:30; box-shadow:0 8px 24px #000000aa;
+  }
+  .has-tip:hover::after{ opacity:1; transform:translateY(0); }
+
+  /* ---- MOBILE DRAWER SIDEBAR ---- */
+  .drawer-overlay{ position:fixed; inset:0; background:#000000b3; z-index:40; opacity:0; pointer-events:none; transition:opacity .2s; }
+  .drawer-overlay.open{ opacity:1; pointer-events:auto; }
+  @media (max-width:1023px){
+    .hamburger{ display:flex; }
+    .sidebar{
+      position:fixed; left:0; top:0; bottom:0; z-index:50; width:220px;
+      transform:translateX(-100%); transition:transform .25s ease; align-items:stretch; padding:16px;
+      box-shadow:12px 0 32px #000000cc;
+    }
+    .sidebar.open{ transform:translateX(0); }
+    .sidebar .sb-logo{ margin-bottom:16px; }
+    .sb-item{ width:100%; justify-content:flex-start; gap:12px; padding:0 12px; }
+    .sb-item span.lbl{ display:inline; font-size:13px; font-weight:600; font-family:'Space Grotesk'; }
+    .sb-close{ display:flex; align-items:center; justify-content:center; width:30px; height:30px; border:1px solid var(--line); border-radius:6px; color:var(--text-mid); position:absolute; top:16px; right:16px; cursor:pointer; }
+  }
+  @media (min-width:1024px){
+    .sb-item span.lbl{ display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="drawer-overlay" id="drawerOverlay"></div>
+
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-close" id="sbClose">✕</div>
+    <div class="sb-logo">E</div>
+    <div class="sb-item active" title="Dashboard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+      <span class="lbl">Dashboard</span>
+    </div>
+    <div class="sb-item" title="Clientes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c0-3.5 2.7-6 6-6s6 2.5 6 6"/><circle cx="18" cy="8" r="2.5"/><path d="M15.5 14.5c2.6.3 4.5 2.5 4.5 5.5"/></svg>
+      <span class="lbl">Clientes</span>
+    </div>
+    <div class="sb-item" title="Ingresos">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l5-5 4 4 8-9"/><path d="M14 7h6v6"/></svg>
+      <span class="lbl">Ingresos</span>
+    </div>
+    <div class="sb-item" title="Reportes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h9l5 5v13H6z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h6"/></svg>
+      <span class="lbl">Reportes</span>
+    </div>
+    <div class="sb-item" title="Config">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+      <span class="lbl">Config</span>
+    </div>
+    <div class="sb-spacer"></div>
+    <div class="sb-avatar">DL</div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="hamburger" id="hamburgerBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </div>
+        <div class="crumbs">
+          <span>ExpandeLab</span><span>/</span><b>Cotizaciones</b><span>/</span><span>2026</span>
+        </div>
+      </div>
+      <div class="sb-avatar hidden sm:flex">DL</div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <div class="mb-5">
+        <h1 class="disp text-[22px] md:text-[26px] font-bold tracking-tight">Cotizaciones Pagadas</h1>
+        <p class="text-[12.5px] text-[--text-mid] mt-1 mono">03.01.2026 → 11.08.2026 · estado <span class="text-[--lime]">PAGADA</span> · 1,667 registros</p>
+      </div>
+
+      <!-- FILTER BAR -->
+      <div class="filterbar no-scrollbar">
+        <div class="chip active" data-f="all">TODO</div>
+        <div class="chip" data-f="top">TOP 10</div>
+        <div class="chip" data-f="risk">⚠ RIESGO</div>
+        <div class="fb-sep"></div>
+        <select class="fselect" id="clientSelect"></select>
+        <select class="fselect" id="monthSelect"></select>
+      </div>
+
+      <!-- STAT ROW -->
+      <div class="flex gap-3 overflow-x-auto no-scrollbar pb-1 snap-x snap-mandatory sm:grid sm:grid-cols-2 sm:gap-4 lg:grid-cols-5 mb-6" id="statRow">
+        <div class="stat-card shrink-0 w-[76%] snap-start sm:w-auto">
+          <div class="glow" style="background:var(--gold)"></div>
+          <div class="eyebrow mb-2 has-tip" data-tip="Suma de todas las cotizaciones con estado Pagada en el periodo o filtro activo.">INGRESOS<span class="tip-ic">?</span></div>
+          <div class="disp text-[22px] md:text-[24px] font-bold mono" id="kpiMain">S/ 1,159,381</div>
+          <div class="up text-[11px] font-bold mt-1.5 mono" id="kpiBadge">▲ 22.8% JUL vs ENE</div>
+        </div>
+        <div class="stat-card shrink-0 w-[76%] snap-start sm:w-auto">
+          <div class="eyebrow mb-2 has-tip" data-tip="Total pagado dividido entre el número de cotizaciones del filtro activo.">TICKET PROMEDIO<span class="tip-ic">?</span></div>
+          <div class="disp text-[22px] md:text-[24px] font-bold mono" id="kpiTile1Val">S/ 696</div>
+          <div class="text-[11px] text-[--text-low] mt-1.5 mono" id="kpiTile1Label">por cotización</div>
+        </div>
+        <div class="stat-card shrink-0 w-[76%] snap-start sm:w-auto">
+          <div class="eyebrow mb-2 has-tip" data-tip="Número de cotizaciones pagadas dentro del filtro activo.">COTIZACIONES<span class="tip-ic">?</span></div>
+          <div class="disp text-[22px] md:text-[24px] font-bold mono" id="kpiTile2Val">1,667</div>
+          <div class="text-[11px] text-[--text-low] mt-1.5 mono" id="kpiTile2Label">pagadas al 11/08</div>
+        </div>
+        <div class="stat-card shrink-0 w-[76%] snap-start sm:w-auto">
+          <div class="eyebrow mb-2 has-tip" data-tip="Clientes distintos con al menos una cotización pagada dentro del filtro activo.">CLIENTES<span class="tip-ic">?</span></div>
+          <div class="disp text-[22px] md:text-[24px] font-bold mono" id="kpiTile3Val">158</div>
+          <div class="text-[11px] text-[--text-low] mt-1.5 mono" id="kpiTile3Label">con ≥1 cotización pagada</div>
+        </div>
+        <div class="stat-card shrink-0 w-[76%] snap-start sm:w-auto">
+          <div class="glow" style="background:var(--lime)"></div>
+          <div class="eyebrow mb-2 has-tip" data-tip="% de clientes que pagaron 2 o más cotizaciones en el periodo completo.">TASA DE RECOMPRA<span class="tip-ic">?</span></div>
+          <div class="disp text-[22px] md:text-[24px] font-bold mono" id="kpiTile4Val" style="color:var(--lime)">73.4%</div>
+          <div class="text-[11px] text-[--text-low] mt-1.5 mono has-tip" data-tip="% de clientes activos en un mes que vuelven a comprar al mes siguiente (promedio ene-jul)."><span id="kpiTile5Label">retención M/M</span>: <span id="kpiTile5Val" class="text-[--text-hi]">66.2%</span></div>
+        </div>
+      </div>
+
+      <!-- MAIN GRID -->
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-5">
+
+        <!-- LEFT -->
+        <div class="flex flex-col gap-5 min-w-0">
+
+          <div class="tpanel fade-in" id="linePanel">
+            <div class="tpanel-head">
+              <span class="tpanel-tag" id="lineLabel">INGRESOS / MES</span>
+              <div class="flex items-center gap-3 text-[11px] mono text-[--text-mid]" id="lineLegendText">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 inline-block" style="background:var(--gold)"></span>Ingresos</span>
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 inline-block" style="background:var(--lime)"></span># Cotizaciones</span>
+              </div>
+            </div>
+            <div class="tpanel-body">
+              <div class="h-[260px] md:h-[280px]"><canvas id="lineChart"></canvas></div>
+              <p class="text-[10.5px] text-[--text-low] mt-3 mono" id="lineFootnote">* AGO 2026 ES PARCIAL (DATOS AL 11/08)</p>
+            </div>
+          </div>
+
+          <div class="tpanel fade-in" id="contribPanel">
+            <div class="tpanel-head">
+              <span class="tpanel-tag" id="contribLabel">CONTRIBUCIÓN / CLIENTE</span>
+              <span class="text-[11px] text-[--text-low] mono" id="contribSubLabel">% del total pagado</span>
+            </div>
+            <div class="tpanel-body">
+              <div class="flex flex-col divide-y divide-[--line-soft]" id="clientBars"></div>
+            </div>
+          </div>
+
+          <div class="tpanel fade-in" id="tablePanel">
+            <div class="tpanel-head">
+              <span class="tpanel-tag" id="tableLabel">DETALLE</span>
+            </div>
+            <div class="tpanel-body !pt-3">
+              <div class="overflow-x-auto scroll-thin">
+                <table class="w-full text-[13px] min-w-[560px]">
+                  <thead>
+                    <tr class="text-left text-[--text-low] text-[10.5px] uppercase tracking-wider border-b" style="border-color:var(--line-soft)" id="tableHead"></tr>
+                  </thead>
+                  <tbody id="tableBody" class="divide-y" style="border-color:var(--line-soft)"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT -->
+        <div class="flex flex-col gap-5 min-w-0">
+
+          <div class="tpanel fade-in" id="donutPanel">
+            <div class="tpanel-head">
+              <span class="tpanel-tag" id="donutLabel">PARTICIPACIÓN</span>
+              <span class="text-[10px] text-[--text-low] mono">clic en el gráfico ↴</span>
+            </div>
+            <div class="tpanel-body">
+              <div class="flex flex-col items-center">
+                <div class="relative w-[160px] h-[160px] shrink-0 mb-5">
+                  <canvas id="donutClientes"></canvas>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                    <div class="eyebrow text-[9px]">TOTAL</div>
+                    <div class="text-sm font-bold mono" id="donutCenter">S/1.16M</div>
+                  </div>
+                </div>
+                <div class="flex flex-col gap-2 text-[12.5px] w-full" id="donutLegend"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="tpanel fade-in" id="segmentPanel">
+            <div class="tpanel-head">
+              <span class="tpanel-tag" id="segmentLabel">TIPO DE CLIENTE</span>
+            </div>
+            <div class="tpanel-body flex flex-col gap-3" id="segmentBody"></div>
+          </div>
+
+          <div class="flag p-5 fade-in" id="flagPanel">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-[--red] text-sm" id="flagIcon">▲</span>
+              <span class="text-[12px] font-bold text-[--red] mono uppercase tracking-wide" id="flagTitle">RIESGO DE CONCENTRACIÓN</span>
+            </div>
+            <p class="text-[13px] text-[--text-mid] leading-relaxed" id="flagBody"></p>
+          </div>
+
+        </div>
+      </div>
+
+      <p class="text-center text-[10.5px] text-[--text-low] mt-8 mono">GENERADO DESDE "COTIZACIONES-20260811_190021.XLSX" · SOLO ESTADO "PAGADA" (1,667 / 1,859 REGISTROS)</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================================================================
+   ExpandeLab · Cotizaciones Pagadas — Dashboard Engine
+   Arquitectura: state -> compute*() [puras] -> render*() [DOM/Chart.js]
+   =================================================================== */
+
+const COLORS = { gold:'#d9b25c', lime:'#c7f22d', blue:'#6fa8ff', purple:'#b98cf2',
+                 gray:'#7b8394', green:'#4ade80', red:'#f87171', otros:'#33384a' };
+const PALETTE = [COLORS.gold, COLORS.lime, COLORS.blue, COLORS.purple, '#f0a35c', COLORS.gray, '#e0716b', '#6bd9c2', '#c9a8f2', '#8ab4f8'];
+const MONTHS = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago*'];
+const MONTHS_FULL = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto (parcial)'];
+const LAST_MONTH_IDX = 7; // Ago, corte al 11/08
+
+/* ---- RAW DATA (embebida, no se modifican las cifras originales) ---- */
+const CLIENTS = {"ABBA ELVIS JAVIER YANQUI QUISPE": {"total": 2051.33, "count": 28, "monthly": [416.74, 767.96, 276.88, 227.73, 83.63, 103.56, 174.83, 0.0], "monthlyCount": [6, 5, 3, 4, 4, 2, 4, 0], "first": "07/01/2026", "last": "31/07/2026", "tipo": "Persona (DNI)", "pct": 0.18}, "AGENCIA LA LLAMA E.I.R.L.": {"total": 1687.92, "count": 12, "monthly": [0.0, 843.23, 427.18, 192.51, 0.0, 0.0, 225.0, 0.0], "monthlyCount": [0, 5, 4, 2, 0, 0, 1, 0], "first": "02/02/2026", "last": "11/07/2026", "tipo": "Empresa (RUC)", "pct": 0.15}, "ALI PERFUMES": {"total": 31903.29, "count": 42, "monthly": [3539.0, 3619.28, 2615.66, 49.27, 1004.62, 6673.48, 8294.75, 6107.23], "monthlyCount": [3, 5, 4, 4, 5, 8, 10, 3], "first": "09/01/2026", "last": "11/08/2026", "tipo": "Persona (DNI)", "pct": 2.75}, "AMCI - GFL AIR CARGO EIRL": {"total": 6467.04, "count": 4, "monthly": [6467.04, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [4, 0, 0, 0, 0, 0, 0, 0], "first": "05/01/2026", "last": "23/01/2026", "tipo": "Otro", "pct": 0.56}, "ANDERSON Andy Leyva campos": {"total": 2627.32, "count": 24, "monthly": [0.0, 746.92, 586.4, 684.2, 609.8, 0.0, 0.0, 0.0], "monthlyCount": [0, 3, 7, 8, 6, 0, 0, 0], "first": "13/02/2026", "last": "20/05/2026", "tipo": "Persona (DNI)", "pct": 0.23}, "ANTHONY GLOBAL CIX": {"total": 285.75, "count": 11, "monthly": [19.44, 68.27, 104.58, 52.74, 9.0, 0.0, 31.72, 0.0], "monthlyCount": [2, 3, 2, 2, 1, 0, 1, 0], "first": "19/01/2026", "last": "20/07/2026", "tipo": "Persona (DNI)", "pct": 0.02}, "ANTHONY MARCELO CAMPOS": {"total": 1108.32, "count": 5, "monthly": [1108.32, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [5, 0, 0, 0, 0, 0, 0, 0], "first": "06/01/2026", "last": "23/01/2026", "tipo": "Otro", "pct": 0.1}, "ARAB PERFUMS": {"total": 996.38, "count": 4, "monthly": [0.0, 0.0, 0.0, 0.0, 405.25, 0.0, 591.13, 0.0], "monthlyCount": [0, 0, 0, 0, 2, 0, 2, 0], "first": "08/05/2026", "last": "27/07/2026", "tipo": "Persona (DNI)", "pct": 0.09}, "ARAGUANEY S.A.C.": {"total": 5685.1, "count": 4, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 2994.1, 2691.0, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 1, 3, 0], "first": "22/06/2026", "last": "27/07/2026", "tipo": "Empresa (RUC)", "pct": 0.49}, "ARIANA GIRON OLIVENCIA": {"total": 16250.18, "count": 24, "monthly": [0.0, 0.0, 0.0, 5262.5, 3696.56, 2073.45, 4251.54, 966.13], "monthlyCount": [0, 0, 0, 3, 6, 6, 7, 2], "first": "06/04/2026", "last": "07/08/2026", "tipo": "Persona (DNI)", "pct": 1.4}, "AURA IMPORT": {"total": 13025.69, "count": 27, "monthly": [3196.41, 4531.18, 4624.66, 0.0, 673.44, 0.0, 0.0, 0.0], "monthlyCount": [7, 8, 9, 0, 3, 0, 0, 0], "first": "05/01/2026", "last": "26/05/2026", "tipo": "Persona (DNI)", "pct": 1.12}, "AVI COURIER": {"total": 223110.65, "count": 84, "monthly": [13131.21, 25924.88, 35527.77, 42483.76, 47728.41, 37453.49, 20728.65, 132.48], "monthlyCount": [9, 11, 11, 11, 11, 12, 17, 2], "first": "05/01/2026", "last": "07/08/2026", "tipo": "Empresa (RUC)", "pct": 19.24}, "Aaron Amadiz Espejo Aguilar": {"total": 29.28, "count": 2, "monthly": [0.0, 0.0, 29.28, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 2, 0, 0, 0, 0, 0], "first": "09/03/2026", "last": "19/03/2026", "tipo": "Empresa (RUC)", "pct": 0.0}, "Alejandro Vega Cornejo": {"total": 8.0, "count": 1, "monthly": [0.0, 8.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 1, 0, 0, 0, 0, 0, 0], "first": "10/02/2026", "last": "10/02/2026", "tipo": "Empresa (RUC)", "pct": 0.0}, "Alfredo Salas Rizo Patrón": {"total": 268.63, "count": 4, "monthly": [52.8, 0.0, 0.0, 0.0, 86.63, 86.93, 42.27, 0.0], "monthlyCount": [1, 0, 0, 0, 1, 1, 1, 0], "first": "03/01/2026", "last": "01/07/2026", "tipo": "Persona (DNI)", "pct": 0.02}, "Anderson Marroquin": {"total": 125.27, "count": 8, "monthly": [7.5, 0.0, 18.19, 21.96, 13.81, 18.22, 45.59, 0.0], "monthlyCount": [1, 0, 1, 1, 1, 2, 2, 0], "first": "13/01/2026", "last": "20/07/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "Angela Annette Zelada Andia": {"total": 38.17, "count": 1, "monthly": [38.17, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 0, 0, 0, 0, 0, 0, 0], "first": "13/01/2026", "last": "13/01/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "Annie Ruiz Hidalgo": {"total": 312.57, "count": 7, "monthly": [0.0, 15.0, 7.5, 184.05, 106.02, 0.0, 0.0, 0.0], "monthlyCount": [0, 2, 1, 2, 2, 0, 0, 0], "first": "20/02/2026", "last": "15/05/2026", "tipo": "Otro", "pct": 0.03}, "Anthony Marcelo Campos": {"total": 5239.03, "count": 12, "monthly": [0.0, 1432.09, 2051.44, 1252.35, 53.91, 449.24, 0.0, 0.0], "monthlyCount": [0, 3, 3, 4, 1, 1, 0, 0], "first": "09/02/2026", "last": "04/06/2026", "tipo": "Empresa (RUC)", "pct": 0.45}, "BENJAMIN AUDIFONOS": {"total": 404.3, "count": 2, "monthly": [404.3, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [2, 0, 0, 0, 0, 0, 0, 0], "first": "20/01/2026", "last": "24/01/2026", "tipo": "Otro", "pct": 0.03}, "BENJAMIN MARTINEZ": {"total": 49.39, "count": 1, "monthly": [49.39, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 0, 0, 0, 0, 0, 0, 0], "first": "06/01/2026", "last": "06/01/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "BOLO KANTE IMPORT & SERVICIOS GENERALES E.I.R.L.": {"total": 3466.78, "count": 10, "monthly": [194.0, 688.58, 629.88, 96.92, 787.84, 1069.56, 0.0, 0.0], "monthlyCount": [1, 1, 4, 1, 1, 2, 0, 0], "first": "30/01/2026", "last": "18/06/2026", "tipo": "Empresa (RUC)", "pct": 0.3}, "BRANDO LEE": {"total": 2648.6, "count": 26, "monthly": [546.04, 1211.04, 743.36, 148.16, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [9, 10, 6, 1, 0, 0, 0, 0], "first": "05/01/2026", "last": "06/04/2026", "tipo": "Persona (DNI)", "pct": 0.23}, "BRUNO NICOLAS EDWIN SELEDONIO": {"total": 40.08, "count": 2, "monthly": [0.0, 21.96, 18.12, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 1, 1, 0, 0, 0, 0, 0], "first": "25/02/2026", "last": "31/03/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "BenJhamin Espejo Martinez": {"total": 3309.26, "count": 21, "monthly": [0.0, 0.0, 0.0, 266.1, 592.6, 1325.8, 716.92, 407.84], "monthlyCount": [0, 0, 0, 2, 3, 7, 7, 2], "first": "17/04/2026", "last": "10/08/2026", "tipo": "Persona (DNI)", "pct": 0.29}, "BenJhamin Espejo Ramirez": {"total": 1143.98, "count": 14, "monthly": [348.04, 64.61, 323.19, 408.14, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [5, 2, 4, 3, 0, 0, 0, 0], "first": "14/01/2026", "last": "14/04/2026", "tipo": "Persona (DNI)", "pct": 0.1}, "Bruno Trucios Raffo": {"total": 75.44, "count": 4, "monthly": [27.41, 8.7, 0.0, 39.33, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 1, 0, 2, 0, 0, 0, 0], "first": "13/01/2026", "last": "22/04/2026", "tipo": "Otro", "pct": 0.01}, "CARLA ISLA": {"total": 3078.65, "count": 9, "monthly": [642.33, 1498.82, 937.5, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [3, 5, 1, 0, 0, 0, 0, 0], "first": "12/01/2026", "last": "03/03/2026", "tipo": "Persona (DNI)", "pct": 0.27}, "CARLOS MANUEL CASTRO COLMENARES": {"total": 4281.8, "count": 2, "monthly": [0.0, 0.0, 0.0, 0.0, 4281.8, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 2, 0, 0, 0], "first": "20/05/2026", "last": "21/05/2026", "tipo": "Empresa (RUC)", "pct": 0.37}, "CESAR GUTIERREZ-PRISCILA": {"total": 708.05, "count": 1, "monthly": [708.05, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 0, 0, 0, 0, 0, 0, 0], "first": "16/01/2026", "last": "16/01/2026", "tipo": "Persona (DNI)", "pct": 0.06}, "CESAR MAGALLANES": {"total": 49.09, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 49.09, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 1, 0, 0, 0], "first": "09/05/2026", "last": "09/05/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "CLUB DE EXPORTADORES S.A.C.": {"total": 49247.0, "count": 17, "monthly": [4248.0, 10717.0, 11926.0, 0.0, 7848.0, 0.0, 6578.0, 7930.0], "monthlyCount": [2, 5, 4, 0, 2, 0, 2, 2], "first": "23/01/2026", "last": "01/08/2026", "tipo": "Empresa (RUC)", "pct": 4.25}, "COMPANY B7 EIRL": {"total": 8354.65, "count": 18, "monthly": [0.0, 1077.75, 1419.75, 1882.75, 307.0, 647.5, 2483.5, 536.4], "monthlyCount": [0, 4, 3, 4, 2, 1, 3, 1], "first": "06/02/2026", "last": "03/08/2026", "tipo": "Empresa (RUC)", "pct": 0.72}, "CORPORACION TELOTENGO 24 S.A.C.": {"total": 1655.5, "count": 4, "monthly": [0.0, 0.0, 0.0, 360.0, 304.0, 592.0, 399.5, 0.0], "monthlyCount": [0, 0, 0, 1, 1, 1, 1, 0], "first": "30/04/2026", "last": "11/07/2026", "tipo": "Empresa (RUC)", "pct": 0.14}, "Celeste Milagros Wertheman Delgado": {"total": 113.39, "count": 2, "monthly": [84.23, 29.16, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 1, 0, 0, 0, 0, 0, 0], "first": "24/01/2026", "last": "23/02/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "Christopher Martínez Olivos": {"total": 1232.36, "count": 18, "monthly": [361.8, 314.93, 383.29, 135.53, 36.81, 0.0, 0.0, 0.0], "monthlyCount": [4, 4, 5, 4, 1, 0, 0, 0], "first": "09/01/2026", "last": "13/05/2026", "tipo": "Persona (DNI)", "pct": 0.11}, "DANICZA JANNET GALA ACUÑA": {"total": 720.4, "count": 8, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 670.25, 50.15], "monthlyCount": [0, 0, 0, 0, 0, 0, 7, 1], "first": "07/07/2026", "last": "07/08/2026", "tipo": "Persona (DNI)", "pct": 0.06}, "DANIEL REYES": {"total": 92.31, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 92.31], "monthlyCount": [0, 0, 0, 0, 0, 0, 0, 1], "first": "05/08/2026", "last": "05/08/2026", "tipo": "Otro", "pct": 0.01}, "DESIREE KAROLINA MUÑOZ MIRANDA": {"total": 32.92, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 32.92, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 1, 0, 0], "first": "03/06/2026", "last": "03/06/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "DIANA BELLORIN": {"total": 257.02, "count": 2, "monthly": [257.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [2, 0, 0, 0, 0, 0, 0, 0], "first": "15/01/2026", "last": "26/01/2026", "tipo": "Persona (DNI)", "pct": 0.02}, "DIEGO QUISPE": {"total": 3128.34, "count": 29, "monthly": [1148.54, 1297.61, 321.62, 215.66, 9.0, 118.22, 17.69, 0.0], "monthlyCount": [9, 9, 3, 3, 1, 3, 1, 0], "first": "05/01/2026", "last": "15/07/2026", "tipo": "Persona (DNI)", "pct": 0.27}, "DM IMPORT": {"total": 19138.47, "count": 64, "monthly": [2553.04, 2250.04, 3786.29, 1519.58, 1959.88, 1382.6, 5045.2, 641.84], "monthlyCount": [9, 8, 11, 6, 8, 6, 13, 3], "first": "03/01/2026", "last": "07/08/2026", "tipo": "Persona (DNI)", "pct": 1.65}, "Daniel David López Granados": {"total": 46.5, "count": 2, "monthly": [0.0, 0.0, 37.5, 0.0, 9.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 1, 0, 1, 0, 0, 0], "first": "26/03/2026", "last": "09/05/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "Daniela Patricia Téllez Vilca": {"total": 643.21, "count": 5, "monthly": [0.0, 0.0, 321.57, 0.0, 280.15, 41.49, 0.0, 0.0], "monthlyCount": [0, 0, 3, 0, 1, 1, 0, 0], "first": "19/03/2026", "last": "02/06/2026", "tipo": "Persona (DNI)", "pct": 0.06}, "Desiree Guevara Sessarego": {"total": 34.88, "count": 1, "monthly": [0.0, 34.88, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 1, 0, 0, 0, 0, 0, 0], "first": "09/02/2026", "last": "09/02/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "Desiree muñoz miranda": {"total": 88.83, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 88.83, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 1, 0, 0, 0], "first": "05/05/2026", "last": "05/05/2026", "tipo": "Otro", "pct": 0.01}, "EASY FREIGHT SAC": {"total": 222.29, "count": 3, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 59.58, 153.71, 9.0], "monthlyCount": [0, 0, 0, 0, 0, 1, 1, 1], "first": "25/06/2026", "last": "05/08/2026", "tipo": "Empresa (RUC)", "pct": 0.02}, "EL COMBO STORE E.I.R.L.": {"total": 343.08, "count": 5, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 222.84, 85.14, 35.1], "monthlyCount": [0, 0, 0, 0, 0, 2, 2, 1], "first": "19/06/2026", "last": "04/08/2026", "tipo": "Empresa (RUC)", "pct": 0.03}, "FEBEK CORP": {"total": 188.21, "count": 4, "monthly": [0.0, 151.13, 0.0, 9.0, 28.08, 0.0, 0.0, 0.0], "monthlyCount": [0, 2, 0, 1, 1, 0, 0, 0], "first": "11/02/2026", "last": "05/05/2026", "tipo": "Otro", "pct": 0.02}, "FEBEK CORP S.A.C.": {"total": 7524.55, "count": 14, "monthly": [0.0, 1930.2, 937.2, 1174.65, 992.4, 627.3, 1862.8, 0.0], "monthlyCount": [0, 3, 2, 3, 2, 2, 2, 0], "first": "02/02/2026", "last": "27/07/2026", "tipo": "Empresa (RUC)", "pct": 0.65}, "FRANCIS MAILET GOMEZ ARAUJO": {"total": 18.15, "count": 1, "monthly": [0.0, 18.15, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 1, 0, 0, 0, 0, 0, 0], "first": "23/02/2026", "last": "23/02/2026", "tipo": "Otro", "pct": 0.0}, "FRANCO VILCA": {"total": 128.2, "count": 1, "monthly": [128.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 0, 0, 0, 0, 0, 0, 0], "first": "06/01/2026", "last": "06/01/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "FUKU IMPORT": {"total": 771.86, "count": 7, "monthly": [771.86, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [7, 0, 0, 0, 0, 0, 0, 0], "first": "05/01/2026", "last": "26/01/2026", "tipo": "Otro", "pct": 0.07}, "Freddy Quispe Tello": {"total": 35.45, "count": 2, "monthly": [20.0, 0.0, 0.0, 0.0, 0.0, 15.45, 0.0, 0.0], "monthlyCount": [1, 0, 0, 0, 0, 1, 0, 0], "first": "31/01/2026", "last": "17/06/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "Fuku Import": {"total": 3976.24, "count": 19, "monthly": [0.0, 3559.58, 337.28, 66.6, 0.0, 12.78, 0.0, 0.0], "monthlyCount": [0, 11, 6, 1, 0, 1, 0, 0], "first": "04/02/2026", "last": "05/06/2026", "tipo": "Empresa (RUC)", "pct": 0.34}, "GAMBOA COLLANTES ANGELES ALEXANDER": {"total": 1794.36, "count": 1, "monthly": [0.0, 0.0, 0.0, 1794.36, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 0, 1, 0, 0, 0, 0], "first": "22/04/2026", "last": "22/04/2026", "tipo": "Empresa (RUC)", "pct": 0.15}, "GFL AIR CARGO EIRL": {"total": 19655.54, "count": 23, "monthly": [247.6, 2125.68, 3938.2, 1237.94, 6643.46, 3423.12, 2039.54, 0.0], "monthlyCount": [1, 2, 5, 2, 5, 6, 2, 0], "first": "29/01/2026", "last": "31/07/2026", "tipo": "Empresa (RUC)", "pct": 1.7}, "GIANNI DAVID YAURO ROCCA": {"total": 359.81, "count": 1, "monthly": [0.0, 0.0, 0.0, 359.81, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 0, 1, 0, 0, 0, 0], "first": "28/04/2026", "last": "28/04/2026", "tipo": "Persona (DNI)", "pct": 0.03}, "GUZMAN BONE JESUS MARTIN": {"total": 561.35, "count": 6, "monthly": [0.0, 0.0, 0.0, 0.0, 144.25, 88.7, 242.8, 85.6], "monthlyCount": [0, 0, 0, 0, 1, 1, 3, 1], "first": "25/05/2026", "last": "07/08/2026", "tipo": "Persona (DNI)", "pct": 0.05}, "Gaerzon Geremy Steve Chávez Pinedo": {"total": 99.81, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 99.81, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 0, 1, 0], "first": "21/07/2026", "last": "21/07/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "Genry Ruiz Maquera Espinoza": {"total": 10.0, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 10.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 1, 0, 0, 0], "first": "20/05/2026", "last": "20/05/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "Geraldine estrella Vivanco vidal": {"total": 39.81, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 39.81, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 1, 0, 0], "first": "10/06/2026", "last": "10/06/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "Germán Palacios": {"total": 75.58, "count": 2, "monthly": [53.38, 0.0, 0.0, 0.0, 0.0, 0.0, 22.2, 0.0], "monthlyCount": [1, 0, 0, 0, 0, 0, 1, 0], "first": "05/01/2026", "last": "08/07/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "Global Link Cargo LLC": {"total": 323.0, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 323.0, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 0, 1, 0], "first": "27/07/2026", "last": "27/07/2026", "tipo": "Otro", "pct": 0.03}, "Golden Brays Import S.A.C": {"total": 7649.86, "count": 5, "monthly": [425.24, 6337.02, 887.6, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 3, 1, 0, 0, 0, 0, 0], "first": "23/01/2026", "last": "03/03/2026", "tipo": "Empresa (RUC)", "pct": 0.66}, "Gustavo Fernadez": {"total": 1428.18, "count": 3, "monthly": [590.0, 0.0, 0.0, 24.45, 0.0, 0.0, 813.73, 0.0], "monthlyCount": [1, 0, 0, 1, 0, 0, 1, 0], "first": "30/01/2026", "last": "03/07/2026", "tipo": "Persona (DNI)", "pct": 0.12}, "H&M NEGOCIOS Y SERVICIOS GENERALES SAC": {"total": 43673.67, "count": 36, "monthly": [7726.94, 12587.12, 8699.2, 6160.65, 7666.43, 833.33, 0.0, 0.0], "monthlyCount": [6, 11, 7, 6, 5, 1, 0, 0], "first": "06/01/2026", "last": "03/06/2026", "tipo": "Empresa (RUC)", "pct": 3.77}, "HOMERO DELGADO ORRILLA": {"total": 28898.02, "count": 15, "monthly": [0.0, 0.0, 1782.19, 18446.92, 8668.91, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 2, 8, 5, 0, 0, 0], "first": "27/03/2026", "last": "15/05/2026", "tipo": "Persona (DNI)", "pct": 2.49}, "Hector Adrian Palacios": {"total": 44.2, "count": 3, "monthly": [0.0, 0.0, 12.5, 0.0, 0.0, 31.7, 0.0, 0.0], "monthlyCount": [0, 0, 1, 0, 0, 2, 0, 0], "first": "11/03/2026", "last": "19/06/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "Hernando Nick Silva Artica": {"total": 86.15, "count": 2, "monthly": [0.0, 0.0, 0.0, 12.0, 74.15, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 0, 1, 1, 0, 0, 0], "first": "10/04/2026", "last": "13/05/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "IBOX": {"total": 1247.9, "count": 12, "monthly": [44.33, 234.28, 144.63, 810.49, 0.0, 14.17, 0.0, 0.0], "monthlyCount": [1, 5, 2, 3, 0, 1, 0, 0], "first": "26/01/2026", "last": "10/06/2026", "tipo": "Empresa (RUC)", "pct": 0.11}, "IMPORT NEO": {"total": 40061.24, "count": 53, "monthly": [8406.29, 8128.87, 3204.38, 15391.56, 674.92, 1895.7, 2082.23, 277.29], "monthlyCount": [10, 11, 7, 10, 3, 3, 8, 1], "first": "05/01/2026", "last": "05/08/2026", "tipo": "Persona (DNI)", "pct": 3.46}, "IRENE CALDAS MEZA": {"total": 364.66, "count": 4, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 364.66, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 0, 4, 0], "first": "15/07/2026", "last": "30/07/2026", "tipo": "Persona (DNI)", "pct": 0.03}, "Ivan Guerrero Castañeda": {"total": 41.1, "count": 3, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 31.1, 10.0], "monthlyCount": [0, 0, 0, 0, 0, 0, 2, 1], "first": "20/07/2026", "last": "07/08/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "JAIME ARAUJO": {"total": 418.28, "count": 10, "monthly": [26.25, 34.39, 260.93, 10.35, 9.0, 77.36, 0.0, 0.0], "monthlyCount": [1, 1, 4, 1, 1, 2, 0, 0], "first": "19/01/2026", "last": "23/06/2026", "tipo": "Persona (DNI)", "pct": 0.04}, "JANUUSZ RUIZ DEL AGUILA": {"total": 409.62, "count": 4, "monthly": [291.3, 0.0, 91.32, 0.0, 27.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 0, 2, 0, 1, 0, 0, 0], "first": "13/01/2026", "last": "19/05/2026", "tipo": "Empresa (RUC)", "pct": 0.04}, "JH-IMPORT": {"total": 9417.8, "count": 62, "monthly": [893.5, 1444.72, 1259.86, 1097.55, 1816.98, 1579.97, 1325.22, 0.0], "monthlyCount": [12, 10, 10, 7, 7, 9, 7, 0], "first": "05/01/2026", "last": "31/07/2026", "tipo": "Empresa (RUC)", "pct": 0.81}, "JORGE ALFREDO REYES CCAHUANTICO": {"total": 600.72, "count": 3, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 600.72], "monthlyCount": [0, 0, 0, 0, 0, 0, 0, 3], "first": "04/08/2026", "last": "07/08/2026", "tipo": "Persona (DNI)", "pct": 0.05}, "JOSE LOPEZ": {"total": 907.79, "count": 6, "monthly": [0.0, 32.81, 480.59, 394.39, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 1, 2, 3, 0, 0, 0, 0], "first": "24/02/2026", "last": "28/04/2026", "tipo": "Persona (DNI)", "pct": 0.08}, "JS LOGISTIC COURIER S.A.C.": {"total": 98011.73, "count": 181, "monthly": [6300.96, 13921.27, 15917.5, 11447.75, 13696.2, 17488.07, 13742.63, 5497.35], "monthlyCount": [7, 44, 70, 28, 8, 9, 11, 4], "first": "06/01/2026", "last": "10/08/2026", "tipo": "Empresa (RUC)", "pct": 8.45}, "JUAN ARAUJO": {"total": 19.24, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 19.24], "monthlyCount": [0, 0, 0, 0, 0, 0, 0, 1], "first": "05/08/2026", "last": "05/08/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "JUAN CARLOS AGUINANGA GONZALES": {"total": 811.05, "count": 2, "monthly": [0.0, 0.0, 0.0, 0.0, 491.85, 319.2, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 1, 1, 0, 0], "first": "19/05/2026", "last": "15/06/2026", "tipo": "Persona (DNI)", "pct": 0.07}, "JULIO CASAL": {"total": 263.7, "count": 5, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 154.67, 65.51, 43.52], "monthlyCount": [0, 0, 0, 0, 0, 2, 2, 1], "first": "17/06/2026", "last": "01/08/2026", "tipo": "Persona (DNI)", "pct": 0.02}, "Jairo Tingo Vega": {"total": 13061.66, "count": 6, "monthly": [10244.06, 2817.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [4, 2, 0, 0, 0, 0, 0, 0], "first": "21/01/2026", "last": "04/02/2026", "tipo": "Persona (DNI)", "pct": 1.13}, "Jency pool galindo alhuay": {"total": 7116.23, "count": 36, "monthly": [151.0, 3078.64, 2242.86, 112.53, 32.35, 1077.01, 421.84, 0.0], "monthlyCount": [2, 10, 10, 5, 2, 5, 2, 0], "first": "29/01/2026", "last": "21/07/2026", "tipo": "Empresa (RUC)", "pct": 0.61}, "Jhair tarmeño Yacila": {"total": 6592.11, "count": 9, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 943.62, 5648.49, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 1, 8, 0], "first": "25/06/2026", "last": "27/07/2026", "tipo": "Persona (DNI)", "pct": 0.57}, "Jhon Lenin coronel silva": {"total": 401.28, "count": 12, "monthly": [0.0, 0.0, 120.41, 36.59, 86.18, 108.67, 18.7, 30.73], "monthlyCount": [0, 0, 4, 2, 1, 3, 1, 1], "first": "04/03/2026", "last": "01/08/2026", "tipo": "Persona (DNI)", "pct": 0.03}, "Joel liñan Reyes": {"total": 188.22, "count": 10, "monthly": [7.5, 41.96, 7.5, 58.86, 18.0, 0.0, 54.4, 0.0], "monthlyCount": [1, 1, 1, 3, 2, 0, 2, 0], "first": "23/01/2026", "last": "31/07/2026", "tipo": "Empresa (RUC)", "pct": 0.02}, "Johan Richard santoyo Diaz": {"total": 65.44, "count": 1, "monthly": [0.0, 0.0, 65.44, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 1, 0, 0, 0, 0, 0], "first": "16/03/2026", "last": "16/03/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "Juan Carlos Montesino": {"total": 294.66, "count": 8, "monthly": [27.86, 25.01, 10.0, 188.06, 15.2, 0.0, 0.0, 28.53], "monthlyCount": [1, 1, 2, 2, 1, 0, 0, 1], "first": "20/01/2026", "last": "07/08/2026", "tipo": "Empresa (RUC)", "pct": 0.03}, "Juan carlos Montesinos caquiamarca": {"total": 37.83, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 37.83, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 1, 0, 0], "first": "03/06/2026", "last": "03/06/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "Julio Casal Cortez": {"total": 799.69, "count": 13, "monthly": [47.58, 20.74, 7.5, 86.08, 129.24, 508.55, 0.0, 0.0], "monthlyCount": [2, 2, 1, 1, 2, 5, 0, 0], "first": "05/01/2026", "last": "15/06/2026", "tipo": "Persona (DNI)", "pct": 0.07}, "Kevin Nick Esteban Villanera": {"total": 12.0, "count": 1, "monthly": [0.0, 0.0, 0.0, 12.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 0, 1, 0, 0, 0, 0], "first": "04/04/2026", "last": "04/04/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "LEONEL  SANCHEZ RONDINEL": {"total": 832.92, "count": 6, "monthly": [115.69, 128.03, 116.25, 189.0, 0.0, 141.75, 0.0, 142.2], "monthlyCount": [1, 1, 1, 1, 0, 1, 0, 1], "first": "27/01/2026", "last": "04/08/2026", "tipo": "Persona (DNI)", "pct": 0.07}, "LUCERO RETUERTO TRINIDAD": {"total": 23923.59, "count": 20, "monthly": [0.0, 947.7, 4582.75, 4292.05, 2224.39, 4486.04, 5616.13, 1774.53], "monthlyCount": [0, 2, 4, 3, 2, 3, 5, 1], "first": "04/02/2026", "last": "10/08/2026", "tipo": "Persona (DNI)", "pct": 2.06}, "LUIS ALARCÓN": {"total": 280.87, "count": 3, "monthly": [228.8, 42.67, 9.4, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 1, 1, 0, 0, 0, 0, 0], "first": "06/01/2026", "last": "25/03/2026", "tipo": "Otro", "pct": 0.02}, "LUIS EDUARDO MOLINA VARGUILLA": {"total": 10.0, "count": 1, "monthly": [0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 1, 0, 0, 0, 0, 0], "first": "04/03/2026", "last": "04/03/2026", "tipo": "Otro", "pct": 0.0}, "Leoncio celada davila": {"total": 47.63, "count": 2, "monthly": [23.78, 23.85, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 1, 0, 0, 0, 0, 0, 0], "first": "05/01/2026", "last": "24/02/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "Lisseth Palacios Saavedra": {"total": 136.71, "count": 5, "monthly": [0.0, 0.0, 0.0, 35.0, 0.0, 62.29, 39.42, 0.0], "monthlyCount": [0, 0, 0, 2, 0, 1, 2, 0], "first": "17/04/2026", "last": "25/07/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "Luis Angel Limasca Oruro": {"total": 12.5, "count": 1, "monthly": [0.0, 12.5, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 1, 0, 0, 0, 0, 0, 0], "first": "24/02/2026", "last": "24/02/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "MADNESS SHOPPING": {"total": 24424.07, "count": 34, "monthly": [7181.46, 9156.38, 7354.69, 638.04, 93.5, 0.0, 0.0, 0.0], "monthlyCount": [11, 12, 9, 1, 1, 0, 0, 0], "first": "03/01/2026", "last": "22/05/2026", "tipo": "Empresa (RUC)", "pct": 2.11}, "MARCOS BRAVO": {"total": 605.55, "count": 2, "monthly": [0.0, 605.55, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 2, 0, 0, 0, 0, 0, 0], "first": "10/02/2026", "last": "25/02/2026", "tipo": "Otro", "pct": 0.05}, "MARIANNY RAMOS": {"total": 24.15, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 24.15, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 0, 1, 0], "first": "13/07/2026", "last": "13/07/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "MISHEL SHOPPER MIAMI": {"total": 692.64, "count": 7, "monthly": [452.6, 126.15, 0.0, 113.89, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [4, 2, 0, 1, 0, 0, 0, 0], "first": "06/01/2026", "last": "07/04/2026", "tipo": "Persona (DNI)", "pct": 0.06}, "Manuel Martínez Zenteno": {"total": 459.54, "count": 9, "monthly": [41.56, 23.95, 70.48, 0.0, 158.23, 106.95, 58.37, 0.0], "monthlyCount": [1, 1, 2, 0, 3, 1, 1, 0], "first": "26/01/2026", "last": "03/07/2026", "tipo": "Persona (DNI)", "pct": 0.04}, "Marco Antonio Chipana Huallpa": {"total": 140.0, "count": 2, "monthly": [0.0, 0.0, 0.0, 140.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 0, 2, 0, 0, 0, 0], "first": "10/04/2026", "last": "21/04/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "Marco De La Sotta": {"total": 68.18, "count": 2, "monthly": [68.18, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [2, 0, 0, 0, 0, 0, 0, 0], "first": "10/01/2026", "last": "19/01/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "María Sanchez": {"total": 171.94, "count": 5, "monthly": [0.0, 0.0, 38.08, 46.77, 12.0, 75.09, 0.0, 0.0], "monthlyCount": [0, 0, 1, 2, 1, 1, 0, 0], "first": "25/03/2026", "last": "24/06/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "Maykells José Meza Suarez": {"total": 10.0, "count": 1, "monthly": [10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 0, 0, 0, 0, 0, 0, 0], "first": "13/01/2026", "last": "13/01/2026", "tipo": "Otro", "pct": 0.0}, "Miguel José Nolaya Rangel": {"total": 57.6, "count": 1, "monthly": [0.0, 0.0, 0.0, 57.6, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 0, 1, 0, 0, 0, 0], "first": "10/04/2026", "last": "10/04/2026", "tipo": "Otro", "pct": 0.0}, "Mundo Express inversiones y encomiendas sac": {"total": 15798.5, "count": 5, "monthly": [0.0, 0.0, 0.0, 0.0, 3767.5, 0.0, 9763.5, 2267.5], "monthlyCount": [0, 0, 0, 0, 2, 0, 2, 1], "first": "09/05/2026", "last": "01/08/2026", "tipo": "Empresa (RUC)", "pct": 1.36}, "NAHEM BOSQUE": {"total": 143.1, "count": 2, "monthly": [0.0, 0.0, 143.1, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 2, 0, 0, 0, 0, 0], "first": "09/03/2026", "last": "09/03/2026", "tipo": "Otro", "pct": 0.01}, "NORMA RUIZ SHAPIAMA": {"total": 331.09, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 331.09], "monthlyCount": [0, 0, 0, 0, 0, 0, 0, 1], "first": "06/08/2026", "last": "06/08/2026", "tipo": "Persona (DNI)", "pct": 0.03}, "NYVELLAN JOSE": {"total": 320.93, "count": 3, "monthly": [182.24, 0.0, 0.0, 138.69, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [2, 0, 0, 1, 0, 0, 0, 0], "first": "13/01/2026", "last": "14/04/2026", "tipo": "Persona (DNI)", "pct": 0.03}, "OMG Luis Ángel Bautista": {"total": 155.0, "count": 6, "monthly": [0.0, 66.3, 0.0, 60.0, 28.7, 0.0, 0.0, 0.0], "monthlyCount": [0, 3, 0, 2, 1, 0, 0, 0], "first": "04/02/2026", "last": "02/05/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "OSCAR FREDDY HUAMAN FLORES": {"total": 517.23, "count": 1, "monthly": [0.0, 0.0, 517.23, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 1, 0, 0, 0, 0, 0], "first": "03/03/2026", "last": "03/03/2026", "tipo": "Empresa (RUC)", "pct": 0.04}, "Olenka Gomez barzola": {"total": 235.76, "count": 4, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 235.76, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 0, 4, 0], "first": "06/07/2026", "last": "25/07/2026", "tipo": "Persona (DNI)", "pct": 0.02}, "Omar Carbajal": {"total": 4210.89, "count": 15, "monthly": [1343.51, 0.0, 656.11, 454.74, 232.65, 776.02, 747.86, 0.0], "monthlyCount": [1, 0, 2, 3, 3, 3, 3, 0], "first": "23/01/2026", "last": "20/07/2026", "tipo": "Persona (DNI)", "pct": 0.36}, "PASCUAL JUAN LEYVA QUISPE": {"total": 2387.99, "count": 20, "monthly": [0.0, 0.0, 0.0, 0.0, 215.85, 1700.13, 458.49, 13.52], "monthlyCount": [0, 0, 0, 0, 2, 12, 5, 1], "first": "22/05/2026", "last": "07/08/2026", "tipo": "Persona (DNI)", "pct": 0.21}, "PERFUMAZO": {"total": 15370.62, "count": 10, "monthly": [0.0, 0.0, 3193.91, 1036.8, 1527.39, 4387.12, 5225.4, 0.0], "monthlyCount": [0, 0, 2, 1, 2, 3, 2, 0], "first": "03/03/2026", "last": "22/07/2026", "tipo": "Persona (DNI)", "pct": 1.33}, "POOL GALINDO": {"total": 1620.48, "count": 8, "monthly": [1620.48, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [8, 0, 0, 0, 0, 0, 0, 0], "first": "05/01/2026", "last": "26/01/2026", "tipo": "Otro", "pct": 0.14}, "Paola del Pilar REATEGUI AREVALO": {"total": 50.84, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 50.84, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 1, 0, 0], "first": "26/06/2026", "last": "26/06/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "ROBERT EDU CARLOS PACHECHO": {"total": 8745.14, "count": 21, "monthly": [0.0, 0.0, 0.0, 0.0, 1783.43, 2746.92, 4074.16, 140.63], "monthlyCount": [0, 0, 0, 0, 3, 5, 12, 1], "first": "05/05/2026", "last": "11/08/2026", "tipo": "Persona (DNI)", "pct": 0.75}, "RODRIGO ANIBAL SANTOS URIBE": {"total": 30.6, "count": 2, "monthly": [0.0, 0.0, 12.0, 0.0, 0.0, 0.0, 0.0, 18.6], "monthlyCount": [0, 0, 1, 0, 0, 0, 0, 1], "first": "31/03/2026", "last": "04/08/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "Ragas Osorio Randy Josue": {"total": 233.69, "count": 1, "monthly": [0.0, 0.0, 233.69, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 1, 0, 0, 0, 0, 0], "first": "09/03/2026", "last": "09/03/2026", "tipo": "Persona (DNI)", "pct": 0.02}, "SAMIR SANTIAGO TABOADA BELLIDO": {"total": 688.78, "count": 18, "monthly": [37.47, 356.8, 280.83, 13.68, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [3, 7, 7, 1, 0, 0, 0, 0], "first": "09/01/2026", "last": "07/04/2026", "tipo": "Persona (DNI)", "pct": 0.06}, "SANTOS MAMANI MAURICIO GABRIEL": {"total": 105.57, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 105.57, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 1, 0, 0, 0], "first": "27/05/2026", "last": "27/05/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "SANTOS PORRAS JOSE DUBERLI": {"total": 34.0, "count": 2, "monthly": [0.0, 34.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 2, 0, 0, 0, 0, 0, 0], "first": "25/02/2026", "last": "28/02/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "SOLUCIONES OPORTUNAS Y SOSTENIBLES EN LOGISTICA EIRL": {"total": 529.55, "count": 9, "monthly": [0.0, 0.0, 51.7, 94.45, 104.5, 110.4, 168.5, 0.0], "monthlyCount": [0, 0, 2, 2, 2, 2, 1, 0], "first": "24/03/2026", "last": "16/07/2026", "tipo": "Empresa (RUC)", "pct": 0.05}, "SONIA SARAI GUILLEN PAULINO": {"total": 8539.57, "count": 12, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 5385.39, 3154.18], "monthlyCount": [0, 0, 0, 0, 0, 0, 8, 4], "first": "15/07/2026", "last": "10/08/2026", "tipo": "Persona (DNI)", "pct": 0.74}, "SUR AMERICA IMPO-CARGO E.I.R.L.": {"total": 66434.6, "count": 23, "monthly": [0.0, 34612.05, 16700.8, 48.46, 5240.87, 206.82, 9613.58, 12.02], "monthlyCount": [0, 8, 3, 1, 3, 2, 5, 1], "first": "02/02/2026", "last": "04/08/2026", "tipo": "Empresa (RUC)", "pct": 5.73}, "Samir Taboada": {"total": 162.5, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 162.5, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 0, 1, 0], "first": "02/07/2026", "last": "02/07/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "Sebastian Pineda": {"total": 152.1, "count": 1, "monthly": [152.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 0, 0, 0, 0, 0, 0, 0], "first": "26/01/2026", "last": "26/01/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "Stephanie Sosa Jara": {"total": 64.24, "count": 6, "monthly": [10.24, 12.64, 0.0, 9.9, 0.0, 9.0, 22.46, 0.0], "monthlyCount": [1, 1, 0, 1, 0, 1, 2, 0], "first": "05/01/2026", "last": "17/07/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "Sur America Impo-Cargo E.I.R.L": {"total": 14.25, "count": 1, "monthly": [14.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 0, 0, 0, 0, 0, 0, 0], "first": "27/01/2026", "last": "27/01/2026", "tipo": "Otro", "pct": 0.0}, "Victor Hugo abad Panta": {"total": 283.6, "count": 7, "monthly": [0.0, 0.0, 0.0, 69.48, 36.0, 106.56, 71.56, 0.0], "monthlyCount": [0, 0, 0, 2, 1, 2, 2, 0], "first": "14/04/2026", "last": "25/07/2026", "tipo": "Empresa (RUC)", "pct": 0.02}, "WILMER EMANUEL LEANDRO SALAZAR": {"total": 68174.8, "count": 17, "monthly": [0.0, 0.0, 6744.79, 8380.74, 28058.03, 23021.89, 763.31, 1206.04], "monthlyCount": [0, 0, 1, 2, 6, 4, 2, 2], "first": "17/03/2026", "last": "06/08/2026", "tipo": "Empresa (RUC)", "pct": 5.88}, "XIGMA IMPORT": {"total": 7824.31, "count": 27, "monthly": [227.21, 2932.86, 2356.23, 2138.11, 154.9, 0.0, 15.0, 0.0], "monthlyCount": [1, 10, 8, 5, 2, 0, 1, 0], "first": "29/01/2026", "last": "13/07/2026", "tipo": "Empresa (RUC)", "pct": 0.67}, "XIGMA IMPORT SAC": {"total": 2285.47, "count": 8, "monthly": [2285.47, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [8, 0, 0, 0, 0, 0, 0, 0], "first": "05/01/2026", "last": "26/01/2026", "tipo": "Otro", "pct": 0.2}, "YELILE AUXILIADORA JAIMES SOSA": {"total": 9.0, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 9.0, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 0, 1, 0], "first": "30/07/2026", "last": "30/07/2026", "tipo": "Otro", "pct": 0.0}, "YERIKA OBREGON": {"total": 844.68, "count": 8, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 32.0, 812.68, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 1, 7, 0], "first": "30/06/2026", "last": "25/07/2026", "tipo": "Persona (DNI)", "pct": 0.07}, "YERSON PALACIOS EULOGIO": {"total": 65.65, "count": 4, "monthly": [17.69, 0.0, 23.63, 24.33, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [1, 0, 1, 2, 0, 0, 0, 0], "first": "20/01/2026", "last": "29/04/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "YORK IMPORT": {"total": 30697.06, "count": 12, "monthly": [30697.06, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [12, 0, 0, 0, 0, 0, 0, 0], "first": "05/01/2026", "last": "30/01/2026", "tipo": "Empresa (RUC)", "pct": 2.65}, "YORK IMPORTACIONES": {"total": 128036.99, "count": 65, "monthly": [0.0, 21249.99, 25605.47, 16537.32, 17216.08, 25324.08, 19573.28, 2530.77], "monthlyCount": [0, 13, 12, 9, 8, 8, 14, 1], "first": "04/02/2026", "last": "04/08/2026", "tipo": "Empresa (RUC)", "pct": 11.04}, "Yerika -USA": {"total": 17901.53, "count": 37, "monthly": [1005.06, 6374.11, 3053.69, 4310.0, 3158.67, 0.0, 0.0, 0.0], "monthlyCount": [8, 12, 6, 6, 5, 0, 0, 0], "first": "05/01/2026", "last": "22/05/2026", "tipo": "Persona (DNI)", "pct": 1.54}, "Yerika Obregon": {"total": 122.31, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 122.31, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 1, 0, 0], "first": "26/06/2026", "last": "26/06/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "Yerson Palacios": {"total": 10.0, "count": 1, "monthly": [0.0, 0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 1, 0, 0, 0, 0, 0], "first": "06/03/2026", "last": "06/03/2026", "tipo": "Otro", "pct": 0.0}, "ZAPATA VARGAS SEBASTIAN ANDRES": {"total": 431.41, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 431.41, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 1, 0, 0, 0], "first": "30/05/2026", "last": "30/05/2026", "tipo": "Persona (DNI)", "pct": 0.04}, "ericka mattos iriarte": {"total": 162.85, "count": 6, "monthly": [0.0, 86.18, 0.0, 44.46, 0.0, 32.21, 0.0, 0.0], "monthlyCount": [0, 3, 0, 1, 0, 2, 0, 0], "first": "13/02/2026", "last": "06/06/2026", "tipo": "Persona (DNI)", "pct": 0.01}, "febek corp": {"total": 12.06, "count": 1, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 12.06, 0.0, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 1, 0, 0], "first": "26/06/2026", "last": "26/06/2026", "tipo": "Otro", "pct": 0.0}, "germán Palacios": {"total": 31.25, "count": 2, "monthly": [0.0, 0.0, 7.5, 23.75, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 0, 1, 1, 0, 0, 0, 0], "first": "24/03/2026", "last": "15/04/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "juan carlos Valdivia": {"total": 10.0, "count": 1, "monthly": [0.0, 10.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 1, 0, 0, 0, 0, 0, 0], "first": "11/02/2026", "last": "11/02/2026", "tipo": "Persona (DNI)", "pct": 0.0}, "luis felipa Monroy": {"total": 540.11, "count": 3, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 11.5, 528.61], "monthlyCount": [0, 0, 0, 0, 0, 0, 1, 2], "first": "13/07/2026", "last": "07/08/2026", "tipo": "Empresa (RUC)", "pct": 0.05}, "luis felipa monroy": {"total": 2468.48, "count": 8, "monthly": [0.0, 0.0, 0.0, 491.15, 541.55, 1204.94, 230.84, 0.0], "monthlyCount": [0, 0, 0, 2, 1, 4, 1, 0], "first": "10/04/2026", "last": "09/07/2026", "tipo": "Persona (DNI)", "pct": 0.21}, "srta LILELY": {"total": 27.48, "count": 1, "monthly": [0.0, 27.48, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 1, 0, 0, 0, 0, 0, 0], "first": "23/02/2026", "last": "23/02/2026", "tipo": "Empresa (RUC)", "pct": 0.0}, "srta PATRICIA": {"total": 144.08, "count": 1, "monthly": [0.0, 144.08, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], "monthlyCount": [0, 1, 0, 0, 0, 0, 0, 0], "first": "23/02/2026", "last": "23/02/2026", "tipo": "Empresa (RUC)", "pct": 0.01}, "wilder ricardo morales cornejo": {"total": 4077.41, "count": 4, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3400.75, 676.66], "monthlyCount": [0, 0, 0, 0, 0, 0, 3, 1], "first": "07/07/2026", "last": "10/08/2026", "tipo": "Persona (DNI)", "pct": 0.35}, "yerika Obregon": {"total": 2133.49, "count": 5, "monthly": [0.0, 0.0, 0.0, 0.0, 0.0, 1589.42, 544.07, 0.0], "monthlyCount": [0, 0, 0, 0, 0, 4, 1, 0], "first": "02/06/2026", "last": "02/07/2026", "tipo": "Persona (DNI)", "pct": 0.18}};
+const DAILY = [[0.0, 0.0, 720.02, 0.0, 15931.98, 9101.39, 165.4, 750.61, 7602.96, 178.65, 0.0, 1013.24, 8674.43, 70.45, 8.66, 8862.63, 7.0, 0.0, 1745.54, 9563.94, 1725.14, 8518.92, 20986.64, 271.63, 0.0, 4042.19, 476.94, 5399.78, 4227.77, 9553.56, 2068.05], [0.0, 5575.59, 30156.7, 20908.5, 1554.37, 11133.59, 0.0, 0.0, 11959.33, 15401.32, 115.42, 9.0, 17200.44, 305.22, 0.0, 1075.51, 6536.91, 4213.2, 8015.42, 16951.94, 1891.66, 0.0, 276.27, 4987.46, 11751.54, 2151.46, 15413.78, 3049.7], [0.0, 1759.58, 17071.87, 317.83, 0.0, 11359.97, 8319.49, 0.0, 5175.53, 7897.55, 8193.15, 892.53, 9011.61, 0.0, 0.0, 1223.04, 27130.05, 48.49, 7087.28, 6636.34, 8543.23, 0.0, 0.0, 9963.4, 8301.04, 48.15, 11584.54, 8201.05, 0.0, 3251.05, 17280.26], [4210.88, 0.0, 0.0, 12.0, 0.0, 3040.34, 27036.61, 2245.63, 151.01, 16820.07, 0.0, 0.0, 1774.13, 18575.38, 384.65, 64.38, 9922.33, 0.0, 0.0, 0.0, 5868.31, 17434.82, 687.55, 10142.3, 1331.17, 0.0, 140.17, 24658.6, 56.25, 9247.66], [0.0, 11262.89, 0.0, 9.0, 18002.82, 7209.86, 0.0, 11941.66, 5369.62, 0.0, 3777.0, 10628.81, 15148.52, 0.0, 19902.58, 8984.25, 0.0, 0.0, 8170.94, 10111.45, 9197.98, 7050.25, 427.2, 0.0, 6075.1, 15831.49, 105.57, 3528.41, 3625.1, 980.4, 0.0], [6640.83, 347.63, 19214.66, 2724.25, 14674.34, 32.21, 0.0, 6509.16, 749.36, 6745.93, 10750.45, 338.52, 70.56, 0.0, 9680.45, 5806.23, 10245.05, 13008.73, 7153.13, 149.6, 0.0, 4579.25, 18112.05, 1249.17, 3337.68, 2985.67, 0.0, 0.0, 0.0, 5821.92], [5340.28, 3845.03, 4210.27, 0.0, 0.0, 1832.59, 26402.99, 7240.02, 1783.18, 4662.17, 10108.3, 0.0, 1085.47, 1210.37, 10978.4, 6274.56, 1348.85, 32.55, 0.0, 10102.75, 2794.58, 5398.42, 0.0, 1655.06, 7355.93, 0.0, 18971.15, 0.0, 0.0, 4654.59, 12125.2], [10271.75, 0.0, 536.4, 5695.04, 2984.56, 3183.34, 6604.72, 0.0, 0.0, 4101.05, 2920.95, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]; // DAILY[monthIdx] = [ingreso_dia1, ingreso_dia2, ...]
+const monthlyRevenue = [121667.52,190634.33,179297.03,153804.24,177340.90,150926.83,149412.71,36297.81];
+const monthlyCount   = [219,304,303,214,168,178,230,51];
+const MOM_RETENTION  = [60.3,71.0,71.2,67.2,60.9,66.7,42.6]; // transición mes i -> i+1
+const TOTAL_ALL   = Object.values(CLIENTS).reduce((s,c)=>s+c.total,0);
+const N_INVOICES  = Object.values(CLIENTS).reduce((s,c)=>s+c.count,0);
+const N_CLIENTS   = Object.keys(CLIENTS).length;
+const N_REPEAT    = Object.values(CLIENTS).filter(c=>c.count>=2).length;
+
+/* ---- FORMATTERS ---- */
+const currencyFmt = new Intl.NumberFormat('es-PE', { style:'currency', currency:'PEN', maximumFractionDigits:0 });
+const fmt  = n => currencyFmt.format(n||0).replace('PEN','S/');
+const fmtK = n => 'S/' + Math.round((n||0)/1000).toLocaleString('es-PE') + 'K';
+const pct1 = n => (n||0).toFixed(1)+'%';
+
+/* ===================================================================
+   STATE
+   =================================================================== */
+const state = { mode:'all', client:null, month:null };
+
+/* ===================================================================
+   PURE COMPUTE FUNCTIONS — no tocan el DOM, siempre devuelven datos
+   =================================================================== */
+
+// Lista de clientes respetando el filtro de mes (revenue/count del mes o del total)
+function clientEntries(monthIdx){
+  return Object.entries(CLIENTS).map(([name,d])=>({
+    name,
+    total: monthIdx==null ? d.total : d.monthly[monthIdx],
+    count: monthIdx==null ? d.count : d.monthlyCount[monthIdx],
+    tipo: d.tipo,
+  }));
+}
+
+// Algoritmo de riesgo (clientes recurrentes/relevantes con caída o inactividad)
+function computeRiskClients(){
+  return Object.entries(CLIENTS).map(([name,d])=>{
+    const activeIdxs = d.monthly.map((v,i)=>v>0?i:-1).filter(i=>i>=0);
+    if(activeIdxs.length===0) return null;
+    const lastActive = activeIdxs[activeIdxs.length-1];
+    const monthsInactive = LAST_MONTH_IDX - lastActive;
+    const peak = Math.max(...d.monthly);
+    const peakIdx = d.monthly.indexOf(peak);
+    const lastVal = d.monthly[lastActive];
+    const dropRatio = peak>0 ? (peak-lastVal)/peak : 0;
+
+    const isRecurring = d.count>=2;
+    const isMeaningful = d.total>=300;
+    let reason=null, type=null, severity=0;
+
+    if(isRecurring && isMeaningful && monthsInactive>=2){
+      reason = `Sin compras hace ${monthsInactive} meses (última: ${d.last})`;
+      type = 'inactivo';
+      severity = monthsInactive*10 + d.total/1000;
+    } else if(isRecurring && isMeaningful && peakIdx < lastActive && dropRatio>=0.6){
+      reason = `Caída de ${Math.round(dropRatio*100)}% desde su mes pico`;
+      type = 'caida';
+      severity = dropRatio*10 + d.total/1000;
+    }
+    if(!reason) return null;
+    return { name, total:d.total, count:d.count, pct:+(d.total/TOTAL_ALL*100).toFixed(2), monthsInactive, dropRatio, reason, type, severity };
+  }).filter(Boolean).sort((a,b)=>b.severity-a.severity);
+}
+const RISK_CLIENTS = computeRiskClients(); // se calcula una sola vez
+const RISK_TOTAL = RISK_CLIENTS.reduce((s,c)=>s+c.total,0);
+
+// Top-N clientes por total (respetando filtro de mes), con paleta asignada
+function topClientsBy(n, monthIdx){
+  const denom = monthIdx==null ? TOTAL_ALL : monthlyRevenue[monthIdx];
+  return clientEntries(monthIdx)
+    .filter(c=>c.total>0)
+    .sort((a,b)=>b.total-a.total)
+    .slice(0,n)
+    .map((c,i)=>({ ...c, pct:+(c.total/denom*100).toFixed(2), color:PALETTE[i%PALETTE.length] }));
+}
+
+// KPI dataset segun el estado actual
+function computeKPIs(){
+  const { mode, client, month } = state;
+
+  if(client){
+    const d = CLIENTS[client];
+    if(month!=null){
+      const rev = d.monthly[month], cnt = d.monthlyCount[month];
+      return {
+        label: client, main: fmt(rev), badge: `${MONTHS_FULL[month]} · ${pct1(d.total? rev/d.total*100:0)} del total del cliente`,
+        tile1Label:'Ticket promedio', tile1Val: cnt? fmt(rev/cnt) : '—',
+        tile2Label:'Cotizaciones', tile2Val: cnt,
+        tile3Label:'% de la cartera ese mes', tile3Val: pct1(monthlyRevenue[month]? rev/monthlyRevenue[month]*100:0),
+        tile4Val: pct1(d.pct), tile5Label:'peso en cartera total', tile5Val: pct1(d.pct),
+      };
+    }
+    return {
+      label: client, main: fmt(d.total), badge: `${pct1(d.pct)} de la cartera total`,
+      tile1Label:'Ticket promedio', tile1Val: fmt(d.total/d.count),
+      tile2Label:'Cotizaciones pagadas', tile2Val: d.count,
+      tile3Label:'Primera compra', tile3Val: d.first,
+      tile4Val: d.count>=2 ? 'Sí' : 'No', tile5Label:'Última compra', tile5Val: d.last,
+    };
+  }
+
+  if(month!=null){
+    const rev = monthlyRevenue[month], cnt = monthlyCount[month];
+    const activeClients = clientEntries(month).filter(c=>c.total>0).length;
+    const prevRet = month>0 ? MOM_RETENTION[month-1] : null;
+    return {
+      label: `Ingresos · ${MONTHS_FULL[month]}`, main: fmt(rev),
+      badge: month>0 ? `${rev>=monthlyRevenue[month-1]?'▲':'▼'} vs ${MONTHS[month-1]}: ${pct1(Math.abs((rev-monthlyRevenue[month-1])/monthlyRevenue[month-1]*100))}` : 'primer mes del periodo',
+      tile1Label:'Ticket promedio', tile1Val: fmt(rev/cnt),
+      tile2Label:'Cotizaciones', tile2Val: cnt,
+      tile3Label:'Clientes activos', tile3Val: activeClients,
+      tile4Val: prevRet!=null ? pct1(prevRet) : 'N/A',
+      tile5Label:'retención vs mes anterior', tile5Val: prevRet!=null ? pct1(prevRet) : '—',
+    };
+  }
+
+  if(mode==='top'){
+    const top10 = topClientsBy(10, null);
+    const sum = top10.reduce((s,c)=>s+c.total,0);
+    const cnt = top10.reduce((s,c)=>s+c.count,0);
+    return {
+      label:'Ingresos · Top 10 clientes', main: fmt(sum), badge:`${pct1(sum/TOTAL_ALL*100)} del total de cartera`,
+      tile1Label:'Ticket promedio (top 10)', tile1Val: fmt(sum/cnt),
+      tile2Label:'Cotizaciones (top 10)', tile2Val: cnt,
+      tile3Label:'Clientes en este grupo', tile3Val: 10,
+      tile4Val: pct1(N_REPEAT/N_CLIENTS*100), tile5Label:'peso sobre cartera total', tile5Val: pct1(sum/TOTAL_ALL*100),
+    };
+  }
+
+  if(mode==='risk'){
+    const invTypes = RISK_CLIENTS.filter(c=>c.type==='inactivo').length;
+    const dropTypes = RISK_CLIENTS.filter(c=>c.type==='caida').length;
+    return {
+      label:'Ingresos en riesgo', main: fmt(RISK_TOTAL), badge:`${pct1(RISK_TOTAL/TOTAL_ALL*100)} de la cartera total`,
+      tile1Label:'Clientes en riesgo', tile1Val: RISK_CLIENTS.length + ' / ' + N_CLIENTS,
+      tile2Label:'Por inactividad (2+ meses)', tile2Val: invTypes,
+      tile3Label:'Por caída brusca (≥60%)', tile3Val: dropTypes,
+      tile4Val: pct1(N_REPEAT/N_CLIENTS*100), tile5Label:'retención mensual (M/M)', tile5Val: '66.2%',
+    };
+  }
+
+  // mode === 'all'
+  return {
+    label:'Ingresos pagados · Ene–Ago 2026', main: fmt(TOTAL_ALL), badge:'▲ 22.8% jul vs ene',
+    tile1Label:'Ticket promedio', tile1Val: fmt(TOTAL_ALL/N_INVOICES),
+    tile2Label:'Cotizaciones pagadas', tile2Val: N_INVOICES.toLocaleString('es-PE'),
+    tile3Label:'Clientes activos', tile3Val: N_CLIENTS,
+    tile4Val: pct1(N_REPEAT/N_CLIENTS*100), tile5Label:'retención mensual (M/M)', tile5Val: '66.2%',
+  };
+}
+
+// Donut dataset segun el estado
+function computeDonut(){
+  const { mode, client, month } = state;
+
+  if(client){
+    const d = CLIENTS[client];
+    const base = month==null ? d.pct : (monthlyRevenue[month] ? +(d.monthly[month]/monthlyRevenue[month]*100).toFixed(2) : 0);
+    const rest = +(100-base).toFixed(2);
+    return { center: month==null?fmtK(TOTAL_ALL):fmtK(monthlyRevenue[month]),
+      slices:[ {name:client, pct:base, color:COLORS.gold}, {name:'Resto de la cartera', pct:rest, color:COLORS.otros} ] };
+  }
+
+  if(mode==='risk'){
+    const top6 = RISK_CLIENTS.slice(0,6).map((c,i)=>({name:c.name, pct:c.pct, color:PALETTE[i]}));
+    const otherRiskPct = +(RISK_TOTAL/TOTAL_ALL*100 - top6.reduce((s,c)=>s+c.pct,0)).toFixed(2);
+    const healthyPct = +(100 - RISK_TOTAL/TOTAL_ALL*100).toFixed(2);
+    return { center: fmtK(TOTAL_ALL), slices:[...top6,
+      {name:'Otros clientes en riesgo', pct:Math.max(otherRiskPct,0), color:'#7a2e2e'},
+      {name:'Cartera sin riesgo', pct:healthyPct, color:COLORS.otros}] };
+  }
+
+  const n = mode==='top' ? 10 : 6;
+  const top = topClientsBy(n, month);
+  const denom = month==null ? TOTAL_ALL : monthlyRevenue[month];
+  const shown = top.reduce((s,c)=>s+c.total,0);
+  const restPct = +((denom-shown)/denom*100).toFixed(2);
+  const nOthers = N_CLIENTS - top.length;
+  const slices = top.map(c=>({name:c.name, pct:c.pct, color:c.color}));
+  if(restPct>0.05) slices.push({name:`Otros (${nOthers} clientes)`, pct:restPct, color:COLORS.otros});
+  return { center: month==null?fmtK(TOTAL_ALL):fmtK(monthlyRevenue[month]), slices };
+}
+
+// Serie de linea segun el estado
+function computeLine(){
+  const { client, month } = state;
+
+  if(client){
+    const d = CLIENTS[client];
+    if(month!=null){
+      // mismo cliente, con el mes seleccionado resaltado (punto mas grande)
+      return { labels: MONTHS, showAxis2:false,
+        datasets:[{ label:client, data:d.monthly, color:COLORS.gold,
+          pointRadii: MONTHS.map((_,i)=> i===month?7:3) }] };
+    }
+    const scaleRef = monthlyRevenue.map(v => v * (Math.max(...d.monthly,1) / Math.max(...monthlyRevenue)));
+    return { labels: MONTHS, showAxis2:false,
+      datasets:[
+        { label:client, data:d.monthly, color:COLORS.gold, pointRadii: MONTHS.map(()=>4) },
+        { label:'Ref. cartera (escalada)', data:scaleRef, color:'#4a4f5c', dash:[3,3], pointRadii: MONTHS.map(()=>2.5) },
+      ]};
+  }
+
+  if(month!=null){
+    // drill-down diario del mes seleccionado
+    const days = DAILY[month];
+    const labels = days.map((_,i)=> String(i+1).padStart(2,'0'));
+    return { labels, showAxis2:false, daily:true,
+      datasets:[{ label:MONTHS_FULL[month], data:days, color:COLORS.gold, pointRadii: days.map(()=>2) }] };
+  }
+
+  return { labels: MONTHS, showAxis2:true,
+    datasets:[
+      { label:'Ingresos', data:monthlyRevenue, color:COLORS.gold, yAxisID:'y', pointRadii: MONTHS.map(()=>4) },
+      { label:'# Cotizaciones', data:monthlyCount, color:COLORS.lime, yAxisID:'y1', dash:[4,4], pointRadii: MONTHS.map(()=>2.5) },
+    ]};
+}
+
+// Barras de contribucion
+function computeContrib(){
+  const { mode, client, month } = state;
+  if(client){
+    const d = CLIENTS[client];
+    const denom = d.total || 1;
+    return { label:'Contribución mensual', sub:'% del total del cliente',
+      bars: MONTHS.map((m,i)=>({ label:m, val:d.monthly[i], pct:+(d.monthly[i]/denom*100).toFixed(1), highlight: i===month })) };
+  }
+  if(mode==='risk'){
+    return { label:'Top clientes en riesgo', sub:'% de la cartera total',
+      bars: RISK_CLIENTS.slice(0,6).map(c=>({ label:c.name, val:c.total, pct:c.pct, caption:c.reason, color: c.type==='inactivo'?COLORS.gray:COLORS.red })) };
+  }
+  const n = mode==='top' ? 10 : 6;
+  const top = topClientsBy(n, month);
+  return { label:`Contribución por cliente (top ${n})`, sub: month==null ? '% del total pagado' : `% de ${MONTHS_FULL[month]}`,
+    bars: top.map(c=>({ label:c.name, val:c.total, pct:c.pct, color:c.color })) };
+}
+
+// Filas de tabla
+function computeTable(){
+  const { mode, client, month } = state;
+
+  if(client){
+    const d = CLIENTS[client];
+    return { head:['Mes','Total pagado','% del cliente','vs mes anterior'],
+      rows: MONTHS.map((m,i)=>{
+        const val = d.monthly[i], prev = i>0?d.monthly[i-1]:null;
+        let delta = '—';
+        if(prev!=null){
+          if(prev===0 && val>0) delta = 'nuevo';
+          else if(prev>0){ const p=(val-prev)/prev*100; delta = `${p>=0?'▲':'▼'} ${Math.abs(p).toFixed(0)}%`; }
+        }
+        return { cells:[m, fmt(val), pct1(d.total?val/d.total*100:0), delta], hi: i===month };
+      }) };
+  }
+
+  if(mode==='risk'){
+    return { head:['Cliente','Motivo','Meses inactivo','Total pagado','% cartera'],
+      rows: RISK_CLIENTS.map(c=>({ cells:[c.name, c.reason, c.type==='inactivo'?c.monthsInactive:'—', fmt(c.total), pct1(c.pct)], type:c.type })) };
+  }
+
+  const n = mode==='top' ? 10 : 12;
+  const top = topClientsBy(n, month);
+  return { head:['Cliente','Cotizaciones','Total pagado','Ticket prom.','% del total'],
+    rows: top.map(c=>({ cells:[c.name, c.count, fmt(c.total), c.count?fmt(c.total/c.count):'—', pct1(c.pct)] })) };
+}
+
+// Panel de tipo de cliente (Empresa/Persona) — exacto por mes ya que 'tipo' es propiedad fija del cliente
+function computeSegments(){
+  const { client, month } = state;
+  if(client){
+    const d = CLIENTS[client];
+    const activeMonths = d.monthly.filter(v=>v>0).length;
+    const bestIdx = d.monthly.indexOf(Math.max(...d.monthly));
+    return { isProfile:true, rows:[
+      ['Tipo de cliente', d.tipo],
+      ['Meses activos', `${activeMonths} / 8`],
+      ['Mejor mes', `${MONTHS[bestIdx]} · ${fmt(d.monthly[bestIdx])}`],
+      ['Frecuencia de compra', `${(d.count/Math.max(activeMonths,1)).toFixed(1)} / mes activo`],
+    ]};
+  }
+  const entries = clientEntries(month);
+  const totalDenom = entries.reduce((s,c)=>s+c.total,0) || 1;
+  const groups = {};
+  entries.forEach(c=>{ groups[c.tipo] = (groups[c.tipo]||0) + c.total; });
+  const order = ['Empresa (RUC)','Persona (DNI)','Otro'];
+  const colors = { 'Empresa (RUC)':COLORS.gold, 'Persona (DNI)':COLORS.blue, 'Otro':COLORS.gray };
+  const segs = order.filter(k=>groups[k]!=null).map(k=>({ label:k, pct:+(groups[k]/totalDenom*100).toFixed(1), color:colors[k] }));
+  return { isProfile:false, segs };
+}
+
+// Panel de alerta / insight
+function computeFlag(){
+  const { mode, client, month } = state;
+  if(client){
+    const d = CLIENTS[client];
+    const risky = RISK_CLIENTS.find(r=>r.name===client);
+    if(risky){
+      return { ok:false, icon:'⚠', title:'Cuenta en riesgo', body:
+        `<b>${client}</b> está marcado en riesgo: ${risky.reason}. Representa <b>${pct1(risky.pct)}</b> de tus ingresos totales — conviene contactarlo antes de perder la cuenta.` };
+    }
+    if(d.pct>=5){
+      return { ok:false, icon:'★', title:'Cuenta clave', body:
+        `<b>${client}</b> representa el <b>${pct1(d.pct)}</b> de tus ingresos pagados totales. Es una cuenta clave: formaliza condiciones comerciales y monitorea su actividad de cerca.` };
+    }
+    return { ok:true, icon:'✓', title:'Cuenta de cartera regular', body:
+      `<b>${client}</b> representa el <b>${pct1(d.pct)}</b> de los ingresos totales, con <b>${d.count}</b> cotizaciones pagadas entre ${d.first} y ${d.last}. Sin riesgo de concentración individual.` };
+  }
+  if(month!=null){
+    const top = topClientsBy(3, month);
+    const rev = monthlyRevenue[month];
+    const sum3 = top.reduce((s,c)=>s+c.total,0);
+    return { ok:false, icon:'ℹ', title:`Concentración en ${MONTHS_FULL[month]}`, body:
+      `Los 3 clientes principales de <b>${MONTHS_FULL[month]}</b> (${top.map(c=>c.name).join(', ')}) concentran el <b>${pct1(sum3/rev*100)}</b> de los ingresos de ese mes.` };
+  }
+  if(mode==='risk'){
+    return { ok:false, icon:'⚠', title:'Riesgo de abandono — detalle', body:
+      `<b>${RISK_CLIENTS.length} de ${N_CLIENTS} clientes</b> (${pct1(RISK_CLIENTS.length/N_CLIENTS*100)}) muestran señales de abandono, representando <b>${pct1(RISK_TOTAL/TOTAL_ALL*100)}</b> de tus ingresos totales. Prioriza contacto directo con los de mayor "% cartera" en la tabla — son los que más impacto tendrían si se van.` };
+  }
+  if(mode==='top'){
+    const top10sum = topClientsBy(10,null).reduce((s,c)=>s+c.total,0);
+    return { ok:false, icon:'⚠', title:'Riesgo de concentración', body:
+      `El <b>top 10 de clientes</b> concentra el <b>${pct1(top10sum/TOTAL_ALL*100)}</b> de los ingresos pagados. Vale la pena diversificar la cartera y asegurar contratos/SLAs con las cuentas top.` };
+  }
+  return { ok:false, icon:'⚠', title:'Riesgo de concentración', body:
+    `El <b>top 10 de clientes</b> concentra el <b>67.2%</b> de los ingresos pagados, y un solo cliente (AVI COURIER) representa el <b>19.2%</b>. Vale la pena diversificar la cartera y asegurar contratos/SLAs con las cuentas top.` };
+}
+
+/* ===================================================================
+   RENDER FUNCTIONS — toman el resultado de compute*() y pintan el DOM
+   =================================================================== */
+
+function renderKPIs(k){
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val; };
+
+  // La tarjeta principal reutiliza su propio label (primer nodo de texto, antes del icono "?")
+  const eyebrowText = document.getElementById('kpiMain').closest('.stat-card').querySelector('.eyebrow').childNodes[0];
+  eyebrowText.nodeValue = k.label.toUpperCase()+' ';
+  set('kpiMain', k.main);
+  const badgeEl = document.getElementById('kpiBadge');
+  badgeEl.textContent = k.badge;
+  badgeEl.className = 'text-[11px] font-bold mt-1.5 mono ' + (k.badge && k.badge.startsWith('▼') ? 'down' : 'up');
+
+  set('kpiTile1Val', k.tile1Val);
+  set('kpiTile1Label', k.tile1Label);
+  set('kpiTile2Val', k.tile2Val);
+  set('kpiTile2Label', k.tile2Label);
+  set('kpiTile3Val', k.tile3Val);
+  set('kpiTile3Label', k.tile3Label);
+  set('kpiTile4Val', k.tile4Val);
+  set('kpiTile5Label', k.tile5Label);
+  set('kpiTile5Val', k.tile5Val);
+}
+
+let donutChart, lineChart;
+
+function renderDonut(d){
+  document.getElementById('donutCenter').textContent = d.center;
+  if(donutChart) donutChart.destroy();
+  donutChart = new Chart(document.getElementById('donutClientes'), {
+    type:'doughnut',
+    data:{ labels: d.slices.map(s=>s.name), datasets:[{ data: d.slices.map(s=>s.pct), backgroundColor: d.slices.map(s=>s.color), borderColor:'#0d0f16', borderWidth:3, hoverOffset:10 }] },
+    options:{
+      cutout:'68%',
+      onClick:(evt, els)=>{
+        if(!els.length) return;
+        const idx = els[0].index;
+        const label = d.slices[idx].name;
+        if(CLIENTS[label]){ state.client = label; state.month = state.month; syncControls(); render(); }
+      },
+      plugins:{ legend:{display:false}, tooltip:{
+        backgroundColor:'#12141c', borderColor:'#262a36', borderWidth:1, padding:10, titleColor:'#f2f3f6', bodyColor:'#9aa0ae',
+        callbacks:{ label:(ctx)=> ' '+ctx.label+': '+ctx.raw+'%' } } }
+    }
+  });
+  const legendEl = document.getElementById('donutLegend');
+  legendEl.innerHTML = '';
+  d.slices.forEach(s=>{
+    const row = document.createElement('div');
+    row.className = 'flex items-center justify-between gap-3' + (CLIENTS[s.name] ? ' cursor-pointer hover:opacity-80' : '');
+    row.innerHTML = `<span class="flex items-center gap-2 text-[--text-mid] truncate"><span class="w-2 h-2 rounded-full shrink-0" style="background:${s.color}"></span><span class="truncate" title="${s.name}">${s.name}</span></span><span class="mono font-semibold shrink-0">${s.pct}%</span>`;
+    if(CLIENTS[s.name]) row.addEventListener('click', ()=>{ state.client = s.name; syncControls(); render(); });
+    legendEl.appendChild(row);
+  });
+}
+
+function renderLine(ld){
+  document.getElementById('lineFootnote').style.display = (!state.client && state.month==null) ? '' : 'none';
+  document.getElementById('lineLegendText').innerHTML = ld.datasets.map(ds=>
+    `<span class="flex items-center gap-1.5"><span class="w-2 h-2 inline-block" style="background:${ds.color}"></span>${ds.label.length>26?ds.label.slice(0,26)+'…':ds.label}</span>`).join('');
+  document.getElementById('lineLabel').textContent = ld.daily ? `INGRESOS DIARIOS · ${ld.datasets[0].label.toUpperCase()}` : (state.client ? `INGRESOS MENSUALES · ${state.client.toUpperCase()}` : 'INGRESOS / MES');
+
+  if(lineChart) lineChart.destroy();
+  const scales = {
+    x:{ grid:{ color:'#161821' }, ticks:{ color:'#5c6273', font:{family:"'JetBrains Mono'",size: ld.daily?9:11}, maxRotation:0, autoSkip:true, maxTicksLimit: ld.daily?10:12 } },
+    y:{ position:'left', grid:{ color:'#161821' }, ticks:{ color:'#5c6273', font:{family:"'JetBrains Mono'",size:10}, callback:(v)=>'S/'+(v/1000).toFixed(0)+'K' } },
+  };
+  if(ld.showAxis2) scales.y1 = { position:'right', grid:{ display:false }, ticks:{ color:'#5c6273', font:{family:"'JetBrains Mono'",size:10} } };
+
+  lineChart = new Chart(document.getElementById('lineChart'), {
+    type:'line',
+    data:{ labels: ld.labels, datasets: ld.datasets.map(ds => ({
+      label: ds.label, data: ds.data, borderColor: ds.color, backgroundColor: ds.color+'14',
+      borderWidth: ds.dash && ds.dash.length ? 1.5 : 2.5, borderDash: ds.dash || [],
+      pointBackgroundColor: ds.color, pointRadius: ds.pointRadii || 3, pointHoverRadius:7,
+      tension:.35, yAxisID: ds.yAxisID || 'y', fill: !ld.daily ? false : true,
+    })) },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{ display:false },
+        tooltip:{ backgroundColor:'#12141c', borderColor:'#262a36', borderWidth:1, padding:10, titleColor:'#f2f3f6', bodyColor:'#9aa0ae',
+          callbacks:{ label:(ctx)=> '  '+ctx.dataset.label+': '+(ctx.dataset.yAxisID==='y1' ? ctx.raw : fmt(ctx.raw)) } } },
+      scales
+    }
+  });
+}
+
+function renderContrib(c){
+  document.getElementById('contribLabel').textContent = c.label.toUpperCase();
+  document.getElementById('contribSubLabel').textContent = c.sub;
+  document.getElementById('clientBars').innerHTML = c.bars.map(b=>`
+    <div class="py-3 first:pt-0 last:pb-0 ${b.highlight ? 'bg-[#d9b25c0d] -mx-2 px-2 rounded-md' : ''}">
+      <div class="flex items-center justify-between mb-1.5 gap-3">
+        <span class="text-[13.5px] font-semibold truncate">${b.label}</span>
+        <span class="mono text-[13.5px] font-bold shrink-0">${b.pct}%</span>
+      </div>
+      ${b.caption ? `<div class="text-[11px] text-[--text-low] mb-1.5">${b.caption}</div>` : ''}
+      <div class="bar-track h-1.5"><div class="h-1.5 rounded-md" style="width:${Math.min(Math.max(b.pct,2)*(c.bars.length>8?4:3),100)}%;background:${b.color||COLORS.gold}"></div></div>
+    </div>`).join('');
+}
+
+function renderTable(t){
+  document.getElementById('tableHead').innerHTML = t.head.map((h,i)=>
+    `<th class="pb-3 ${i===0?'pr-3':'text-right'} font-semibold">${h}</th>`).join('');
+  document.getElementById('tableBody').innerHTML = t.rows.map(r=>{
+    const cells = r.cells.map((v,i)=>{
+      if(i===0) return `<td class="py-3 pr-3 font-medium">${v}</td>`;
+      const goldLast = i===r.cells.length-1;
+      return `<td class="py-3 text-right mono ${goldLast?'font-semibold':'text-[--text-mid]'}" ${goldLast?'style="color:var(--gold)"':''}>${v}</td>`;
+    }).join('');
+    const rowClass = r.hi ? 'bg-[#d9b25c0d]' : (r.type==='inactivo' ? 'bg-[#7b83940a]' : (r.type==='caida' ? 'bg-[#f871710a]' : ''));
+    return `<tr class="${rowClass}">${cells}</tr>`;
+  }).join('');
+}
+
+function renderSegments(s){
+  document.getElementById('segmentLabel').textContent = s.isProfile ? 'PERFIL DEL CLIENTE' : 'TIPO DE CLIENTE';
+  const body = document.getElementById('segmentBody');
+  if(s.isProfile){
+    body.innerHTML = s.rows.map(([label,val],i)=>`
+      <div class="flex justify-between text-[13px] py-1.5 ${i>0?'border-t':''}" style="border-color:var(--line-soft)">
+        <span class="text-[--text-mid]">${label}</span><span class="font-semibold text-right">${val}</span>
+      </div>`).join('');
+  } else {
+    body.innerHTML = s.segs.map(seg=>`
+      <div>
+        <div class="flex justify-between text-[13px] mb-1">
+          <span class="flex items-center gap-2"><span class="w-2 h-2 rounded-full" style="background:${seg.color}"></span>${seg.label}</span>
+          <span class="mono font-semibold">${seg.pct}%</span>
+        </div>
+        <div class="bar-track h-2"><div class="h-2 rounded-md" style="width:${seg.pct}%;background:${seg.color}"></div></div>
+      </div>`).join('');
+  }
+}
+
+function renderFlag(f){
+  const panel = document.getElementById('flagPanel');
+  panel.classList.toggle('ok', !!f.ok);
+  document.getElementById('flagIcon').textContent = f.icon;
+  document.getElementById('flagIcon').className = f.ok ? 'up text-sm' : 'text-[--red] text-sm';
+  const titleEl = document.getElementById('flagTitle');
+  titleEl.textContent = f.title.toUpperCase();
+  titleEl.className = 'text-[12px] font-bold mono uppercase tracking-wide ' + (f.ok ? 'up' : 'text-[--red]');
+  document.getElementById('flagBody').innerHTML = f.body;
+}
+
+/* ===================================================================
+   MAIN DISPATCH
+   =================================================================== */
+function renderCharts(){
+  renderDonut(computeDonut());
+  renderLine(computeLine());
+}
+
+function render(){
+  ['linePanel','contribPanel','tablePanel','donutPanel','segmentPanel','flagPanel'].forEach(id=>{
+    const el = document.getElementById(id);
+    el.classList.remove('fade-in'); void el.offsetWidth; el.classList.add('fade-in');
+  });
+  renderKPIs(computeKPIs());
+  renderCharts();
+  renderContrib(computeContrib());
+  renderTable(computeTable());
+  renderSegments(computeSegments());
+  renderFlag(computeFlag());
+}
+
+/* ===================================================================
+   CONTROLS: chips, selects, sidebar drawer
+   =================================================================== */
+function syncControls(){
+  document.getElementById('clientSelect').value = state.client || '';
+  document.getElementById('monthSelect').value = state.month==null ? '' : state.month;
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.classList.toggle('active', !state.client && state.month==null && c.dataset.f===state.mode);
+    c.classList.toggle('risk-active', c.dataset.f==='risk' && !state.client && state.month==null && state.mode==='risk');
+  });
+}
+
+// populate client select
+const clientSelectEl = document.getElementById('clientSelect');
+clientSelectEl.appendChild(new Option('👥 Todos los clientes',''));
+Object.keys(CLIENTS).sort((a,b)=>CLIENTS[b].total-CLIENTS[a].total).forEach(name=>{
+  clientSelectEl.appendChild(new Option(`${name} · ${fmt(CLIENTS[name].total)}`, name));
+});
+clientSelectEl.addEventListener('change', ()=>{
+  state.client = clientSelectEl.value || null;
+  if(!state.client) state.mode = 'all';
+  syncControls(); render();
+});
+
+// populate month select
+const monthSelectEl = document.getElementById('monthSelect');
+monthSelectEl.appendChild(new Option('📅 Todos los meses',''));
+MONTHS_FULL.forEach((m,i)=> monthSelectEl.appendChild(new Option(m, i)));
+monthSelectEl.addEventListener('change', ()=>{
+  const v = monthSelectEl.value;
+  state.month = v==='' ? null : +v;
+  if(state.month!=null) state.mode='all';
+  syncControls(); render();
+});
+
+// chips
+document.querySelectorAll('.chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    state.mode = chip.dataset.f;
+    state.client = null; state.month = null;
+    syncControls(); render();
+  });
+});
+
+// sidebar drawer (mobile)
+const sidebarEl = document.getElementById('sidebar');
+const overlayEl = document.getElementById('drawerOverlay');
+function openDrawer(){ sidebarEl.classList.add('open'); overlayEl.classList.add('open'); }
+function closeDrawer(){ sidebarEl.classList.remove('open'); overlayEl.classList.remove('open'); }
+document.getElementById('hamburgerBtn').addEventListener('click', openDrawer);
+document.getElementById('sbClose').addEventListener('click', closeDrawer);
+overlayEl.addEventListener('click', closeDrawer);
+document.querySelectorAll('.sb-item').forEach(it=> it.addEventListener('click', closeDrawer));
+
+/* ---- INIT ---- */
+syncControls();
+render();
+
+</script>
+</body>
+</html>
