@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Holos · Control Comercial de Campo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+  button { font: inherit; }
+  input, select { font: inherit; outline: none; }
+  input:focus, select:focus { border-color: #33C9B0 !important; }
+  ::placeholder { color: #5C6C64; }
+  .row { display: flex; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ============ PALETA (sin cambios respecto a la versión anterior) ============ */
+const INK = "#0F1613";
+const PANEL = "#17211D";
+const PANEL_LIGHT = "#1E2A25";
+const LINE = "#2A3A33";
+const CREAM = "#EDEFE6";
+const LIME = "#C6FF3D";
+const TEAL = "#33C9B0";
+const CORAL = "#FF6B57";
+const AMBER = "#F2B84B";
+const MUTED = "#8FA097";
+
+/* ============ TIPOGRAFÍA HOMOGENEIZADA ============
+   Cormorant Garamond (serif elegante, marca/hero/números y títulos grandes)
+   Inter (sans, UI, labels, inputs, cuerpo) — solo 2 familias en toda la app. */
+const SERIF = "'Cormorant Garamond', serif";
+const SANS = "'Inter', sans-serif";
+
+const DISTRICTS = ["Miraflores", "Surco", "San Borja"];
+
+const STAGES = [
+  { key: "contactos", label: "Contactos Efectivos", short: "Contactos", target: 35, color: TEAL },
+  { key: "visitas", label: "Visitas / Reuniones", short: "Visitas", target: 20, color: LIME },
+  { key: "propuestas", label: "Propuestas Enviadas", short: "Propuestas", target: 15, color: AMBER },
+  { key: "cierres", label: "Cierres", short: "Cierres", target: 7, color: CORAL },
+];
+
+const STAGE_TRANSITIONS = [
+  { fromKey: "contactos", toKey: "visitas", label: "Contactos → Visitas", targetRate: STAGES[1].target / STAGES[0].target },
+  { fromKey: "visitas", toKey: "propuestas", label: "Visitas → Propuestas", targetRate: STAGES[2].target / STAGES[1].target },
+  { fromKey: "propuestas", toKey: "cierres", label: "Propuestas → Cierres", targetRate: STAGES[3].target / STAGES[2].target },
+];
+
+const MONTHLY_TARGET_CIERRES = 25;
+
+// Solo Miraflores tiene la base de 40 locales calificada en el business case.
+const TIER_DATA_BY_DISTRICT = {
+  Miraflores: [
+    { name: "Tier 1 · Boutique", value: 32, color: LIME },
+    { name: "Tier 2 · Gimnasios medianos", value: 37, color: TEAL },
+    { name: "Tier 3 · Descartado temporal", value: 27, color: "#3A4640" },
+  ],
+  Surco: [],
+  "San Borja": [],
+};
+
+const RUTA = [
+  { dia: "LUN", foco: "Gimnasios alta densidad", bloque: "Visita fría" },
+  { dia: "MAR", foco: "Gimnasios alta densidad", bloque: "Visita fría" },
+  { dia: "MIÉ", foco: "Centros funcionales / yoga", bloque: "Visita fría" },
+  { dia: "JUE", foco: "Centros funcionales / yoga", bloque: "Visita fría" },
+  { dia: "VIE", foco: "Agenda + seguimiento", bloque: "Cierre" },
+  { dia: "SÁB", foco: "Visitas agendadas", bloque: "Cierre" },
+];
+
+/* ============ ICONOS (SVG propios, minimalistas, sin dependencias) ============ */
+function icon(name, color, size) {
+  color = color || "currentColor"; size = size || 16;
+  const common = `xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:block"`;
+  const paths = {
+    users: `<circle cx="8" cy="8" r="3"/><circle cx="16.5" cy="9" r="2.3"/><path d="M3 20c0-3 2.4-5 5-5s5 2 5 5"/><path d="M14 20c0-2.1 1.5-3.8 3.8-4.2"/>`,
+    calendar: `<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18"/><path d="M8 3v4"/><path d="M16 3v4"/><path d="m9 15 2 2 4-4"/>`,
+    file: `<path d="M14 3v5h5"/><path d="M6 3h8l5 5v13H6z"/><path d="M9 13h6"/><path d="M9 17h6"/>`,
+    target: `<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="0.8" fill="${color}"/>`,
+    trophy: `<path d="M8 4h8v4a4 4 0 0 1-8 0V4z"/><path d="M8 5H5a3 3 0 0 0 3 5"/><path d="M16 5h3a3 3 0 0 1-3 5"/><path d="M10 15h4v3h-4z"/><path d="M8 21h8"/>`,
+    alert: `<path d="M12 3 2 20h20L12 3z"/><path d="M12 10v4"/><circle cx="12" cy="17" r="0.8" fill="${color}"/>`,
+    check: `<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>`,
+    trendUp: `<path d="M3 17 10 10l4 4 7-8"/><path d="M17 6h4v4"/>`,
+    trendDown: `<path d="M3 7 10 14l4-4 7 8"/><path d="M17 18h4v-4"/>`,
+    mapPin: `<path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.4"/>`,
+    plus: `<path d="M12 5v14"/><path d="M5 12h14"/>`,
+    trash: `<path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/>`,
+    flame: `<path d="M12 2c2 3-3 4-1 8 1 2 3 1 3 3a3 3 0 1 1-6 0c0-4 4-5 4-11z"/>`,
+    pencil: `<path d="m3 21 1.5-5L16 4.5 19.5 8 8 19.5 3 21z"/><path d="m14 6.5 3.5 3.5"/>`,
+    info: `<circle cx="12" cy="12" r="9"/><path d="M12 8h.01"/><path d="M11 12h1v5h1"/>`,
+    x: `<path d="m5 5 14 14"/><path d="m19 5-14 14"/>`,
+  };
+  return `<svg ${common}>${paths[name] || ""}</svg>`;
+}
+
+/* ============ HELPERS ============ */
+function pct(value, target) { return target ? Math.round((value / target) * 100) : 0; }
+function statusColor(p) { return p >= 100 ? LIME : p >= 70 ? TEAL : CORAL; }
+function todayLabel() { return new Date().toLocaleDateString("es-PE", { day: "2-digit", month: "short" }); }
+
+/* ============ ESTADO ============ */
+const emptyForm = () => ({ label: "", distrito: state.district, contactos: "", visitas: "", propuestas: "", cierres: "" });
+const state = {
+  weeks: [],
+  loaded: false,
+  district: DISTRICTS[0],
+  form: null,
+  editingId: null,
+  error: "",
+  confirmingClear: false,
+};
+state.form = emptyForm();
+let clearTimer = null;
+
+/* ============ PERSISTENCIA ============ */
+async function loadWeeks() {
+  try {
+    const res = await window.storage.get("holos-weeks", false);
+    if (res && res.value) state.weeks = JSON.parse(res.value);
+  } catch (e) {
+    // sin datos guardados todavía
+  } finally {
+    state.loaded = true;
+    renderApp();
+  }
+}
+
+async function persist(next) {
+  state.weeks = next;
+  try {
+    await window.storage.set("holos-weeks", JSON.stringify(next), false);
+  } catch (e) {
+    state.error = "No se pudo guardar. Intenta de nuevo.";
+  }
+}
+
+/* ============ ACCIONES ============ */
+function resetForm() {
+  state.form = emptyForm();
+  state.editingId = null;
+  state.error = "";
+}
+
+function startEdit(id) {
+  const w = state.weeks.find((w) => w.id === id);
+  if (!w) return;
+  state.form = {
+    label: w.label, distrito: w.distrito || DISTRICTS[0],
+    contactos: String(w.contactos), visitas: String(w.visitas),
+    propuestas: String(w.propuestas), cierres: String(w.cierres),
+  };
+  state.editingId = id;
+  state.error = "";
+  renderApp();
+}
+
+async function saveWeek() {
+  const fields = ["contactos", "visitas", "propuestas", "cierres"];
+  if (fields.some((f) => String(state.form[f]).trim() === "")) {
+    state.error = "Completa las 4 casillas antes de guardar."; renderApp(); return;
+  }
+  const nums = fields.map((f) => Number(state.form[f]));
+  if (nums.some((n) => Number.isNaN(n) || n < 0)) {
+    state.error = "Ingresa solo números válidos (0 o mayores)."; renderApp(); return;
+  }
+  const [contactos, visitas, propuestas, cierres] = nums;
+  if (visitas > contactos || propuestas > visitas || cierres > propuestas) {
+    state.error = "Revisa los números: cada etapa del embudo no puede ser mayor que la anterior."; renderApp(); return;
+  }
+  state.error = "";
+  const label = state.form.label.trim() || `Semana del ${todayLabel()}`;
+  const entry = { id: state.editingId ?? Date.now(), label, distrito: state.form.distrito, contactos, visitas, propuestas, cierres };
+  const next = state.editingId ? state.weeks.map((w) => (w.id === state.editingId ? entry : w)) : [...state.weeks, entry];
+  await persist(next);
+  resetForm();
+  renderApp();
+}
+
+async function removeWeek(id) {
+  await persist(state.weeks.filter((w) => w.id !== id));
+  if (state.editingId === id) resetForm();
+  renderApp();
+}
+
+async function clearDistrictData() {
+  if (!state.confirmingClear) {
+    state.confirmingClear = true;
+    renderApp();
+    clearTimer = setTimeout(() => { state.confirmingClear = false; renderApp(); }, 4000);
+    return;
+  }
+  clearTimeout(clearTimer);
+  await persist(state.weeks.filter((w) => (w.distrito || DISTRICTS[0]) !== state.district));
+  state.confirmingClear = false;
+  resetForm();
+  renderApp();
+}
+
+/* ============ DIAGNÓSTICO (misma lógica de negocio, sin cambios) ============ */
+function computeStageDiagnosis(latest) {
+  if (!latest) return null;
+  const results = STAGE_TRANSITIONS.map((t) => {
+    const fromVal = latest[t.fromKey], toVal = latest[t.toKey];
+    const actualRate = fromVal > 0 ? toVal / fromVal : 0;
+    const gapPts = Math.round((actualRate - t.targetRate) * 100);
+    return { ...t, actualRate, gapPts };
+  });
+  const worst = results.reduce((a, b) => (a.gapPts <= b.gapPts ? a : b));
+  const activityPct = (pct(latest.contactos, STAGES[0].target) + pct(latest.visitas, STAGES[1].target) + pct(latest.propuestas, STAGES[2].target)) / 3;
+  const resultPct = pct(latest.cierres, STAGES[3].target);
+  return { results, worst, activityPct, resultPct };
+}
+
+function computeHeadline(sd) {
+  if (!sd) return null;
+  const { worst, activityPct, resultPct } = sd;
+  if (worst.gapPts <= -10) {
+    return { icon: "alert", color: CORAL, title: `Cuello de botella: ${worst.label}`,
+      text: `La conversión real (${Math.round(worst.actualRate * 100)}%) está ${Math.abs(worst.gapPts)} pts por debajo de la meta (${Math.round(worst.targetRate * 100)}%). Es la etapa que más limita el resultado de esta semana.` };
+  }
+  if (activityPct < 70) {
+    return { icon: "alert", color: CORAL, title: "Problema de volumen de prospección",
+      text: "Contactos, visitas y propuestas están por debajo de meta de forma pareja. El foco de la próxima semana es volumen, no técnica de cierre." };
+  }
+  if (activityPct >= 90 && resultPct < 70) {
+    return { icon: "alert", color: AMBER, title: "Actividad en meta, cierres por debajo",
+      text: "El embudo se mueve bien etapa por etapa, pero el resultado final no acompaña. Revisar guiones de cierre y manejo de objeciones." };
+  }
+  return { icon: "check", color: LIME, title: "En línea con la meta",
+    text: "Actividad y conversión por etapa están dentro de rango esta semana. Mantener cadencia." };
+}
+
+/* ============ GRÁFICOS (SVG / CSS propios, sin librerías externas) ============ */
+function funnelSVG(latest) {
+  const W = 280, SEG_H = 46, GAP = 3;
+  const maxVal = Math.max(latest.contactos, 1);
+  const widths = STAGES.map((s) => Math.max((latest[s.key] / maxVal) * (W - 20), 14));
+  const cx = W / 2;
+  let shapes = "";
+  STAGES.forEach((s, i) => {
+    const topW = widths[i];
+    const botW = i < STAGES.length - 1 ? widths[i + 1] : widths[i] * 0.82;
+    const y = i * (SEG_H + GAP);
+    const points = [[cx - topW / 2, y], [cx + topW / 2, y], [cx + botW / 2, y + SEG_H], [cx - botW / 2, y + SEG_H]].map((p) => p.join(",")).join(" ");
+    shapes += `<g><polygon points="${points}" fill="${s.color}" opacity="0.88"/>
+      <text x="${cx}" y="${y + SEG_H / 2 - 4}" text-anchor="middle" fill="${INK}" font-size="12" font-family="${SANS}" font-weight="600">${s.short}</text>
+      <text x="${cx}" y="${y + SEG_H / 2 + 13}" text-anchor="middle" fill="${INK}" font-size="14" font-family="${SERIF}" font-weight="700">${latest[s.key]}</text>
+    </g>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${STAGES.length * (SEG_H + GAP)}" width="100%" height="${STAGES.length * (SEG_H + GAP)}">${shapes}</svg>`;
+}
+
+function trendSVG(weeksArr) {
+  if (weeksArr.length === 0) return `<div style="color:${MUTED};font-size:12px;font-family:${SANS};">Sin datos aún.</div>`;
+  const W = 320, H = 170, PAD = 26;
+  const maxY = Math.max(STAGES[3].target, ...weeksArr.map((w) => w.cierres)) * 1.2;
+  const stepX = weeksArr.length > 1 ? (W - PAD * 2) / (weeksArr.length - 1) : 0;
+  const pts = weeksArr.map((w, i) => [PAD + i * stepX, H - PAD - (w.cierres / maxY) * (H - PAD * 2)]);
+  const metaY = H - PAD - (STAGES[3].target / maxY) * (H - PAD * 2);
+  const poly = pts.map((p) => p.join(",")).join(" ");
+  const dots = pts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="${LIME}"/>`).join("");
+  const labels = weeksArr.map((w, i) => `<text x="${PAD + i * stepX}" y="${H - 6}" font-size="9" fill="${MUTED}" text-anchor="middle" font-family="${SANS}">${w.label.length > 9 ? w.label.slice(0, 9) + "…" : w.label}</text>`).join("");
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}">
+    <line x1="${PAD}" y1="${metaY}" x2="${W - PAD}" y2="${metaY}" stroke="${MUTED}" stroke-width="1.5" stroke-dasharray="4 4"/>
+    <polyline points="${poly}" fill="none" stroke="${LIME}" stroke-width="2.5"/>
+    ${dots}${labels}
+  </svg>`;
+}
+
+function donutHTML(data, size) {
+  size = size || 150;
+  const total = data.reduce((s, d) => s + d.value, 0) || 1;
+  let acc = 0;
+  const stops = data.map((d) => {
+    const start = (acc / total) * 360; acc += d.value; const end = (acc / total) * 360;
+    return `${d.color} ${start}deg ${end}deg`;
+  }).join(", ");
+  const hole = Math.round(size * 0.6);
+  return `<div style="width:${size}px;height:${size}px;border-radius:50%;background:conic-gradient(${stops});display:flex;align-items:center;justify-content:center;margin:0 auto;">
+    <div style="width:${hole}px;height:${hole}px;border-radius:50%;background:${PANEL};"></div>
+  </div>`;
+}
+
+function legendHTML(data) {
+  return `<div style="display:flex;flex-direction:column;gap:6px;margin-top:12px;">
+    ${data.map((d) => `<div style="display:flex;align-items:center;gap:8px;font-size:12px;color:${MUTED};font-family:${SANS};">
+      <div style="width:8px;height:8px;border-radius:2px;background:${d.color};flex-shrink:0;"></div>${d.name} · ${d.value}
+    </div>`).join("")}
+  </div>`;
+}
+
+/* ============ SECCIONES DE UI ============ */
+function heroHTML(district) {
+  return `
+  <div style="text-align:center;padding:38px 20px 26px;border-bottom:1px solid ${LINE};margin-bottom:24px;">
+    <div style="font-family:${SERIF};font-style:italic;font-weight:600;font-size:46px;color:${CREAM};line-height:1;">holos</div>
+    <div style="font-family:${SERIF};font-style:italic;font-weight:500;font-size:15px;color:${MUTED};letter-spacing:0.4px;margin-top:6px;">the wellness journey</div>
+    <div style="margin-top:24px;font-family:${SANS};font-size:11px;font-weight:600;color:${MUTED};letter-spacing:2.5px;">CONTROL COMERCIAL DE CAMPO</div>
+    <div style="font-family:${SERIF};font-weight:600;font-size:26px;color:${CREAM};margin-top:6px;">${district}</div>
+    <div style="font-family:${SERIF};font-size:13px;color:${TEAL};margin-top:4px;">Miraflores · Surco · San Borja</div>
+  </div>`;
+}
+
+function scoreboardHTML(monthCierres) {
+  const color = monthCierres >= MONTHLY_TARGET_CIERRES ? LIME : CREAM;
+  return `<div style="display:flex;justify-content:space-between;align-items:center;background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px 20px;margin-bottom:22px;">
+    <div>
+      <div style="font-family:${SANS};font-size:11px;color:${MUTED};letter-spacing:1px;">CIERRES · ÚLT. 4 SEMANAS</div>
+      <div style="font-family:${SERIF};font-weight:700;font-size:42px;color:${color};line-height:1.15;">${monthCierres}<span style="font-size:18px;color:${MUTED};font-family:${SANS};font-weight:600;"> / ${MONTHLY_TARGET_CIERRES}</span></div>
+    </div>
+    <div style="width:50px;height:50px;border-radius:50%;background:${PANEL_LIGHT};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+      ${icon("trophy", monthCierres >= MONTHLY_TARGET_CIERRES ? LIME : MUTED, 24)}
+    </div>
+  </div>`;
+}
+
+function districtTabsHTML() {
+  return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:22px;flex-wrap:wrap;">
+    ${icon("mapPin", MUTED, 14)}
+    <div style="display:flex;gap:6px;background:${PANEL};border:1px solid ${LINE};border-radius:10px;padding:4px;">
+      ${DISTRICTS.map((d) => `<button data-tab-district="${d}" style="border:none;border-radius:7px;padding:8px 16px;cursor:pointer;font-family:${SANS};font-size:13px;font-weight:600;background:${state.district === d ? LIME : "transparent"};color:${state.district === d ? INK : MUTED};transition:all .15s ease;">${d}</button>`).join("")}
+    </div>
+  </div>`;
+}
+
+function formHTML(districtWeeks) {
+  const inputStyle = `background:${PANEL_LIGHT};border:1px solid ${LINE};border-radius:8px;color:${CREAM};padding:9px 11px;font-family:${SANS};font-size:14px;width:100%;`;
+  return `<div style="background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px;margin-bottom:22px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
+      <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};">
+        ${state.editingId ? "EDITAR SEMANA" : `REGISTRAR SEMANA · ${state.form.distrito.toUpperCase()}`}
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        ${state.editingId ? `<button id="btn-cancel-edit" style="background:none;border:none;color:${MUTED};font-size:12px;cursor:pointer;text-decoration:underline;font-family:${SANS};">cancelar edición</button>` : ""}
+        <button id="btn-clear" ${districtWeeks.length === 0 ? "disabled" : ""} style="display:flex;align-items:center;gap:6px;background:${state.confirmingClear ? CORAL : "transparent"};border:1px solid ${state.confirmingClear ? CORAL : LINE};border-radius:6px;padding:6px 10px;color:${state.confirmingClear ? INK : districtWeeks.length === 0 ? "#4A5650" : MUTED};font-size:11px;font-family:${SANS};font-weight:600;cursor:${districtWeeks.length === 0 ? "not-allowed" : "pointer"};">
+          ${icon("trash", state.confirmingClear ? INK : MUTED, 13)} ${state.confirmingClear ? "¿Confirmar borrado?" : `Borrar datos de ${state.district}`}
+        </button>
+      </div>
+    </div>
+    <div class="row" style="gap:12px;align-items:flex-end;">
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <label style="font-size:11px;color:${MUTED};font-family:${SANS};">Etiqueta (opcional)</label>
+        <input id="f-label" type="text" placeholder="Semana del ${todayLabel()}" style="${inputStyle}width:150px;" />
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;">
+        <label style="font-size:11px;color:${MUTED};font-family:${SANS};">Distrito</label>
+        <select id="f-distrito" style="${inputStyle}width:135px;">
+          ${DISTRICTS.map((d) => `<option value="${d}">${d}</option>`).join("")}
+        </select>
+      </div>
+      ${STAGES.map((s) => `<div style="display:flex;flex-direction:column;gap:4px;">
+        <label style="font-size:11px;color:${MUTED};font-family:${SANS};">${s.short}</label>
+        <input id="f-${s.key}" type="number" min="0" style="${inputStyle}width:90px;" />
+      </div>`).join("")}
+      <button id="btn-save" style="display:flex;align-items:center;gap:6px;background:${LIME};color:${INK};border:none;border-radius:8px;padding:10px 18px;font-family:${SANS};font-weight:700;font-size:13px;cursor:pointer;">
+        ${icon(state.editingId ? "pencil" : "plus", INK, 14)} ${state.editingId ? "Actualizar" : "Guardar semana"}
+      </button>
+    </div>
+    ${state.error ? `<div style="color:${CORAL};font-size:12px;margin-top:10px;font-family:${SANS};">${state.error}</div>` : ""}
+    ${districtWeeks.length > 0 ? `<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+      ${districtWeeks.map((w) => `<div style="display:flex;align-items:center;gap:8px;background:${state.editingId === w.id ? "#233229" : PANEL_LIGHT};border:1px solid ${state.editingId === w.id ? LIME : LINE};border-radius:8px;padding:5px 10px;font-size:12px;font-family:${SANS};cursor:pointer;">
+        <span data-edit-id="${w.id}" style="color:${MUTED};">${w.label}:</span>
+        <span data-edit-id="${w.id}">${w.contactos}/${w.visitas}/${w.propuestas}/${w.cierres}</span>
+        <span data-delete-id="${w.id}" style="cursor:pointer;display:flex;">${icon("x", MUTED, 12)}</span>
+      </div>`).join("")}
+    </div>` : ""}
+  </div>`;
+}
+
+function emptyStateHTML(district) {
+  return `<div style="color:${MUTED};font-size:14px;margin-bottom:24px;font-style:italic;font-family:${SERIF};background:${PANEL};border:1px dashed ${LINE};border-radius:14px;padding:22px;text-align:center;">
+    Aún no hay semanas registradas para ${district}. Ingresa los números de campo para activar el diagnóstico por etapa y las tendencias.
+  </div>`;
+}
+
+function statCardsHTML(latest) {
+  const cards = [
+    { icon: "users", label: "CONTACTOS EFECTIVOS", value: latest.contactos, target: STAGES[0].target },
+    { icon: "calendar", label: "VISITAS / REUNIONES", value: latest.visitas, target: STAGES[1].target },
+    { icon: "file", label: "PROPUESTAS ENVIADAS", value: latest.propuestas, target: STAGES[2].target },
+    { icon: "target", label: "CIERRES", value: latest.cierres, target: STAGES[3].target },
+  ];
+  return `<div class="row" style="gap:14px;margin-bottom:20px;">
+    ${cards.map((c) => {
+      const p = pct(c.value, c.target), color = statusColor(p);
+      return `<div style="background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px 20px;flex:1 1 200px;min-width:170px;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;height:3px;width:${Math.min(p, 100)}%;background:${color};"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+          ${icon(c.icon, MUTED, 14)}<span style="font-family:${SANS};font-size:12px;color:${MUTED};letter-spacing:0.2px;">${c.label}</span>
+        </div>
+        <div style="display:flex;align-items:baseline;gap:8px;">
+          <span style="font-family:${SERIF};font-size:38px;font-weight:700;color:${CREAM};line-height:1;">${c.value}</span>
+          <span style="font-family:${SANS};font-size:13px;color:${MUTED};">/ ${c.target} meta</span>
+        </div>
+        <div style="margin-top:10px;font-family:${SANS};font-size:13px;color:${color};font-weight:600;">${p}% de la meta semanal</div>
+      </div>`;
+    }).join("")}
+  </div>`;
+}
+
+function headlineHTML(h) {
+  return `<div style="display:flex;gap:12px;align-items:flex-start;background:${PANEL};border:1px solid ${h.color}55;border-left:3px solid ${h.color};border-radius:12px;padding:14px 18px;margin-bottom:20px;">
+    <div style="margin-top:2px;flex-shrink:0;">${icon(h.icon, h.color, 18)}</div>
+    <div>
+      <div style="font-family:${SERIF};font-size:16px;color:${h.color};font-weight:700;">${h.title}</div>
+      <div style="font-size:13px;color:${MUTED};margin-top:2px;font-family:${SANS};">${h.text}</div>
+    </div>
+  </div>`;
+}
+
+function stageConversionPanelHTML(results) {
+  const rows = results.map((r) => {
+    const good = r.gapPts >= 0;
+    const color = good ? LIME : r.gapPts >= -10 ? AMBER : CORAL;
+    return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap;">
+      <div style="width:160px;font-size:12px;color:${CREAM};flex-shrink:0;font-family:${SANS};">${r.label}</div>
+      <div style="flex:1;min-width:100px;height:8px;background:${PANEL_LIGHT};border-radius:4px;position:relative;overflow:hidden;">
+        <div style="position:absolute;left:0;top:0;bottom:0;width:${Math.min(r.actualRate * 100, 100)}%;background:${color};border-radius:4px;"></div>
+        <div style="position:absolute;left:${Math.min(r.targetRate * 100, 100)}%;top:-2px;bottom:-2px;width:2px;background:${CREAM};"></div>
+      </div>
+      <div style="width:150px;text-align:right;font-family:${SERIF};font-size:16px;color:${color};flex-shrink:0;display:flex;align-items:center;justify-content:flex-end;gap:4px;font-weight:700;">
+        ${icon(good ? "trendUp" : "trendDown", color, 13)} ${Math.round(r.actualRate * 100)}% <span style="color:${MUTED};font-weight:500;font-family:${SANS};font-size:11px;">meta ${Math.round(r.targetRate * 100)}%</span>
+      </div>
+    </div>`;
+  }).join("");
+  return `<div style="background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px;margin-bottom:20px;">
+    <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};margin-bottom:14px;">CONVERSIÓN POR ETAPA · ACTUAL VS. META</div>
+    ${rows}
+    <div style="display:flex;align-items:center;gap:6px;margin-top:12px;font-size:11px;color:${MUTED};font-family:${SANS};">
+      ${icon("info", MUTED, 12)} Meta de conversión basada en el embudo general (sección 3.1), no en el 80% puntual de la proyección de Miraflores.
+    </div>
+  </div>`;
+}
+
+function embudoPanelHTML(latest) {
+  const maxVal = Math.max(...STAGES.map((s) => Math.max(s.target * 1.3, latest[s.key])));
+  const bars = STAGES.map((s) => {
+    const val = latest[s.key];
+    const widthPct = Math.min((val / maxVal) * 100, 100);
+    const targetPct = Math.min((s.target / maxVal) * 100, 100);
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+        <span style="font-size:13px;color:${CREAM};font-family:${SANS};">${s.short}</span>
+        <span style="font-family:${SERIF};font-size:15px;color:${s.color};font-weight:700;">${val} <span style="color:${MUTED};font-size:11px;font-family:${SANS};font-weight:400;">/ ${s.target} meta</span></span>
+      </div>
+      <div style="height:8px;background:${PANEL_LIGHT};border-radius:4px;position:relative;overflow:hidden;">
+        <div style="height:100%;width:${widthPct}%;background:${s.color};border-radius:4px;"></div>
+        <div style="position:absolute;left:${targetPct}%;top:-2px;bottom:-2px;width:2px;background:${CREAM};"></div>
+      </div>
+    </div>`;
+  }).join("");
+  return `<div style="background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px;flex:1 1 340px;">
+    <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};margin-bottom:14px;">EMBUDO · ACTUAL VS. META (SEMANA)</div>
+    ${bars}
+  </div>`;
+}
+
+function trendPanelHTML(districtWeeks) {
+  return `<div style="background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px;flex:1 1 340px;">
+    <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};margin-bottom:14px;">TENDENCIA DE CIERRES VS. META SEMANAL</div>
+    ${trendSVG(districtWeeks)}
+    <div style="display:flex;gap:16px;margin-top:10px;font-size:11px;color:${MUTED};font-family:${SANS};">
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:2px;background:${LIME};display:inline-block;"></span>Cierres reales</span>
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:2px;background:${MUTED};display:inline-block;border-top:1px dashed ${MUTED};"></span>Meta semanal</span>
+    </div>
+  </div>`;
+}
+
+function funnelAndCompositionHTML(latest) {
+  const compositionData = STAGES.map((s) => ({ name: s.short, value: latest[s.key], color: s.color }));
+  return `<div class="row" style="gap:16px;margin-bottom:20px;">
+    <div style="background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px;flex:1 1 280px;display:flex;flex-direction:column;align-items:center;">
+      <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};margin-bottom:12px;align-self:flex-start;">VISTA DE EMBUDO REAL</div>
+      ${funnelSVG(latest)}
+    </div>
+    <div style="background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px;flex:1 1 340px;">
+      <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};margin-bottom:12px;">COMPOSICIÓN DE LA SEMANA</div>
+      ${donutHTML(compositionData, 150)}
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;justify-content:center;">
+        ${compositionData.map((d) => `<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:${MUTED};font-family:${SANS};"><div style="width:8px;height:8px;border-radius:2px;background:${d.color};"></div>${d.name} · ${d.value}</div>`).join("")}
+      </div>
+    </div>
+  </div>`;
+}
+
+function tierAndRouteHTML(tierData, district) {
+  const tierBlock = tierData.length > 0
+    ? `${donutHTML(tierData, 150)}${legendHTML(tierData)}`
+    : `<div style="height:150px;display:flex;align-items:center;justify-content:center;text-align:center;color:${MUTED};font-size:13px;font-family:${SERIF};font-style:italic;padding:0 10px;">${district} aún no tiene la calificación de tiers del business case. Se necesita levantar y puntuar el universo local antes de mostrar esta vista.</div>`;
+  return `<div class="row" style="gap:16px;">
+    <div style="background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px;flex:1 1 300px;">
+      <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};margin-bottom:12px;">
+        UNIVERSO OBJETIVO · ${district === "Miraflores" ? "40 LOCALES POR TIER" : "PENDIENTE DE LEVANTAMIENTO"}
+      </div>
+      ${tierBlock}
+    </div>
+    <div style="background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px;flex:2 1 400px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+        ${icon("mapPin", MUTED, 14)}<div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};">RUTA SEMANAL DE CAMPO</div>
+      </div>
+      <div class="row" style="gap:8px;">
+        ${RUTA.map((r) => `<div style="flex:1 1 90px;background:${PANEL_LIGHT};border:1px solid ${LINE};border-radius:10px;padding:10px;min-width:96px;">
+          <div style="font-family:${SERIF};font-size:16px;font-weight:700;color:${r.bloque === "Cierre" ? LIME : TEAL};">${r.dia}</div>
+          <div style="font-size:11px;color:${CREAM};margin-top:4px;line-height:1.35;font-family:${SANS};">${r.foco}</div>
+          <div style="font-size:10px;color:${MUTED};margin-top:6px;display:flex;align-items:center;gap:4px;font-family:${SANS};">${icon("flame", MUTED, 10)} ${r.bloque}</div>
+        </div>`).join("")}
+      </div>
+    </div>
+  </div>`;
+}
+
+function footerHTML() {
+  return `<div style="margin-top:24px;font-size:11px;color:${MUTED};border-top:1px solid ${LINE};padding-top:14px;font-family:${SANS};line-height:1.5;">
+    Filtra por distrito arriba para ver su propio embudo, tendencia y universo de tiers. El botón de borrado pide confirmación antes de eliminar los datos guardados del distrito activo. Haz clic en una semana guardada para editarla.
+  </div>`;
+}
+
+/* ============ RENDER PRINCIPAL ============ */
+function renderApp() {
+  const app = document.getElementById("app");
+  const districtWeeks = state.weeks.filter((w) => (w.distrito || DISTRICTS[0]) === state.district);
+  const latest = districtWeeks[districtWeeks.length - 1];
+  const tierData = TIER_DATA_BY_DISTRICT[state.district] || [];
+  const monthCierres = districtWeeks.slice(-4).reduce((s, w) => s + w.cierres, 0);
+  const sd = latest ? computeStageDiagnosis(latest) : null;
+  const headline = sd ? computeHeadline(sd) : null;
+
+  app.innerHTML = `
+    <div style="background:${INK};min-height:100vh;font-family:${SANS};color:${CREAM};">
+      <div style="max-width:920px;margin:0 auto;padding:0 22px 50px;">
+        ${heroHTML(state.district)}
+        ${scoreboardHTML(monthCierres)}
+        ${districtTabsHTML()}
+        ${formHTML(districtWeeks)}
+        ${!latest && state.loaded ? emptyStateHTML(state.district) : ""}
+        ${latest ? statCardsHTML(latest) : ""}
+        ${headline ? headlineHTML(headline) : ""}
+        ${sd ? stageConversionPanelHTML(sd.results) : ""}
+        ${latest ? `<div class="row" style="gap:16px;margin-bottom:20px;">${embudoPanelHTML(latest)}${trendPanelHTML(districtWeeks)}</div>` : ""}
+        ${latest ? funnelAndCompositionHTML(latest) : ""}
+        ${tierAndRouteHTML(tierData, state.district)}
+        ${footerHTML()}
+      </div>
+    </div>
+  `;
+  attachEvents();
+  syncFormInputs();
+}
+
+/* ============ EVENTOS ============ */
+function attachEvents() {
+  const app = document.getElementById("app");
+  app.querySelectorAll("[data-tab-district]").forEach((btn) => {
+    btn.addEventListener("click", () => { state.district = btn.dataset.tabDistrict; resetForm(); renderApp(); });
+  });
+  const saveBtn = document.getElementById("btn-save");
+  if (saveBtn) saveBtn.addEventListener("click", saveWeek);
+  const cancelBtn = document.getElementById("btn-cancel-edit");
+  if (cancelBtn) cancelBtn.addEventListener("click", () => { resetForm(); renderApp(); });
+  const clearBtn = document.getElementById("btn-clear");
+  if (clearBtn) clearBtn.addEventListener("click", clearDistrictData);
+  app.querySelectorAll("[data-edit-id]").forEach((el) => {
+    el.addEventListener("click", () => startEdit(Number(el.dataset.editId)));
+  });
+  app.querySelectorAll("[data-delete-id]").forEach((el) => {
+    el.addEventListener("click", (e) => { e.stopPropagation(); removeWeek(Number(el.dataset.deleteId)); });
+  });
+  ["label", "contactos", "visitas", "propuestas", "cierres"].forEach((key) => {
+    const el = document.getElementById("f-" + key);
+    if (el) el.addEventListener("input", () => { state.form[key] = el.value; });
+  });
+  const distSel = document.getElementById("f-distrito");
+  if (distSel) distSel.addEventListener("change", () => { state.form.distrito = distSel.value; renderApp(); });
+}
+
+function syncFormInputs() {
+  ["label", "contactos", "visitas", "propuestas", "cierres"].forEach((key) => {
+    const el = document.getElementById("f-" + key);
+    if (el) el.value = state.form[key];
+  });
+  const sel = document.getElementById("f-distrito");
+  if (sel) sel.value = state.form.distrito;
+}
+
+/* ============ INICIO ============ */
+renderApp();
+loadWeeks();
+</script>
+</body>
+</html>
