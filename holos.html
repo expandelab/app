@@ -175,7 +175,7 @@ async function saveWeek() {
     state.error = "Revisa los números: cada etapa del embudo no puede ser mayor que la anterior."; renderApp(); return;
   }
   state.error = "";
-  const label = state.form.label.trim() || `Semana del ${todayLabel()}`;
+  const label = state.form.label.trim() || `Día del ${todayLabel()}`;
   const entry = { id: state.editingId ?? Date.now(), label, distrito: state.form.distrito, contactos, visitas, propuestas, cierres };
   const next = state.editingId ? state.weeks.map((w) => (w.id === state.editingId ? entry : w)) : [...state.weeks, entry];
   await persist(next);
@@ -296,6 +296,58 @@ function legendHTML(data) {
   </div>`;
 }
 
+/* ============ AVANCE SEMANAL (consolidado: suma de los avances diarios de los 3 distritos) ============ */
+function weeklyConsolidatedHTML() {
+  const cutoff = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const recent = state.weeks.filter((w) => w.id >= cutoff);
+  const totals = { contactos: 0, visitas: 0, propuestas: 0, cierres: 0 };
+  const byDistrict = {};
+  DISTRICTS.forEach((d) => { byDistrict[d] = { contactos: 0, visitas: 0, propuestas: 0, cierres: 0 }; });
+  recent.forEach((w) => {
+    const d = w.distrito || DISTRICTS[0];
+    if (!byDistrict[d]) byDistrict[d] = { contactos: 0, visitas: 0, propuestas: 0, cierres: 0 };
+    STAGES.forEach((s) => { totals[s.key] += w[s.key]; byDistrict[d][s.key] += w[s.key]; });
+  });
+
+  const cards = STAGES.map((s) => {
+    const val = totals[s.key];
+    const p = pct(val, s.target);
+    const color = statusColor(p);
+    return `<div style="background:${PANEL_LIGHT};border:1px solid ${LINE};border-radius:12px;padding:14px 16px;flex:1 1 140px;min-width:130px;position:relative;overflow:hidden;">
+      <div style="position:absolute;top:0;left:0;height:3px;width:${Math.min(p, 100)}%;background:${color};"></div>
+      <div style="font-family:${SANS};font-size:11px;color:${MUTED};letter-spacing:0.3px;margin-bottom:8px;">${s.short.toUpperCase()}</div>
+      <div style="font-family:${SERIF};font-size:30px;font-weight:700;color:${CREAM};line-height:1;">${val}<span style="font-size:13px;color:${MUTED};font-family:${SANS};font-weight:500;"> / ${s.target}</span></div>
+      <div style="font-family:${SANS};font-size:12px;color:${color};font-weight:600;margin-top:6px;">${p}% de la meta semanal</div>
+    </div>`;
+  }).join("");
+
+  const breakdown = STAGES.map((s) => {
+    const rows = DISTRICTS.map((d) => {
+      const val = byDistrict[d][s.key];
+      const share = totals[s.key] ? Math.round((val / totals[s.key]) * 100) : 0;
+      return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+        <span style="width:76px;font-size:11px;color:${MUTED};font-family:${SANS};flex-shrink:0;">${d}</span>
+        <div style="flex:1;height:6px;background:${PANEL};border-radius:3px;overflow:hidden;">
+          <div style="height:100%;width:${share}%;background:${s.color};border-radius:3px;"></div>
+        </div>
+        <span style="width:24px;text-align:right;font-size:11px;color:${CREAM};font-family:${SANS};">${val}</span>
+      </div>`;
+    }).join("");
+    return `<div style="flex:1 1 200px;min-width:180px;margin-bottom:14px;">
+      <div style="font-size:12px;color:${CREAM};font-family:${SANS};font-weight:600;margin-bottom:8px;">${s.short}</div>
+      ${rows}
+    </div>`;
+  }).join("");
+
+  return `<div style="background:${PANEL};border:1px solid ${LINE};border-radius:16px;padding:20px;margin-bottom:24px;">
+    <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};margin-bottom:6px;">AVANCE SEMANAL: MIRAFLORES, SURCO, SAN BORJA</div>
+    <div style="font-family:${SERIF};font-size:14px;font-style:italic;color:${TEAL};margin-bottom:16px;">Suma de los días registrados en los últimos 7 días, en los tres distritos</div>
+    <div class="row" style="gap:12px;margin-bottom:18px;">${cards}</div>
+    <div style="font-family:${SANS};font-size:11px;color:${MUTED};letter-spacing:1px;margin-bottom:10px;">APORTE POR DISTRITO</div>
+    <div class="row" style="gap:20px;">${breakdown}</div>
+  </div>`;
+}
+
 /* ============ SECCIONES DE UI ============ */
 function heroHTML(district) {
   return `
@@ -335,7 +387,7 @@ function formHTML(districtWeeks) {
   return `<div style="background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px;margin-bottom:22px;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;">
       <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};">
-        ${state.editingId ? "EDITAR SEMANA" : `REGISTRAR SEMANA · ${state.form.distrito.toUpperCase()}`}
+        ${state.editingId ? "EDITAR DÍA" : `REGISTRAR DÍA · ${state.form.distrito.toUpperCase()}`}
       </div>
       <div style="display:flex;align-items:center;gap:12px;">
         ${state.editingId ? `<button id="btn-cancel-edit" style="background:none;border:none;color:${MUTED};font-size:12px;cursor:pointer;text-decoration:underline;font-family:${SANS};">cancelar edición</button>` : ""}
@@ -347,7 +399,7 @@ function formHTML(districtWeeks) {
     <div class="row" style="gap:12px;align-items:flex-end;">
       <div style="display:flex;flex-direction:column;gap:4px;">
         <label style="font-size:11px;color:${MUTED};font-family:${SANS};">Etiqueta (opcional)</label>
-        <input id="f-label" type="text" placeholder="Semana del ${todayLabel()}" style="${inputStyle}width:150px;" />
+        <input id="f-label" type="text" placeholder="Día del ${todayLabel()}" style="${inputStyle}width:150px;" />
       </div>
       <div style="display:flex;flex-direction:column;gap:4px;">
         <label style="font-size:11px;color:${MUTED};font-family:${SANS};">Distrito</label>
@@ -360,7 +412,7 @@ function formHTML(districtWeeks) {
         <input id="f-${s.key}" type="number" min="0" style="${inputStyle}width:90px;" />
       </div>`).join("")}
       <button id="btn-save" style="display:flex;align-items:center;gap:6px;background:${LIME};color:${INK};border:none;border-radius:8px;padding:10px 18px;font-family:${SANS};font-weight:700;font-size:13px;cursor:pointer;">
-        ${icon(state.editingId ? "pencil" : "plus", INK, 14)} ${state.editingId ? "Actualizar" : "Guardar semana"}
+        ${icon(state.editingId ? "pencil" : "plus", INK, 14)} ${state.editingId ? "Actualizar" : "Guardar día"}
       </button>
     </div>
     ${state.error ? `<div style="color:${CORAL};font-size:12px;margin-top:10px;font-family:${SANS};">${state.error}</div>` : ""}
@@ -376,7 +428,7 @@ function formHTML(districtWeeks) {
 
 function emptyStateHTML(district) {
   return `<div style="color:${MUTED};font-size:14px;margin-bottom:24px;font-style:italic;font-family:${SERIF};background:${PANEL};border:1px dashed ${LINE};border-radius:14px;padding:22px;text-align:center;">
-    Aún no hay semanas registradas para ${district}. Ingresa los números de campo para activar el diagnóstico por etapa y las tendencias.
+    Aún no hay días registrados para ${district}. Ingresa los números de campo para activar el diagnóstico por etapa y las tendencias.
   </div>`;
 }
 
@@ -457,7 +509,7 @@ function embudoPanelHTML(latest) {
     </div>`;
   }).join("");
   return `<div style="background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px;flex:1 1 340px;">
-    <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};margin-bottom:14px;">EMBUDO · ACTUAL VS. META (SEMANA)</div>
+    <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};margin-bottom:14px;">EMBUDO · ACTUAL VS. META (DÍA)</div>
     ${bars}
   </div>`;
 }
@@ -481,7 +533,7 @@ function funnelAndCompositionHTML(latest) {
       ${funnelSVG(latest)}
     </div>
     <div style="background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px;flex:1 1 340px;">
-      <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};margin-bottom:12px;">COMPOSICIÓN DE LA SEMANA</div>
+      <div style="font-family:${SANS};font-size:12px;font-weight:600;letter-spacing:1px;color:${MUTED};margin-bottom:12px;">COMPOSICIÓN DEL DÍA</div>
       ${donutHTML(compositionData, 150)}
       <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:12px;justify-content:center;">
         ${compositionData.map((d) => `<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:${MUTED};font-family:${SANS};"><div style="width:8px;height:8px;border-radius:2px;background:${d.color};"></div>${d.name} · ${d.value}</div>`).join("")}
@@ -518,7 +570,7 @@ function tierAndRouteHTML(tierData, district) {
 
 function footerHTML() {
   return `<div style="margin-top:24px;font-size:11px;color:${MUTED};border-top:1px solid ${LINE};padding-top:14px;font-family:${SANS};line-height:1.5;">
-    Filtra por distrito arriba para ver su propio embudo, tendencia y universo de tiers. El botón de borrado pide confirmación antes de eliminar los datos guardados del distrito activo. Haz clic en una semana guardada para editarla.
+    Filtra por distrito arriba para ver su propio embudo, tendencia y universo de tiers. El botón de borrado pide confirmación antes de eliminar los datos guardados del distrito activo. Haz clic en un día guardado para editarlo.
   </div>`;
 }
 
@@ -537,6 +589,7 @@ function renderApp() {
       <div style="max-width:920px;margin:0 auto;padding:0 22px 50px;">
         ${heroHTML(state.district)}
         ${scoreboardHTML(monthCierres)}
+        ${weeklyConsolidatedHTML()}
         ${districtTabsHTML()}
         ${formHTML(districtWeeks)}
         ${!latest && state.loaded ? emptyStateHTML(state.district) : ""}
