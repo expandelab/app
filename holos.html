@@ -456,7 +456,7 @@ function scoreboardHTML(monthCierres) {
   const color = monthCierres >= MONTHLY_TARGET_CIERRES ? LIME : CREAM;
   return `<div class="glow-panel" style="display:flex;justify-content:space-between;align-items:center;background:${PANEL};border:1px solid ${LINE};border-radius:14px;padding:18px 20px;margin-bottom:22px;">
     <div style="position:relative;z-index:1;">
-      <div style="font-family:${SANS};font-size:11px;color:${MUTED};letter-spacing:1px;">CIERRES · ÚLT. 4 SEMANAS</div>
+      <div style="font-family:${SANS};font-size:11px;color:${MUTED};letter-spacing:1px;">CIERRES · ÚLT. 4 SEMANAS · 3 DISTRITOS</div>
       <div style="font-family:${SERIF};font-weight:700;font-size:42px;color:${color};line-height:1.15;">${monthCierres}<span style="font-size:18px;color:${MUTED};font-family:${SANS};font-weight:600;"> / ${MONTHLY_TARGET_CIERRES}</span></div>
     </div>
     <div style="width:50px;height:50px;border-radius:50%;background:${PANEL_LIGHT};display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;z-index:1;">
@@ -679,7 +679,8 @@ function renderApp() {
   const districtWeeks = state.weeks.filter((w) => (w.distrito || DISTRICTS[0]) === state.district);
   const latest = districtWeeks[districtWeeks.length - 1];
   const tierData = TIER_DATA_BY_DISTRICT[state.district] || [];
-  const monthCierres = districtWeeks.slice(-4).reduce((s, w) => s + w.cierres, 0);
+  const monthCutoff = Date.now() - 28 * 24 * 60 * 60 * 1000;
+  const monthCierres = state.weeks.filter((w) => w.id >= monthCutoff).reduce((s, w) => s + w.cierres, 0);
   const sd = latest ? computeStageDiagnosis(latest) : null;
   const headline = sd ? computeHeadline(sd) : null;
 
