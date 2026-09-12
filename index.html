@@ -135,7 +135,7 @@
             overflow: hidden;
             transition: max-height 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        #mobile-menu.is-open { max-height: 420px; }
+        #mobile-menu.is-open { max-height: 480px; }
         .hamburger-line { transition: transform 0.25s ease, opacity 0.25s ease; }
         #hamburger-btn.is-open .line-1 { transform: translateY(7px) rotate(45deg); }
         #hamburger-btn.is-open .line-2 { opacity: 0; }
@@ -183,6 +183,67 @@
         .path-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
         .path-scroll::-webkit-scrollbar-thumb:hover { background: #bef264; }
 
+        /* ============ SERVICIOS — BENTO ASIMÉTRICO ============ */
+        .bento-servicios {
+            display: grid;
+            grid-template-columns: 1.25fr 1fr 1fr;
+            grid-template-rows: auto auto;
+            grid-template-areas:
+                "ventas marketing finanzas"
+                "ventas desarrollo gestion";
+            gap: 1.25rem;
+        }
+        .card-ventas { grid-area: ventas; }
+        .card-marketing { grid-area: marketing; }
+        .card-finanzas { grid-area: finanzas; }
+        .card-desarrollo { grid-area: desarrollo; }
+        .card-gestion { grid-area: gestion; }
+
+        .servicio-hub {
+            background:
+                radial-gradient(120% 140% at 0% 0%, rgba(190, 242, 100, 0.16) 0%, rgba(190, 242, 100, 0.02) 45%, transparent 70%),
+                #0D1117;
+            border: 1px solid rgba(190, 242, 100, 0.28);
+            position: relative;
+            overflow: hidden;
+        }
+        .servicio-hub::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 28px 28px;
+            mask-image: radial-gradient(circle at 20% 15%, black, transparent 70%);
+            pointer-events: none;
+        }
+        .servicio-spoke {
+            background-color: #0D1117;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+        .servicio-spoke:hover {
+            border-color: rgba(190, 242, 100, 0.25);
+            background-color: #0F1420;
+        }
+        .servicio-icon-wrap {
+            background: linear-gradient(160deg, rgba(190,242,100,0.14), rgba(190,242,100,0.02));
+            border: 1px solid rgba(190, 242, 100, 0.22);
+        }
+
+        @media (max-width: 900px) {
+            .bento-servicios {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "ventas"
+                    "marketing"
+                    "finanzas"
+                    "desarrollo"
+                    "gestion";
+            }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             .reveal, .faq-answer, #back-to-top, #mobile-menu, .hamburger-line, .nav-link::after {
                 transition: none !important;
@@ -205,6 +266,7 @@
             </a>
 
             <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
+                <a href="#servicios" data-section="servicios" class="nav-link hover:text-white transition-colors">Servicios</a>
                 <a href="#soluciones" data-section="soluciones" class="nav-link hover:text-white transition-colors">Soluciones</a>
                 <a href="#ecosistema" data-section="ecosistema" class="nav-link hover:text-white transition-colors">Ecosistema SaaS</a>
                 <a href="#programa" data-section="programa" class="nav-link hover:text-white transition-colors">Programa</a>
@@ -237,6 +299,7 @@
         <!-- Panel mobile -->
         <div id="mobile-menu" class="md:hidden border-t border-white/5 bg-[#05070B]/95 backdrop-blur-2xl">
             <nav class="flex flex-col px-6 py-5 gap-1 text-sm font-medium text-slate-300">
+                <a href="#servicios" data-section="servicios" class="mobile-nav-link py-3 border-b border-white/5">Servicios</a>
                 <a href="#soluciones" data-section="soluciones" class="mobile-nav-link py-3 border-b border-white/5">Soluciones</a>
                 <a href="#ecosistema" data-section="ecosistema" class="mobile-nav-link py-3 border-b border-white/5">Ecosistema SaaS</a>
                 <a href="#programa" data-section="programa" class="mobile-nav-link py-3 border-b border-white/5">Programa</a>
@@ -296,9 +359,102 @@
                 <span>Hazme socio</span>
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </a>
-            <a href="#ecosistema" class="w-full sm:w-auto px-10 py-4.5 rounded-2xl font-semibold text-slate-300 hover:text-white border border-white/10 hover:border-white/20 bg-white/5 transition-all text-lg flex items-center justify-center gap-2">
-                <span>Explorar Ecosistema ↓</span>
+            <a href="#servicios" class="w-full sm:w-auto px-10 py-4.5 rounded-2xl font-semibold text-slate-300 hover:text-white border border-white/10 hover:border-white/20 bg-white/5 transition-all text-lg flex items-center justify-center gap-2">
+                <span>Ver qué automatizamos ↓</span>
             </a>
+        </div>
+    </section>
+
+    <!-- SECCIÓN SERVICIOS — BENTO ASIMÉTRICO (Ventas como núcleo, cinco frentes alrededor) -->
+    <section id="servicios" class="py-28 px-6 max-w-7xl mx-auto border-t border-white/5">
+        <div class="text-center mb-16 reveal">
+            <span class="text-brand-accent font-mono text-xs font-semibold tracking-wider uppercase badge-chip px-4 py-1.5 rounded-full">
+                STACK DE SERVICIOS
+            </span>
+            <h2 class="text-4xl md:text-5xl font-extrabold text-white mt-5 leading-tight">
+                El <span class="text-brand-accent">AI Builder</span> detrás de tus cinco áreas críticas
+            </h2>
+            <p class="text-base md:text-lg text-slate-400 mt-4 max-w-2xl mx-auto">
+                No vendemos horas de consultoría: diseñamos, construimos y operamos la arquitectura de marketing, ventas, finanzas, software y talento que necesita tu empresa para escalar.
+            </p>
+        </div>
+
+        <div class="bento-servicios reveal">
+
+            <!-- NÚCLEO: VENTAS -->
+            <div class="card-ventas servicio-hub rounded-3xl p-9 md:p-10 flex flex-col justify-between">
+                <div class="relative z-10">
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="w-14 h-14 rounded-2xl bg-brand-accent text-dark-bg flex items-center justify-center flex-shrink-0">
+                            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+                        </div>
+                        <span class="text-[10px] badge-chip font-mono px-2.5 py-1 rounded font-bold uppercase">El núcleo</span>
+                    </div>
+                    <h3 class="text-2xl md:text-[28px] font-bold text-white leading-tight mb-4">Ventas &amp; Conversión</h3>
+                    <p class="text-slate-300 text-sm md:text-base leading-relaxed max-w-md">
+                        Agentes de IA que califican, agendan y cierran dentro del mismo chat, conectados en vivo a marketing, finanzas y operaciones para que ninguna oportunidad se enfríe.
+                    </p>
+                </div>
+                <div class="relative z-10 flex gap-8 mt-10 pt-8 border-t border-white/10">
+                    <div>
+                        <div class="text-white font-mono font-extrabold text-2xl">&lt;60s</div>
+                        <div class="text-slate-400 text-xs mt-1">tiempo de respuesta</div>
+                    </div>
+                    <div>
+                        <div class="text-white font-mono font-extrabold text-2xl">24/7</div>
+                        <div class="text-slate-400 text-xs mt-1">disponibilidad</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MARKETING -->
+            <div class="card-marketing servicio-spoke rounded-3xl p-7 flex flex-col justify-between">
+                <div>
+                    <div class="servicio-icon-wrap w-11 h-11 rounded-xl flex items-center justify-center text-brand-accent mb-5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c2.5.223 4.957.71 7.31 1.44a19.5 19.5 0 00-1.86-11.16 19.5 19.5 0 00-7.31-1.44m0 9.18v6.75m0-6.75v-9.18"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Marketing &amp; Atracción</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Motores de contenido y performance que generan demanda calificada, no solo alcance.</p>
+                </div>
+                <div class="mt-6 pt-5 border-t border-white/5 text-xs font-mono text-brand-accent">Leads calificados ↑</div>
+            </div>
+
+            <!-- FINANZAS -->
+            <div class="card-finanzas servicio-spoke rounded-3xl p-7 flex flex-col justify-between">
+                <div>
+                    <div class="servicio-icon-wrap w-11 h-11 rounded-xl flex items-center justify-center text-brand-accent mb-5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Finanzas &amp; Reporting</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Tableros en tiempo real que muestran margen y caja antes de que se conviertan en un problema.</p>
+                </div>
+                <div class="mt-6 pt-5 border-t border-white/5 text-xs font-mono text-brand-accent">Margen en vivo</div>
+            </div>
+
+            <!-- DESARROLLO DE SOFTWARE -->
+            <div class="card-desarrollo servicio-spoke rounded-3xl p-7 flex flex-col justify-between">
+                <div>
+                    <div class="servicio-icon-wrap w-11 h-11 rounded-xl flex items-center justify-center text-brand-accent mb-5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Desarrollo de Software</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Plataformas propias construidas a la medida de tu operación, no plantillas genéricas.</p>
+                </div>
+                <div class="mt-6 pt-5 border-t border-white/5 text-xs font-mono text-brand-accent">100% a medida</div>
+            </div>
+
+            <!-- GESTIÓN HUMANA -->
+            <div class="card-gestion servicio-spoke rounded-3xl p-7 flex flex-col justify-between">
+                <div>
+                    <div class="servicio-icon-wrap w-11 h-11 rounded-xl flex items-center justify-center text-brand-accent mb-5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-2">Gestión Humana</h3>
+                    <p class="text-slate-400 text-sm leading-relaxed">Procesos de talento automatizados, del reclutamiento al onboarding, sin fricción operativa.</p>
+                </div>
+                <div class="mt-6 pt-5 border-t border-white/5 text-xs font-mono text-brand-accent">Onboarding automatizado</div>
+            </div>
+
         </div>
     </section>
 
@@ -465,7 +621,7 @@
                         <div class="text-slate-500 text-xs mt-1">mentoría</div>
                     </div>
                     <div>
-                        <div class="text-brand-accent font-mono font-extrabold text-xl">$45</div>
+                        <div class="text-brand-accent font-mono font-extrabold text-xl">$145</div>
                         <div class="text-slate-500 text-xs mt-1">desde, pago único</div>
                     </div>
                 </div>
@@ -655,6 +811,7 @@
                 <span class="ml-2 text-slate-500">— Desarrollo & Ingeniería de IA Multiplataforma</span>
             </div>
             <div class="flex items-center gap-6 font-mono text-slate-400">
+                <a href="#servicios" class="hover:text-white transition-colors">Servicios</a>
                 <a href="#soluciones" class="hover:text-white transition-colors">Soluciones</a>
                 <a href="#ecosistema" class="hover:text-white transition-colors">Ecosistema</a>
                 <a href="#programa" class="hover:text-white transition-colors">Programa</a>
