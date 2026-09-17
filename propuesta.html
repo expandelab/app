@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amazónika — Marketplace de Café Peruano</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ivory:#FBF9F5;
+    --ivory-2:#F5F3EF;
+    --graphite:#1A1A1A;
+    --graphite-70:#1A1A1AB3;
+    --taupe:#6B655F;
+    --champagne:#C5A880;
+    --rust:#B4552F;
+    --line: rgba(26,26,26,0.09);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--ivory); color:var(--graphite); font-family:'Inter',sans-serif; font-weight:400; position:relative;}
+  .font-serif{font-family:'Playfair Display',serif;}
+  .label{ font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--taupe); font-weight:500; }
+  .label-sm{ font-size:10px; letter-spacing:.16em; text-transform:uppercase; }
+  .ghost-btn{ border:1px solid var(--graphite); color:var(--graphite); background:transparent; transition: all .35s ease; }
+  .ghost-btn:hover{ background:var(--graphite); color:var(--ivory); }
+  .header-float{ background: rgba(251,249,245,0.6); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+  .header-scrolled{ background: rgba(251,249,245,0.94) !important; box-shadow: 0 1px 0 var(--line); }
+  .cart-drawer{ transition: transform .4s cubic-bezier(.22,.61,.36,1); }
+  .cart-drawer.closed{ transform: translateX(100%); }
+  .mobile-menu{ transition: transform .35s cubic-bezier(.22,.61,.36,1); }
+  .mobile-menu.closed{ transform: translateX(-100%); }
+  .pill{ transition: all .25s ease; }
+  .pill.active{ background:var(--graphite); color:var(--ivory); border-color:var(--graphite); }
+  .pill.filter-pill.active{ background:var(--rust); border-color:var(--rust); color:var(--ivory); }
+  .fade-up{ opacity:0; transform: translateY(22px); transition: opacity .8s ease, transform .8s ease; }
+  .fade-up.in-view{ opacity:1; transform: translateY(0); }
+  ::-webkit-scrollbar{ width:7px; }
+  ::-webkit-scrollbar-thumb{ background:var(--champagne); border-radius:999px;}
+  .qty-btn{ min-width:44px; min-height:44px; }
+  .tasting-chip{ font-size:11px; padding:4px 10px; border:1px solid var(--line); border-radius:999px; color:var(--graphite-70); white-space:nowrap; }
+
+  .grain-overlay{
+    position:fixed; inset:0; z-index:60; pointer-events:none; opacity:.035; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  .marquee-track{ display:flex; width:max-content; animation: marquee 26s linear infinite; }
+  .marquee-track:hover{ animation-play-state: paused; }
+  @keyframes marquee{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+  .marquee-item{ white-space:nowrap; }
+
+  .sticker{
+    display:inline-flex; align-items:center; justify-content:center; text-align:center;
+    border-radius:999px; border:1.5px dashed currentColor; user-select:none;
+  }
+  .sticker-spin{ animation: sticker-spin 14s linear infinite; }
+  @keyframes sticker-spin{ from{ transform:rotate(-8deg);} 50%{ transform:rotate(6deg);} to{ transform:rotate(-8deg);} }
+
+  .ig-tile{ position:relative; overflow:hidden; aspect-ratio:1/1; }
+  .ig-tile .ig-overlay{
+    position:absolute; inset:0; background:rgba(26,26,26,0.55); opacity:0; transition:opacity .3s ease;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--ivory);
+  }
+  .ig-tile:hover .ig-overlay{ opacity:1; }
+
+  #toast{
+    position:fixed; left:50%; bottom:28px; transform:translate(-50%,16px); z-index:70;
+    background:var(--graphite); color:var(--ivory); padding:12px 20px; border-radius:2px;
+    font-size:13px; display:flex; align-items:center; gap:10px; opacity:0; pointer-events:none;
+    transition: opacity .3s ease, transform .3s ease; box-shadow:0 12px 32px -8px rgba(0,0,0,.35);
+  }
+  #toast.show{ opacity:1; transform:translate(-50%,0); pointer-events:auto; }
+
+  .hc-slide{ transition: opacity .6s ease; }
+  .hc-dot{ width:6px; height:6px; border-radius:999px; background:rgba(251,249,245,0.4); transition: all .3s ease; }
+  .hc-dot.active{ width:22px; border-radius:999px; background:var(--ivory); }
+  .fs-track{ scroll-snap-type:x mandatory; scrollbar-width:none; }
+  .fs-track::-webkit-scrollbar{ display:none; }
+  .fs-card{ scroll-snap-align:start; }
+
+  .catalog-card{ transition: box-shadow .35s ease; }
+  .catalog-card:hover{ box-shadow: 0 20px 44px -20px rgba(26,26,26,0.22); }
+  .sold-out-overlay{ position:absolute; inset:0; background:rgba(251,249,245,0.72); display:flex; align-items:center; justify-content:center; }
+
+  /* =========================================================
+     MAPA INTERACTIVO DE ORÍGENES
+     Armonizado con los tokens del sitio (ivory / graphite /
+     taupe / line) en vez de su paleta original aislada.
+     ========================================================= */
+  #amazonika-map{
+    --san:#9A6237;
+    --bon:#6E8D4F;
+    --poz:#3F725F;
+    color:var(--graphite);
+    width:100%;
+  }
+  .amazonika-grid{
+    display:grid;
+    grid-template-columns: minmax(0,1.05fr) minmax(340px,.95fr);
+    gap:22px;
+  }
+  .amazonika-map-card{
+    overflow:hidden; border:1px solid var(--line); background:var(--ivory);
+  }
+  .map-card-header{
+    display:flex; justify-content:space-between; align-items:center; gap:20px;
+    padding:22px 24px 8px;
+  }
+  .map-status{
+    white-space:nowrap; padding:7px 12px; border-radius:999px;
+    border:1px solid var(--line); font-size:10px; color:var(--taupe);
+    letter-spacing:.16em; text-transform:uppercase;
+  }
+  .map-stage{
+    position:relative; overflow:hidden;
+    background:
+      radial-gradient(circle at 75% 25%, rgba(197,168,128,.20), transparent 32%),
+      radial-gradient(circle at 15% 80%, rgba(110,141,79,.14), transparent 36%),
+      linear-gradient(145deg, var(--ivory-2), #EDF0E8);
+  }
+  #amazonika-svg{ position:relative; z-index:2; display:block; width:100%; height:auto; }
+  .map-decoration{ position:absolute; border-radius:50%; pointer-events:none; opacity:.22; }
+  .map-decoration-one{ width:180px; height:180px; right:-50px; top:80px; background:var(--champagne); }
+  .map-decoration-two{ width:220px; height:220px; left:-90px; bottom:30px; background:#789D6A; }
+
+  .peru-country{
+    fill:#E9E0D1; stroke:#51483E; stroke-width:1.5;
+    vector-effect:non-scaling-stroke;
+    filter:drop-shadow(0 8px 12px rgba(0,0,0,.12));
+  }
+  .amazonika-marker{ cursor:pointer; outline:none; }
+  .amazonika-marker .marker-pulse{
+    fill:none; stroke-width:2; opacity:.45;
+    transform-box:fill-box; transform-origin:center;
+    animation: amazonikaPulse 2.3s ease-out infinite;
+  }
+  .amazonika-marker .marker-halo{
+    stroke:#fff; stroke-width:3; vector-effect:non-scaling-stroke;
+    filter:drop-shadow(0 4px 7px rgba(0,0,0,.25)); transition:transform .2s ease;
+  }
+  .amazonika-marker .marker-core{ fill:#fff; }
+  .amazonika-marker.active .marker-halo{ transform:scale(1.18); }
+  .amazonika-marker:focus-visible .marker-halo{ transform:scale(1.18); }
+  .marker-label{
+    font-size:14px; font-weight:700; fill:var(--graphite);
+    paint-order:stroke; stroke:var(--ivory); stroke-width:5px; stroke-linejoin:round;
+  }
+  .marker-region{
+    font-size:11px; font-weight:500; fill:var(--taupe);
+    paint-order:stroke; stroke:var(--ivory); stroke-width:4px;
+  }
+  .origin-buttons{ display:flex; flex-wrap:wrap; gap:8px; padding:0 22px 22px; }
+  .origin-button{
+    display:inline-flex; align-items:center; gap:8px;
+    min-height:44px; padding:8px 14px; border-radius:999px;
+    border:1px solid var(--line); background:var(--ivory); color:var(--graphite);
+    font-size:11px; font-weight:500; letter-spacing:.14em; text-transform:uppercase;
+    cursor:pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease;
+  }
+  .origin-button:hover{ transform:translateY(-2px); border-color:var(--taupe); }
+  .origin-button.active{ background:var(--graphite); border-color:var(--graphite); color:var(--ivory); }
+  .origin-dot{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .origin-dot.san{ background:var(--san); }
+  .origin-dot.bon{ background:var(--bon); }
+  .origin-dot.poz{ background:var(--poz); }
+
+  .amazonika-detail{ min-width:0; border:1px solid var(--line); background:var(--ivory); padding:20px; }
+  .origin-header{ position:relative; overflow:hidden; color:#fff; padding:20px; margin-bottom:8px; }
+  .origin-header::after{
+    content:""; position:absolute; width:130px; height:130px; right:-40px; top:-55px;
+    border:1px solid rgba(255,255,255,.2); border-radius:50%;
+  }
+  .origin-san{ background:linear-gradient(135deg,#865331,#B47748); }
+  .origin-bon{ background:linear-gradient(135deg,#587644,#83A765); }
+  .origin-poz{ background:linear-gradient(135deg,#315E51,#5A8975); }
+  .origin-header-eyebrow{
+    position:relative; z-index:2; font-size:9px; font-weight:600;
+    letter-spacing:.2em; opacity:.85; text-transform:uppercase;
+  }
+  .origin-header h3{
+    position:relative; z-index:2; margin:6px 0 0;
+    font-family:'Playfair Display',serif; font-size:28px; font-weight:500; line-height:1.1;
+  }
+  .origin-header-region{ position:relative; z-index:2; margin-top:5px; font-size:12px; opacity:.9; }
+  .origin-tagline{
+    position:relative; z-index:2; margin-top:12px; font-size:11px;
+    letter-spacing:.1em; text-transform:uppercase; opacity:.9;
+  }
+  .coffee-card{ padding:18px 0; border-top:1px solid var(--line); animation: coffeeCardIn .35s ease both; }
+  .coffee-title-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+  .coffee-card h4{ margin:0; font-family:'Playfair Display',serif; font-size:20px; font-weight:500; }
+  .coffee-producer{ margin-top:4px; font-size:11px; color:var(--taupe); }
+  .coffee-pills{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:5px; }
+  .coffee-pill{
+    display:inline-flex; align-items:center; border:1px solid var(--line); border-radius:999px;
+    padding:5px 9px; background:var(--ivory-2); font-size:10px; font-weight:600;
+    letter-spacing:.08em; text-transform:uppercase;
+  }
+  .coffee-pill.sold{ background:#EEE1DF; color:#80534D; }
+  .coffee-notes{ margin-top:10px; padding:12px; background:var(--ivory-2); font-size:12px; line-height:1.55; }
+  .coffee-notes strong{ font-weight:600; }
+  .coffee-facts{ display:grid; grid-template-columns:1fr 1fr; gap:13px 16px; margin:14px 0 0; }
+  .coffee-facts div{ min-width:0; }
+  .coffee-facts dt{
+    font-size:9px; font-weight:600; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--taupe);
+  }
+  .coffee-facts dd{ margin:4px 0 0; font-size:11px; line-height:1.45; }
+  .coffee-cta{
+    margin-top:14px; width:100%; min-height:44px; padding:12px;
+    background:var(--graphite); color:var(--ivory); border:none; cursor:pointer;
+    font-size:10px; font-weight:500; letter-spacing:.16em; text-transform:uppercase;
+    transition: background .3s ease;
+  }
+  .coffee-cta:hover{ background:var(--rust); }
+  .coffee-cta[disabled]{ background:transparent; color:var(--taupe); border:1px solid var(--line); cursor:default; }
+
+  @keyframes amazonikaPulse{
+    0%{ transform:scale(.75); opacity:.55; }
+    75%,100%{ transform:scale(2.1); opacity:0; }
+  }
+  @keyframes coffeeCardIn{ from{ opacity:0; transform:translateY(7px);} to{ opacity:1; transform:translateY(0);} }
+  @keyframes detailIn{ from{ opacity:.5; transform:translateY(6px);} to{ opacity:1; transform:translateY(0);} }
+  .amazonika-detail.animate{ animation: detailIn .32s ease; }
+
+  @media (max-width:850px){
+    .amazonika-grid{ grid-template-columns:1fr; }
+  }
+  @media (max-width:520px){
+    .map-card-header{ align-items:flex-start; flex-direction:column; }
+    .map-status{ display:none; }
+    .amazonika-detail{ padding:16px; }
+    .coffee-facts{ grid-template-columns:1fr; }
+    .coffee-title-row{ flex-direction:column; }
+    .coffee-pills{ justify-content:flex-start; }
+    .marker-label{ font-size:16px; }
+    .marker-region{ font-size:12px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    #amazonika-map *{ animation:none !important; transition:none !important; }
+    .marquee-track{ animation:none !important; }
+    .sticker-spin{ animation:none !important; }
+    .fade-up{ opacity:1 !important; transform:none !important; }
+  }
+</style>
+</head>
+<body class="antialiased">
+
+<div class="grain-overlay" aria-hidden="true"></div>
+
+<!-- ================= HEADER ================= -->
+<header id="siteHeader" class="fixed top-0 left-0 right-0 z-40 header-float transition-colors duration-300">
+  <div class="max-w-[1400px] mx-auto px-5 md:px-8">
+    <div class="grid grid-cols-3 items-center h-[76px] md:h-[92px]">
+      <div class="flex items-center gap-4">
+        <button onclick="toggleMenu()" class="p-2 -ml-2" style="min-width:44px;min-height:44px;" aria-label="Abrir menú">
+          <svg width="20" height="20" fill="none" stroke="var(--graphite)" stroke-width="1.3"><path d="M1 5h18M1 10h18M1 15h18"/></svg>
+        </button>
+        <nav class="hidden lg:flex items-center gap-7 label">
+          <a href="#catalogo" class="hover:text-[var(--graphite)] transition-colors">Catálogo</a>
+          <a href="#amazonika-map" class="hover:text-[var(--graphite)] transition-colors">Mapa</a>
+          <a href="#origen" class="hover:text-[var(--graphite)] transition-colors">Origen</a>
+          <a href="#caficultores" class="hover:text-[var(--graphite)] transition-colors">Caficultores</a>
+          <a href="#comunidad" class="hover:text-[var(--graphite)] transition-colors">Comunidad</a>
+        </nav>
+      </div>
+      <a href="#home" class="text-center">
+        <span class="font-serif italic text-[22px] md:text-[28px] tracking-tight" style="font-weight:500;">Amazónika</span>
+      </a>
+      <div class="flex items-center justify-end gap-1 md:gap-3">
+        <button onclick="toggleCart()" class="relative p-2" style="min-width:44px;min-height:44px;" aria-label="Carrito">
+          <svg width="18" height="18" fill="none" stroke="var(--graphite)" stroke-width="1.3"><path d="M2 5h2l1.6 9.2a2 2 0 0 0 2 1.6h6.8a2 2 0 0 0 2-1.6L17.5 7H5.4"/><circle cx="8" cy="17.5" r="1"/><circle cx="14" cy="17.5" r="1"/></svg>
+          <span id="cartBadge" class="absolute -top-0.5 -right-0.5 bg-[var(--champagne)] text-[var(--graphite)] text-[9px] font-semibold rounded-full w-4 h-4 flex items-center justify-center">0</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overflow-hidden border-t border-[var(--line)]" style="background:var(--graphite);">
+    <div class="marquee-track py-2">
+      <span class="marquee-item"></span>
+    </div>
+  </div>
+</header>
+
+<!-- ================= MOBILE MENU ================= -->
+<div id="mobileMenu" class="mobile-menu closed fixed inset-0 z-50">
+  <div class="absolute inset-0 bg-black/30" onclick="toggleMenu()"></div>
+  <div class="absolute left-0 top-0 h-full w-[82%] max-w-sm bg-[var(--ivory)] p-7 overflow-y-auto flex flex-col">
+    <div class="flex items-center justify-between mb-10">
+      <span class="font-serif italic text-xl" style="font-weight:500;">Amazónika</span>
+      <button onclick="toggleMenu()" style="min-width:44px;min-height:44px;" aria-label="Cerrar"><svg width="18" height="18" fill="none" stroke="var(--graphite)" stroke-width="1.3"><path d="M3 3l14 14M17 3L3 17"/></svg></button>
+    </div>
+    <nav class="flex flex-col font-serif text-2xl divide-y divide-[var(--line)]">
+      <a href="#catalogo" onclick="toggleMenu()" class="py-4" style="min-height:48px;">Catálogo</a>
+      <a href="#amazonika-map" onclick="toggleMenu()" class="py-4" style="min-height:48px;">Mapa de orígenes</a>
+      <a href="#origen" onclick="toggleMenu()" class="py-4" style="min-height:48px;">Origen</a>
+      <a href="#caficultores" onclick="toggleMenu()" class="py-4" style="min-height:48px;">Caficultores</a>
+      <a href="#comunidad" onclick="toggleMenu()" class="py-4" style="min-height:48px;">Comunidad</a>
+    </nav>
+  </div>
+</div>
+
+<!-- ================= HERO CAROUSEL ================= -->
+<section id="home" class="relative h-[92vh] md:h-screen overflow-hidden">
+  <div id="hcTrack" class="relative w-full h-full">
+
+    <div class="hc-slide absolute inset-0 flex items-center" style="background:linear-gradient(135deg,#2A2118,#4A3624);">
+      <div class="max-w-[1400px] mx-auto px-5 md:px-8 w-full relative">
+        <span class="label block mb-6" style="color:var(--champagne);">Nueva cosecha disponible</span>
+        <h1 class="font-serif text-[40px] leading-[1.1] md:text-[68px] md:leading-[1.04] text-[var(--ivory)] max-w-2xl" style="font-weight:500;">
+          Café peruano, directo del caficultor a tu taza.
+        </h1>
+        <a href="#catalogo" class="inline-block mt-8 px-8 py-4 text-[12px] label-sm font-medium tracking-widest" style="background:var(--ivory);color:var(--graphite);">Ver el marketplace</a>
+
+        <div class="sticker sticker-spin hidden md:flex absolute -right-2 top-2 w-24 h-24 flex-col leading-tight text-[10px] label-sm" style="color:var(--champagne);">
+          100%<br>PERUANO<br>★★★
+        </div>
+      </div>
+    </div>
+
+    <div class="hc-slide absolute inset-0 flex items-center opacity-0" style="background:linear-gradient(135deg,#3A2E1F,#5C4832);">
+      <div class="max-w-[1400px] mx-auto px-5 md:px-8 w-full">
+        <span class="label block mb-6" style="color:var(--champagne);">Trazabilidad de origen</span>
+        <h1 class="font-serif text-[36px] leading-[1.15] md:text-[58px] md:leading-[1.08] text-[var(--ivory)] max-w-2xl" style="font-weight:500;">
+          Tres orígenes, de Cajamarca a Pasco, en un solo mapa.
+        </h1>
+        <a href="#amazonika-map" class="inline-block mt-8 px-8 py-4 text-[12px] label-sm font-medium tracking-widest ghost-btn" style="border-color:var(--ivory);color:var(--ivory);">Explorar el mapa</a>
+      </div>
+    </div>
+
+    <div class="hc-slide absolute inset-0 flex items-center opacity-0" style="background:linear-gradient(135deg,#241E16,#3E3222);">
+      <div class="max-w-[1400px] mx-auto px-5 md:px-8 w-full">
+        <span class="label block mb-6" style="color:var(--champagne);">Impacto directo</span>
+        <h1 class="font-serif text-[36px] leading-[1.15] md:text-[58px] md:leading-[1.08] text-[var(--ivory)] max-w-2xl" style="font-weight:500;">
+          Detrás de cada lote, un caficultor con nombre propio.
+        </h1>
+        <p class="mt-4 text-[var(--ivory)]/70 max-w-md">Jovita Culquiton, Gregorio Espinoza y la cooperativa de Chirinos cultivan lo que tuestas hoy.</p>
+        <a href="#caficultores" class="inline-block mt-8 px-8 py-4 text-[12px] label-sm font-medium tracking-widest ghost-btn" style="border-color:var(--ivory);color:var(--ivory);">Conocer a los caficultores</a>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+    <button onclick="goToSlide(0)" class="hc-dot active" data-dot="0" aria-label="Slide 1"></button>
+    <button onclick="goToSlide(1)" class="hc-dot" data-dot="1" aria-label="Slide 2"></button>
+    <button onclick="goToSlide(2)" class="hc-dot" data-dot="2" aria-label="Slide 3"></button>
+  </div>
+
+  <button onclick="prevSlide()" class="hidden md:flex absolute left-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full items-center justify-center border border-[var(--ivory)]/30 hover:border-[var(--ivory)] transition-colors z-10" aria-label="Anterior">
+    <svg width="16" height="16" fill="none" stroke="var(--ivory)" stroke-width="1.5"><path d="M11 3L5 9l6 6"/></svg>
+  </button>
+  <button onclick="nextSlide()" class="hidden md:flex absolute right-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full items-center justify-center border border-[var(--ivory)]/30 hover:border-[var(--ivory)] transition-colors z-10" aria-label="Siguiente">
+    <svg width="16" height="16" fill="none" stroke="var(--ivory)" stroke-width="1.5"><path d="M7 3l6 6-6 6"/></svg>
+  </button>
+</section>
+
+<!-- ================= MAPA INTERACTIVO DE ORÍGENES ================= -->
+<section id="amazonika-map" class="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28">
+
+  <div class="mb-8 fade-up">
+    <span class="label">Amazónika Café · Orígenes del Perú</span>
+    <h2 class="font-serif text-[30px] md:text-[42px] mt-3 leading-tight" style="font-weight:500;">Café peruano, desde su origen</h2>
+    <p class="mt-3 text-[var(--graphite-70)] max-w-xl leading-relaxed">
+      Recorre el mapa y descubre las historias, perfiles y procesos detrás de nuestros cafés.
+    </p>
+  </div>
+
+  <div class="amazonika-grid fade-up">
+
+    <div class="amazonika-map-card">
+      <div class="map-card-header">
+        <div>
+          <span class="label-sm text-[var(--taupe)]">Mapa de origen</span>
+          <p class="mt-1.5 text-[13px]">Pasa el cursor o toca un punto</p>
+        </div>
+        <span id="amazonika-status" class="map-status">Cargando mapa…</span>
+      </div>
+
+      <div class="map-stage">
+        <div class="map-decoration map-decoration-one"></div>
+        <div class="map-decoration map-decoration-two"></div>
+        <svg id="amazonika-svg" viewBox="0 0 520 650" role="img" aria-label="Mapa del Perú con los orígenes de café Amazónika"></svg>
+      </div>
+
+      <div class="origin-buttons">
+        <button type="button" class="origin-button" data-origin="san"><span class="origin-dot san"></span>San Ignacio</button>
+        <button type="button" class="origin-button" data-origin="bon"><span class="origin-dot bon"></span>Bongará</button>
+        <button type="button" class="origin-button" data-origin="poz"><span class="origin-dot poz"></span>Pozuzo</button>
+      </div>
+    </div>
+
+    <aside id="amazonika-detail" class="amazonika-detail" aria-live="polite"></aside>
+
+  </div>
+</section>
+
+<!-- ================= ABOUT / ORIGEN ================= -->
+<section id="origen" class="max-w-[1400px] mx-auto px-5 md:px-8 pb-20 md:pb-28">
+  <div class="grid md:grid-cols-2 gap-12 md:gap-20 items-start">
+    <div class="fade-up">
+      <span class="label">Quiénes somos</span>
+      <h2 class="font-serif text-[30px] md:text-[42px] mt-3 leading-tight" style="font-weight:500;">100% café peruano, cultivado por gente con nombre y apellido.</h2>
+      <p class="mt-6 text-[var(--graphite-70)] leading-relaxed max-w-md">
+        Somos el marketplace directo entre caficultores peruanos y tu taza — sin intermediarios que se lleven la trazabilidad. Cada bolsa lleva la región, la altitud y el nombre de quien la cultivó.
+      </p>
+      <div class="flex items-center gap-3 mt-8">
+        <span class="label-sm px-3 py-2 border border-[var(--line)]">100% Café Peruano</span>
+        <span class="label-sm px-3 py-2 border border-[var(--line)]">Specialty Coffee</span>
+      </div>
+    </div>
+    <div class="fade-up">
+      <span class="label block mb-5">Nuestras regiones</span>
+      <div id="regionSummary" class="space-y-4"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CAFICULTORES ================= -->
+<section id="caficultores" class="py-20 md:py-28" style="background:var(--ivory-2);">
+  <div class="max-w-[1400px] mx-auto px-5 md:px-8 mb-10 fade-up">
+    <span class="label">Caficultores</span>
+    <h2 class="font-serif text-[30px] md:text-[42px] mt-3" style="font-weight:500;">Las manos detrás de tu café</h2>
+  </div>
+  <div id="fsTrack" class="fs-track flex gap-5 overflow-x-auto px-5 md:px-8 pb-2"></div>
+</section>
+
+<!-- ================= CATÁLOGO — MARKETPLACE ================= -->
+<section id="catalogo" class="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28">
+  <div class="mb-10 fade-up">
+    <span class="label">Marketplace</span>
+    <h2 class="font-serif text-[30px] md:text-[42px] mt-3" style="font-weight:500;">Elige tu lote, directo del caficultor</h2>
+    <p class="mt-3 text-[var(--graphite-70)] max-w-lg">Grano entero o molido a tu preferencia — cada bolsa lleva el puntaje de catación y las notas de cata de su lote.</p>
+  </div>
+
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10 fade-up">
+    <div id="regionFilters" class="flex flex-wrap gap-2"></div>
+    <label class="flex items-center gap-2 text-[11px] label-sm text-[var(--taupe)]">
+      Ordenar por
+      <select id="sortSelect" class="border border-[var(--line)] bg-transparent px-3 py-2 text-[var(--graphite)] focus:outline-none" style="min-height:44px;">
+        <option value="recomendados">Recomendados</option>
+        <option value="precio-asc">Precio: menor a mayor</option>
+        <option value="precio-desc">Precio: mayor a menor</option>
+        <option value="puntaje">Puntaje de catación</option>
+      </select>
+    </label>
+  </div>
+
+  <div id="catalogGrid" class="grid md:grid-cols-3 gap-8 md:gap-10"></div>
+</section>
+
+<!-- ================= GALERÍA / COMUNIDAD ================= -->
+<section id="comunidad" class="max-w-[1400px] mx-auto px-5 md:px-8 pb-20 md:pb-28">
+  <div class="flex items-end justify-between mb-8 fade-up">
+    <div>
+      <span class="label">Comunidad</span>
+      <h2 class="font-serif text-[28px] md:text-[36px] mt-2" style="font-weight:500;">@amazonikacafe</h2>
+    </div>
+    <a href="#" class="hidden sm:inline label-sm border-b border-[var(--graphite)] pb-0.5 hover:text-[var(--rust)] hover:border-[var(--rust)]">Seguir en Instagram →</a>
+  </div>
+  <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 md:gap-3 fade-up"></div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer class="bg-[var(--graphite)] text-[var(--ivory)] mt-4">
+  <div class="max-w-[1400px] mx-auto px-5 md:px-8 py-16 md:py-20">
+    <div class="grid md:grid-cols-4 gap-12 md:gap-10">
+      <div class="md:col-span-2">
+        <span class="font-serif italic text-2xl" style="font-weight:500;">Amazónika</span>
+        <p class="mt-4 text-sm text-[var(--ivory)]/55 max-w-xs leading-relaxed">Marketplace de café peruano de especialidad. Trazable de origen a taza.</p>
+      </div>
+      <div>
+        <span class="label-sm text-[var(--ivory)]/45">Orígenes</span>
+        <ul id="footerOriginLinks" class="mt-4 space-y-3 text-sm text-[var(--ivory)]/70"></ul>
+      </div>
+      <div>
+        <span class="label-sm text-[var(--ivory)]/45">Contacto</span>
+        <ul class="mt-4 space-y-3 text-sm text-[var(--ivory)]/70">
+          <li>hola@amazonika.pe</li>
+          <li class="flex gap-3 pt-1">
+            <a href="#" class="hover:text-[var(--champagne)]">Instagram</a>
+            <a href="#" class="hover:text-[var(--champagne)]">TikTok</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-[var(--ivory)]/12 mt-12 pt-6 flex flex-col sm:flex-row justify-between gap-3 text-xs text-[var(--ivory)]/40">
+      <span>© 2026 Amazónika Café.</span>
+      <span>Yape · Plin · Visa · Mastercard</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= CART DRAWER ================= -->
+<div id="cartOverlay" onclick="toggleCart()" class="hidden fixed inset-0 bg-black/30 z-50"></div>
+<aside id="cartDrawer" class="cart-drawer closed fixed top-0 right-0 h-full w-full sm:w-[420px] bg-[var(--ivory)] z-50 p-7 flex flex-col shadow-2xl">
+  <div class="flex items-center justify-between mb-8">
+    <h3 class="font-serif italic text-xl" style="font-weight:500;">Tu carrito</h3>
+    <button onclick="toggleCart()" style="min-width:44px;min-height:44px;" aria-label="Cerrar carrito">
+      <svg width="16" height="16" fill="none" stroke="var(--graphite)" stroke-width="1.3"><path d="M3 3l14 14M17 3L3 17"/></svg>
+    </button>
+  </div>
+  <div id="cartItemsContainer" class="flex-grow overflow-y-auto space-y-6 pr-2 -mr-2">
+    <p class="text-center text-[var(--graphite-70)] py-10 text-sm">Tu carrito está vacío</p>
+  </div>
+  <div class="mt-auto pt-8 border-t border-[var(--line)]">
+    <div class="flex justify-between items-center font-serif text-lg mb-2">
+      <span>Subtotal</span>
+      <span id="cartSubtotal">S/ 0.00</span>
+    </div>
+    <p class="text-[11px] text-[var(--graphite-70)] mb-6">Impuestos y envío calculados en el checkout.</p>
+    <a href="#" onclick="return false;" class="block text-center w-full py-4 font-medium text-[12px] label-sm tracking-widest" style="min-height:44px;background:var(--graphite);color:var(--ivory);">Finalizar Pedido</a>
+  </div>
+</aside>
+
+<div id="toast"></div>
+
+<script type="module">
+/* =========================================================================
+   AMAZÓNIKA — FUENTE ÚNICA DE DATOS
+   Antes había dos verdades en conflicto: el catálogo (Villa Rica /
+   Pichanaqui) y el mapa (San Ignacio / Bongará / Pozuzo), con "Imperial"
+   apareciendo en ambos con origen y productor distintos.
+   Aquí se consolida en ORIGINS: el mapa, el catálogo, los caficultores,
+   el resumen de regiones y el footer se derivan todos de este objeto.
+   PRECIOS: placeholder escalado por puntaje — reemplazar por los reales.
+   ========================================================================= */
+const ORIGINS = {
+  san: {
+    id: "san",
+    name: "San Ignacio",
+    region: "Cajamarca",
+    coordinates: [-78.99, -5.15],
+    color: "#9A6237",
+    cssClass: "origin-san",
+    tagline: "Dulzura, tradición y equilibrio",
+    producer: "La Prosperidad de Chirinos",
+    producerQuote: "El café de Chirinos se trabaja en comunidad, lote por lote.",
+    coffees: [
+      {
+        id: "imperial-san-ignacio",
+        name: "Imperial",
+        score: 83,
+        scoreLabel: "83 pts",
+        notes: "Dulce, panela, miel, vainilla, chocolate, nuez y cuerpo cremoso.",
+        altitude: "1200–1600 m s. n. m.",
+        variety: "Paches, Catimor, Gran Colombia, Catuay",
+        process: "Lavado",
+        producer: "La Prosperidad de Chirinos",
+        soldOut: false,
+        isNew: false,
+        weights: [
+          { label: "250g", price: 42.00 },
+          { label: "500g", price: 76.00 },
+          { label: "1000g", price: 138.00 }
+        ],
+        grinds: ["En Grano Entero", "Molido Fino (Espresso)", "Molido Medio (Gota / V60)", "Molido Grueso (Prensa)"]
+      },
+      {
+        id: "premium-blend-san-ignacio",
+        name: "Premium Blend",
+        score: 84,
+        scoreLabel: "84 pts",
+        notes: "Caramelo, cítrico a lima, miel, vainilla, chocolate y cuerpo cremoso.",
+        altitude: "1400–1600 m s. n. m.",
+        variety: "Paches, Caturra, Bourbon",
+        process: "Lavado",
+        producer: "La Prosperidad de Chirinos",
+        soldOut: false,
+        isNew: true,
+        weights: [
+          { label: "250g", price: 46.00 },
+          { label: "500g", price: 84.00 },
+          { label: "1000g", price: 152.00 }
+        ],
+        grinds: ["En Grano Entero", "Molido Fino (Espresso)", "Molido Medio (Gota / V60)", "Molido Grueso (Prensa)"]
+      }
+    ]
+  },
+  bon: {
+    id: "bon",
+    name: "Bongará",
+    region: "Amazonas",
+    coordinates: [-77.87, -5.94],
+    color: "#6E8D4F",
+    cssClass: "origin-bon",
+    tagline: "Naturaleza amazónica en cada taza",
+    producer: "Jovita Culquiton Culqui",
+    producerQuote: "A 1850 metros el grano madura lento — ahí está el dulzor.",
+    coffees: [
+      {
+        id: "deluxe-bongara",
+        name: "Deluxe",
+        score: 85,
+        scoreLabel: "85 pts",
+        notes: "Frutos rojos, afrutado, manzana verde, final dulce a miel y cuerpo jugoso.",
+        altitude: "1850 m s. n. m.",
+        variety: "Típica, Bourbon, Caturra, CR95",
+        process: "Lavado · 90 hrs fermentación en cerezo",
+        producer: "Jovita Culquiton Culqui",
+        soldOut: true,
+        isNew: false,
+        weights: [
+          { label: "250g", price: 54.00 }
+        ],
+        grinds: ["En Grano Entero", "Molido Medio (Gota / V60)"]
+      }
+    ]
+  },
+  poz: {
+    id: "poz",
+    name: "Pozuzo",
+    region: "Oxapampa · Pasco",
+    coordinates: [-75.55, -10.07],
+    color: "#3F725F",
+    cssClass: "origin-poz",
+    tagline: "Café de altura, carácter y complejidad",
+    producer: "Gregorio Espinoza",
+    producerQuote: "La fermentación anaeróbica es paciencia: 90 horas sin atajos.",
+    coffees: [
+      {
+        id: "luxe-black-pozuzo",
+        name: "Luxe Black",
+        score: 86.25,
+        scoreLabel: "86.25 pts",
+        notes: "Panela, frutos rojos, mandarina, frutos secos. Sabor dulce, chocolate y frutal. Acidez dulce, cuerpo cremoso.",
+        altitude: "1850 m s. n. m.",
+        variety: "Catuaí Rojo",
+        process: "Lavado · fermentación anaeróbica doble 90 horas",
+        producer: "Gregorio Espinoza",
+        soldOut: false,
+        isNew: false,
+        weights: [
+          { label: "250g", price: 62.00 },
+          { label: "500g", price: 115.00 }
+        ],
+        grinds: ["En Grano Entero", "Molido Medio (Gota / V60)", "Molido Fino (Espresso)"]
+      },
+      {
+        id: "heritage-pozuzo",
+        name: "Heritage",
+        score: 86.5,
+        scoreLabel: "86.5 pts",
+        notes: "Caramelo, confites, avellanas, manzana roja. Sabor cítrico, chocolate, cañal. Acidez cítrica, cuerpo cremoso.",
+        altitude: "1800 m s. n. m.",
+        variety: "Obata Rojo",
+        process: "Lavado · doble fermentación anaeróbica 72 horas",
+        producer: "Gregorio Espinoza",
+        soldOut: false,
+        isNew: true,
+        weights: [
+          { label: "250g", price: 64.00 },
+          { label: "500g", price: 119.00 }
+        ],
+        grinds: ["En Grano Entero", "Molido Medio (Gota / V60)", "Molido Fino (Espresso)"]
+      }
+    ]
+  }
+};
+
+/* Lista plana de productos, derivada de ORIGINS — la usa el catálogo */
+const PRODUCTS = Object.values(ORIGINS).flatMap(origin =>
+  origin.coffees.map(coffee => ({
+    ...coffee,
+    originId: origin.id,
+    originName: origin.name,
+    regionName: origin.region,
+    place: `${origin.name} - ${origin.region}`,
+    accent: origin.color
+  }))
+);
+
+/* =========================================================================
+   DOM
+   ========================================================================= */
+const amazonikaSVG = document.getElementById("amazonika-svg");
+const amazonikaDetail = document.getElementById("amazonika-detail");
+const amazonikaStatus = document.getElementById("amazonika-status");
+
+/* =========================================================================
+   PANEL DE DETALLE DEL MAPA
+   Cada ficha ahora tiene CTA que empuja al catálogo (antes el mapa era
+   informativo y terminaba en un callejón sin salida comercial).
+   ========================================================================= */
+function renderAmazonikaDetail(originId){
+  const origin = ORIGINS[originId];
+  if(!origin) return;
+
+  amazonikaDetail.classList.remove("animate");
+  void amazonikaDetail.offsetWidth;
+  amazonikaDetail.classList.add("animate");
+
+  const coffeeHTML = origin.coffees.map(coffee => `
+    <article class="coffee-card">
+      <div class="coffee-title-row">
+        <div>
+          <h4>${coffee.name}</h4>
+          <div class="coffee-producer">Productor: ${coffee.producer}</div>
+        </div>
+        <div class="coffee-pills">
+          <span class="coffee-pill">${coffee.scoreLabel}</span>
+          <span class="coffee-pill${coffee.soldOut ? " sold" : ""}">${coffee.soldOut ? "Agotado" : "Disponible"}</span>
+        </div>
+      </div>
+      <div class="coffee-notes"><strong>Perfil:</strong> ${coffee.notes}</div>
+      <dl class="coffee-facts">
+        <div><dt>Altitud</dt><dd>${coffee.altitude}</dd></div>
+        <div><dt>Variedad</dt><dd>${coffee.variety}</dd></div>
+        <div><dt>Proceso</dt><dd>${coffee.process}</dd></div>
+        <div><dt>Desde</dt><dd>S/ ${coffee.weights[0].price.toFixed(2)} · ${coffee.weights[0].label}</dd></div>
+      </dl>
+      ${coffee.soldOut
+        ? `<button class="coffee-cta" disabled>Agotado por ahora</button>`
+        : `<button class="coffee-cta" data-goto-product="${coffee.id}">Ver en el marketplace</button>`}
+    </article>
+  `).join("");
+
+  amazonikaDetail.innerHTML = `
+    <div class="origin-header ${origin.cssClass}">
+      <div class="origin-header-eyebrow">Origen Amazónika</div>
+      <h3>${origin.name}</h3>
+      <div class="origin-header-region">${origin.region} · Perú</div>
+      <div class="origin-tagline">${origin.tagline}</div>
+    </div>
+    ${coffeeHTML}
+  `;
+
+  document.querySelectorAll(".origin-button").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.origin === originId);
+  });
+  document.querySelectorAll(".amazonika-marker").forEach(marker => {
+    marker.classList.toggle("active", marker.dataset.origin === originId);
+  });
+}
+
+/* Puente mapa → catálogo: filtra por región y hace scroll al lote */
+amazonikaDetail.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-goto-product]");
+  if(!btn) return;
+  const productId = btn.dataset.gotoProduct;
+  const product = PRODUCTS.find(p => p.id === productId);
+  if(!product) return;
+  catalogState.region = "todos";
+  renderCatalog();
+  document.getElementById("catalogo").scrollIntoView({ behavior:"smooth", block:"start" });
+  setTimeout(() => {
+    const card = document.querySelector(`[data-product-id="${productId}"]`);
+    if(card){
+      card.style.outline = `2px solid ${product.accent}`;
+      card.style.outlineOffset = "6px";
+      setTimeout(() => { card.style.outline = "none"; }, 2200);
+    }
+  }, 620);
+});
+
+document.querySelectorAll(".origin-button").forEach(btn => {
+  btn.addEventListener("click", () => renderAmazonikaDetail(btn.dataset.origin));
+});
+
+/* =========================================================================
+   CARGA DEL MAPA (d3 + topojson)
+   FIX: el import original de world-atlas apuntaba a
+   ".../countries-50m.json/+esm", que no es un módulo ESM válido y hacía
+   fallar el mapa siempre. Ahora se descarga el JSON con fetch.
+   ========================================================================= */
+async function loadAmazonikaMap(){
+  try{
+    const [d3, topojson, world] = await Promise.all([
+      import("https://cdn.jsdelivr.net/npm/d3@7.9.0/+esm"),
+      import("https://cdn.jsdelivr.net/npm/topojson-client@3.1.0/+esm"),
+      fetch("https://cdn.jsdelivr.net/npm/world-atlas@2.0.2/countries-50m.json").then(r => {
+        if(!r.ok) throw new Error("No se pudo descargar la capa geográfica");
+        return r.json();
+      })
+    ]);
+
+    const countries = topojson.feature(world, world.objects.countries).features;
+    const peru = countries.find(c => String(c.id) === "604");
+    if(!peru) throw new Error("No se encontró la geometría de Perú.");
+
+    const projection = d3.geoMercator().fitExtent([[65,35],[455,610]], peru);
+    const path = d3.geoPath(projection);
+
+    const SVG_NS = "http://www.w3.org/2000/svg";
+    const countryPath = document.createElementNS(SVG_NS, "path");
+    countryPath.setAttribute("d", path(peru));
+    countryPath.setAttribute("class", "peru-country");
+    amazonikaSVG.appendChild(countryPath);
+
+    const labelOffsets = { san:[20,0], bon:[20,-10], poz:[20,0] };
+
+    Object.entries(ORIGINS).forEach(([id, origin]) => {
+      const pos = projection(origin.coordinates);
+      if(!pos) return;
+
+      const group = document.createElementNS(SVG_NS, "g");
+      group.setAttribute("class", "amazonika-marker");
+      group.dataset.origin = id;
+      group.setAttribute("tabindex", "0");
+      group.setAttribute("role", "button");
+      group.setAttribute("aria-label", `${origin.name}, ${origin.region}`);
+      group.setAttribute("transform", `translate(${pos[0]},${pos[1]})`);
+
+      const pulse = document.createElementNS(SVG_NS, "circle");
+      pulse.setAttribute("r", "13");
+      pulse.setAttribute("class", "marker-pulse");
+      pulse.setAttribute("stroke", origin.color);
+      group.appendChild(pulse);
+
+      const halo = document.createElementNS(SVG_NS, "circle");
+      halo.setAttribute("r", "12");
+      halo.setAttribute("class", "marker-halo");
+      halo.setAttribute("fill", origin.color);
+      group.appendChild(halo);
+
+      const core = document.createElementNS(SVG_NS, "circle");
+      core.setAttribute("r", "3.8");
+      core.setAttribute("class", "marker-core");
+      group.appendChild(core);
+
+      const [ox, oy] = labelOffsets[id];
+      const label = document.createElementNS(SVG_NS, "text");
+      label.setAttribute("x", ox);
+      label.setAttribute("y", oy);
+      label.setAttribute("class", "marker-label");
+      label.textContent = origin.name;
+      group.appendChild(label);
+
+      const region = document.createElementNS(SVG_NS, "text");
+      region.setAttribute("x", ox);
+      region.setAttribute("y", oy + 16);
+      region.setAttribute("class", "marker-region");
+      region.textContent = origin.region;
+      group.appendChild(region);
+
+      /* En desktop el hover explora rápido; en touch sólo cuenta el tap
+         (antes mouseenter disparaba también en algunos móviles). */
+      if(window.matchMedia("(hover:hover)").matches){
+        group.addEventListener("mouseenter", () => renderAmazonikaDetail(id));
+      }
+      group.addEventListener("click", () => renderAmazonikaDetail(id));
+      group.addEventListener("keydown", (ev) => {
+        if(ev.key === "Enter" || ev.key === " "){
+          ev.preventDefault();
+          renderAmazonikaDetail(id);
+        }
+      });
+
+      amazonikaSVG.appendChild(group);
+    });
+
+    amazonikaStatus.textContent = "Mapa interactivo · 3 orígenes";
+    renderAmazonikaDetail("san");
+
+  }catch(error){
+    console.error("Amazonika map error:", error);
+    amazonikaStatus.textContent = "Capa geográfica no disponible";
+    amazonikaSVG.innerHTML = `
+      <text x="260" y="296" text-anchor="middle" fill="#1A1A1A" font-size="17" font-weight="600">No se pudo cargar el mapa</text>
+      <text x="260" y="326" text-anchor="middle" fill="#6B655F" font-size="13">Explora los orígenes con los botones de abajo.</text>
+    `;
+    renderAmazonikaDetail("san");
+  }
+}
+
+/* =========================================================================
+   CATÁLOGO — estado, filtros y render
+   ========================================================================= */
+const catalogState = { region: "todos", sort: "recomendados" };
+
+function getFilteredProducts(){
+  let list = PRODUCTS.filter(p => catalogState.region === "todos" || p.originId === catalogState.region);
+  switch(catalogState.sort){
+    case "precio-asc":  list = [...list].sort((a,b) => a.weights[0].price - b.weights[0].price); break;
+    case "precio-desc": list = [...list].sort((a,b) => b.weights[0].price - a.weights[0].price); break;
+    case "puntaje":     list = [...list].sort((a,b) => b.score - a.score); break;
+  }
+  return list;
+}
+
+const coffeeBeanIcon = (color) => `
+  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1" opacity="0.7">
+    <ellipse cx="9" cy="10" rx="4" ry="5.5" transform="rotate(-20 9 10)"/><path d="M9 5.5c1 2 1 7-1 9"/>
+    <ellipse cx="16" cy="14" rx="4" ry="5.5" transform="rotate(-20 16 14)"/><path d="M16 9.5c1 2 1 7-1 9"/>
+  </svg>`;
+
+function renderProductCard(p){
+  const weightPills = p.weights.map((w,i) => `
+    <button class="pill weight-pill ${i===0?'active':''}" data-price="${w.price}" style="font-size:11px;padding:8px 12px;border:1px solid var(--line);min-height:44px;">${w.label}</button>
+  `).join("");
+  const grindPills = p.grinds.map((g,i) => `
+    <button class="pill grind-pill ${i===0?'active':''}" style="font-size:11px;padding:8px 12px;border:1px solid var(--line);text-align:left;min-height:44px;">${g}</button>
+  `).join("");
+  const noteChips = p.notes.split(/[,.]/).map(n => n.trim()).filter(Boolean).slice(0,5)
+    .map(n => `<span class="tasting-chip">${n}</span>`).join("");
+  const varietyChips = p.variety.split(",").map(v => v.trim()).filter(Boolean)
+    .map(v => `<span class="tasting-chip">${v}</span>`).join("");
+
+  return `
+  <div class="catalog-card fade-up in-view relative" data-product-id="${p.id}" data-title="${p.name}" data-image="linear-gradient(160deg,${p.accent}22,${p.accent}55)">
+    <div class="aspect-[4/5] flex flex-col items-center justify-center relative" style="background:linear-gradient(160deg,${p.accent}22,${p.accent}55);">
+      <span class="absolute top-4 left-4 label-sm px-2.5 py-1" style="background:${p.accent};color:var(--ivory);">${p.originName}</span>
+      <span class="absolute top-4 right-4 font-serif text-2xl" style="color:${p.accent};">${p.score}</span>
+      <span class="absolute bottom-4 right-4 label-sm" style="color:${p.accent};">pts catación</span>
+      ${p.isNew ? `<div class="sticker sticker-spin absolute top-14 left-4 w-14 h-14 text-[9px] label-sm flex-col leading-tight" style="background:var(--ivory);color:${p.accent};">LOTE<br>NUEVO</div>` : ""}
+      ${coffeeBeanIcon(p.accent)}
+      ${p.soldOut ? `<div class="sold-out-overlay"><span class="label-sm px-4 py-2 border border-[var(--graphite)]">Agotado — avísame</span></div>` : ""}
+    </div>
+
+    <div class="pt-5">
+      <p class="label-sm text-[var(--taupe)]">${p.place} · ${p.altitude}</p>
+      <h3 class="font-serif text-2xl mt-1" style="font-weight:500;">${p.name}</h3>
+      <p class="text-sm text-[var(--graphite-70)] mt-1">Cultivado por ${p.producer} · ${p.process}</p>
+
+      <div class="flex flex-wrap gap-1.5 mt-4">${varietyChips}</div>
+      <div class="flex flex-wrap gap-1.5 mt-2">${noteChips}</div>
+
+      <div class="mt-5">
+        <p class="label-sm text-[var(--taupe)] mb-2">Peso</p>
+        <div class="flex gap-2 flex-wrap weight-group">${weightPills}</div>
+      </div>
+      <div class="mt-4">
+        <p class="label-sm text-[var(--taupe)] mb-2">Molienda</p>
+        <div class="grid grid-cols-1 gap-2 grind-group">${grindPills}</div>
+      </div>
+
+      <div class="mt-6 flex items-center justify-between gap-3">
+        <span class="current-price font-serif text-xl" style="font-weight:500;">S/ ${p.weights[0].price.toFixed(2)}</span>
+        ${p.soldOut
+          ? `<button class="px-6 py-3 text-[11px] label-sm font-medium ghost-btn" style="min-height:44px;" data-notify="${p.id}">Avísame</button>`
+          : `<button class="add-to-cart-btn px-6 py-3 text-[11px] label-sm font-medium" style="background:var(--graphite);color:var(--ivory);min-height:44px;">Añadir</button>`}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderCatalog(){
+  const grid = document.getElementById("catalogGrid");
+  const list = getFilteredProducts();
+  grid.innerHTML = list.length
+    ? list.map(renderProductCard).join("")
+    : `<p class="text-sm text-[var(--graphite-70)] py-10">No hay lotes en este origen por ahora.</p>`;
+}
+
+/* Filtros de origen, derivados de ORIGINS */
+function renderRegionFilters(){
+  const wrap = document.getElementById("regionFilters");
+  const buttons = [`<button class="pill filter-pill active text-[11px] px-3.5 py-2 border border-[var(--line)]" data-region="todos" style="min-height:44px;">Todos</button>`]
+    .concat(Object.values(ORIGINS).map(o =>
+      `<button class="pill filter-pill text-[11px] px-3.5 py-2 border border-[var(--line)]" data-region="${o.id}" style="min-height:44px;">${o.name}</button>`
+    ));
+  wrap.innerHTML = buttons.join("");
+}
+
+/* Une nombres en español: "A", "A y B", "A, B y C" */
+function formatList(items){
+  if(items.length <= 1) return items.join("");
+  return items.slice(0,-1).join(", ") + " y " + items[items.length-1];
+}
+
+/* Caficultores, resumen de regiones y footer: todo desde ORIGINS */
+function renderDerivedSections(){
+  document.getElementById("fsTrack").innerHTML = Object.values(ORIGINS).map(o => `
+    <div class="fs-card flex-shrink-0 w-[280px] md:w-[340px] bg-[var(--ivory)] border border-[var(--line)] p-7 relative">
+      <div class="w-16 h-16 rounded-full flex items-center justify-center mb-5" style="background:${o.color}1F;">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="${o.color}" stroke-width="1.3"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>
+      </div>
+      <p class="font-serif text-xl" style="font-weight:500;">${o.producer}</p>
+      <p class="text-sm text-[var(--graphite-70)] mt-1">${o.name}, ${o.region}</p>
+      <p class="label-sm text-[var(--taupe)] mt-1">${o.coffees[0].altitude}</p>
+      <p class="text-sm text-[var(--graphite-70)] mt-4 italic font-serif">"${o.producerQuote}"</p>
+      <p class="label-sm text-[var(--taupe)] mt-4">${o.coffees.length === 1 ? "Cultiva el lote" : "Cultiva los lotes"} ${formatList(o.coffees.map(c => c.name))}</p>
+    </div>
+  `).join("");
+
+  document.getElementById("regionSummary").innerHTML = Object.values(ORIGINS).map(o => `
+    <button class="w-full text-left border border-[var(--line)] p-6 flex items-start justify-between gap-4 hover:border-[var(--graphite)] transition-colors" data-region-jump="${o.id}" style="min-height:44px;">
+      <div>
+        <p class="font-serif text-xl" style="font-weight:500;">${o.name}</p>
+        <p class="text-sm text-[var(--graphite-70)] mt-1">${o.region}, Perú</p>
+      </div>
+      <span class="label-sm text-[var(--taupe)] whitespace-nowrap mt-1">${o.coffees[0].altitude}</span>
+    </button>
+  `).join("");
+
+  document.getElementById("footerOriginLinks").innerHTML = Object.values(ORIGINS).map(o =>
+    `<li><a href="#amazonika-map" class="hover:text-[var(--champagne)]">${o.name} · ${o.region}</a></li>`
+  ).join("");
+}
+
+document.getElementById("regionSummary").addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-region-jump]");
+  if(!btn) return;
+  renderAmazonikaDetail(btn.dataset.regionJump);
+  document.getElementById("amazonika-map").scrollIntoView({ behavior:"smooth", block:"start" });
+});
+
+/* Delegación de eventos del catálogo */
+document.getElementById("catalogGrid").addEventListener("click", (e) => {
+  const card = e.target.closest("[data-product-id]");
+  if(!card) return;
+  const weightBtn = e.target.closest(".weight-pill");
+  const grindBtn = e.target.closest(".grind-pill");
+  const addBtn = e.target.closest(".add-to-cart-btn");
+  const notifyBtn = e.target.closest("[data-notify]");
+
+  if(weightBtn){
+    card.querySelectorAll(".weight-pill").forEach(b => b.classList.remove("active"));
+    weightBtn.classList.add("active");
+    card.querySelector(".current-price").textContent = "S/ " + parseFloat(weightBtn.dataset.price).toFixed(2);
+  }
+  if(grindBtn){
+    card.querySelectorAll(".grind-pill").forEach(b => b.classList.remove("active"));
+    grindBtn.classList.add("active");
+  }
+  if(addBtn){
+    const weightActive = card.querySelector(".weight-pill.active");
+    const grindActive = card.querySelector(".grind-pill.active");
+    const weight = weightActive.textContent.trim();
+    const grind = grindActive.textContent.trim();
+    const price = parseFloat(weightActive.dataset.price);
+    const variantId = card.dataset.productId + "-" + weight + "-" + grind.replace(/\s+/g,"-").toLowerCase();
+    addToCart(variantId, `${card.dataset.title} — ${weight} (${grind})`, price, card.dataset.image);
+    showToast(`${card.dataset.title} añadido al carrito`);
+  }
+  if(notifyBtn){
+    showToast("Te avisaremos cuando este lote vuelva a estar disponible");
+  }
+});
+
+document.getElementById("regionFilters").addEventListener("click", (e) => {
+  const btn = e.target.closest(".filter-pill");
+  if(!btn) return;
+  document.querySelectorAll("#regionFilters .filter-pill").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  catalogState.region = btn.dataset.region;
+  renderCatalog();
+});
+
+document.getElementById("sortSelect").addEventListener("change", (e) => {
+  catalogState.sort = e.target.value;
+  renderCatalog();
+});
+
+/* =========================================================================
+   GALERÍA DE COMUNIDAD
+   ========================================================================= */
+const GALLERY = [
+  { caption: "Cosecha en San Ignacio", color: "#9A6237" },
+  { caption: "Secado en camas africanas", color: "#8C6847" },
+  { caption: "Cata del lote Heritage", color: "#3F725F" },
+  { caption: "Jovita seleccionando cerezas", color: "#6E8D4F" },
+  { caption: "V60 en el taller de Lima", color: "#C5A880" },
+  { caption: "Empaque del Luxe Black", color: "#3A2E1F" }
+];
+document.getElementById("galleryGrid").innerHTML = GALLERY.map(g => `
+  <div class="ig-tile" style="background:linear-gradient(160deg,${g.color}33,${g.color}77);">
+    <div class="ig-overlay">
+      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="16" height="16" rx="4"/><circle cx="10" cy="10" r="3.6"/><circle cx="14.3" cy="5.7" r="0.7" fill="currentColor"/></svg>
+      <span class="text-[10px] label-sm text-center px-2">${g.caption}</span>
+    </div>
+  </div>
+`).join("");
+
+/* =========================================================================
+   MARQUEE
+   ========================================================================= */
+const marqueeMessages = [
+  "100% Café Peruano", "Trazabilidad de Origen a Taza", "Envío en Lima 24h",
+  "Directo del Caficultor", "Specialty Coffee 83+ pts", "Pago con Yape y Plin"
+];
+const marqueeHTML = marqueeMessages.map(m =>
+  `<span class="marquee-item px-6 text-[11px] label-sm" style="color:var(--ivory);">${m} <span style="color:var(--champagne);">·</span></span>`
+).join("");
+document.querySelector(".marquee-track").innerHTML = marqueeHTML + marqueeHTML;
+
+/* =========================================================================
+   TOAST
+   ========================================================================= */
+let toastTimer;
+function showToast(msg){
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+}
+
+/* =========================================================================
+   MENÚ MÓVIL + CARRUSEL HERO
+   ========================================================================= */
+window.toggleMenu = function(){ document.getElementById("mobileMenu").classList.toggle("closed"); };
+
+let hcIndex = 0;
+const hcSlides = document.querySelectorAll(".hc-slide");
+const hcDots = document.querySelectorAll(".hc-dot");
+window.goToSlide = function(i){
+  hcSlides[hcIndex].style.opacity = "0";
+  hcDots[hcIndex].classList.remove("active");
+  hcIndex = i;
+  hcSlides[hcIndex].style.opacity = "1";
+  hcDots[hcIndex].classList.add("active");
+};
+window.nextSlide = function(){ goToSlide((hcIndex + 1) % hcSlides.length); };
+window.prevSlide = function(){ goToSlide((hcIndex - 1 + hcSlides.length) % hcSlides.length); };
+let hcAuto = setInterval(nextSlide, 6000);
+const hcTrack = document.getElementById("hcTrack");
+hcTrack.addEventListener("mouseenter", () => clearInterval(hcAuto));
+hcTrack.addEventListener("mouseleave", () => { hcAuto = setInterval(nextSlide, 6000); });
+
+/* =========================================================================
+   CARRITO — persistente vía localStorage
+   ========================================================================= */
+let cart = [];
+function loadCart(){
+  try{
+    const saved = localStorage.getItem("amazonikaCart");
+    if(saved){ cart = JSON.parse(saved); }
+  }catch(e){ cart = []; }
+  updateCartUI();
+}
+function saveCart(){
+  try{ localStorage.setItem("amazonikaCart", JSON.stringify(cart)); }
+  catch(e){ /* localStorage no disponible */ }
+}
+function updateCartUI(){
+  const container = document.getElementById("cartItemsContainer");
+  const subtotalEl = document.getElementById("cartSubtotal");
+  let subtotal = 0, totalItems = 0;
+  if(cart.length === 0){
+    container.innerHTML = '<p class="text-center text-[var(--graphite-70)] py-10 text-sm">Tu carrito está vacío</p>';
+    subtotalEl.textContent = "S/ 0.00";
+    document.querySelectorAll("#cartBadge").forEach(b => b.textContent = "0");
+    return;
+  }
+  container.innerHTML = cart.map(item => {
+    const lineTotal = item.price * item.quantity;
+    subtotal += lineTotal;
+    totalItems += item.quantity;
+    return `<div class="flex items-start gap-4">
+      <div class="w-16 h-16 flex-shrink-0" style="background:${item.image};"></div>
+      <div class="flex-grow min-w-0">
+        <div class="flex justify-between gap-2">
+          <p class="text-[13px] font-medium text-[var(--graphite)] leading-snug">${item.name}</p>
+          <button onclick="removeFromCart('${item.id}')" class="text-[var(--graphite-70)] hover:text-[var(--graphite)] flex-shrink-0" style="min-width:24px;min-height:24px;" aria-label="Eliminar producto">
+            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l6 6M9 3L3 9"/></svg>
+          </button>
+        </div>
+        <p class="text-xs text-[var(--graphite-70)] mb-2 mt-1">S/ ${item.price.toFixed(2)}</p>
+        <div class="flex items-center border border-[var(--line)] rounded-full w-fit">
+          <button onclick="changeQuantity('${item.id}', -1)" class="qty-btn flex items-center justify-center text-[var(--graphite-70)] hover:text-[var(--graphite)]" aria-label="Disminuir cantidad">−</button>
+          <span class="text-xs font-medium w-7 text-center">${item.quantity}</span>
+          <button onclick="changeQuantity('${item.id}', 1)" class="qty-btn flex items-center justify-center text-[var(--graphite-70)] hover:text-[var(--graphite)]" aria-label="Aumentar cantidad">+</button>
+        </div>
+      </div>
+      <p class="text-[13px] font-medium text-[var(--graphite)] w-16 text-right flex-shrink-0">S/ ${lineTotal.toFixed(2)}</p>
+    </div>`;
+  }).join("");
+  subtotalEl.textContent = "S/ " + subtotal.toFixed(2);
+  document.querySelectorAll("#cartBadge").forEach(b => b.textContent = totalItems);
+}
+window.toggleCart = function(){
+  document.getElementById("cartDrawer").classList.toggle("closed");
+  document.getElementById("cartOverlay").classList.toggle("hidden");
+};
+function addToCart(id, name, price, image){
+  const existing = cart.find(i => i.id === id);
+  if(existing){ existing.quantity++; }
+  else{ cart.push({ id, name, price, image, quantity: 1 }); }
+  saveCart();
+  updateCartUI();
+}
+window.changeQuantity = function(id, delta){
+  const item = cart.find(i => i.id === id);
+  if(!item) return;
+  item.quantity += delta;
+  if(item.quantity <= 0){ removeFromCart(id); }
+  else{ saveCart(); updateCartUI(); }
+};
+window.removeFromCart = function(id){
+  cart = cart.filter(i => i.id !== id);
+  saveCart();
+  updateCartUI();
+};
+
+/* =========================================================================
+   INIT
+   ========================================================================= */
+renderRegionFilters();
+renderDerivedSections();
+renderCatalog();
+loadCart();
+loadAmazonikaMap();
+
+const header = document.getElementById("siteHeader");
+window.addEventListener("scroll", () => {
+  header.classList.toggle("header-scrolled", window.scrollY > 12);
+});
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add("in-view"); observer.unobserve(e.target); } });
+}, { threshold: 0.1 });
+document.querySelectorAll(".fade-up").forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
