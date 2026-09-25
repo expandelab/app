@@ -74,9 +74,70 @@
   }
   #toast.show{ opacity:1; transform:translate(-50%,0); pointer-events:auto; }
 
+  /* ===== Hero — Slide 1 (rediseño: fondo claro, packshot real) ===== */
+  .hero1-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    grid-template-areas:"label" "title" "image" "copy";
+    row-gap:28px;
+    padding:96px 0 56px;
+  }
+  .hero1-label{ letter-spacing:.22em; }
+  .hero1-title{
+    font-size:clamp(34px, 9vw, 68px);
+    line-height:1.06;
+    text-transform:uppercase;
+    max-width:14ch;
+  }
+  .hero1-subtitle{
+    font-size:18px;
+    color:var(--graphite-70);
+    margin-bottom:20px;
+  }
+  .hero1-cta{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    width:100%; min-height:48px; padding:0 28px;
+    border:1.5px solid var(--graphite); border-radius:999px;
+    color:var(--graphite); font-size:12px; font-weight:600;
+    letter-spacing:.16em; text-transform:uppercase; text-decoration:none;
+    transition: background .3s ease, color .3s ease;
+  }
+  .hero1-cta:hover{ background:var(--graphite); color:var(--ivory); }
+  .hero1-pack{ position:relative; padding-bottom:18px; }
+  .hero1-pack-grid{
+    display:grid; grid-template-columns:repeat(3, 1fr); gap:14px;
+  }
+  .hero1-pack-grid img{
+    width:100%; height:100%; object-fit:contain; aspect-ratio:3/4;
+    background:var(--ivory-2);
+  }
+  .hero1-beans{
+    display:block; height:10px; margin-top:14px; border-radius:999px;
+    background:
+      radial-gradient(circle, #5C3A22 0 3px, transparent 4px) 0 0/22px 10px repeat-x,
+      radial-gradient(circle, #7A4E2C 0 2.5px, transparent 3.5px) 11px 3px/22px 10px repeat-x;
+    opacity:.55;
+  }
+
+  @media (min-width:1024px){
+    .hero1-grid{
+      grid-template-columns: minmax(0,1fr) minmax(0,1fr);
+      grid-template-areas: "label image" "title image" "copy image";
+      column-gap:56px;
+      align-items:center;
+      padding:0;
+    }
+    .hero1-title{ max-width:11ch; }
+    .hero1-cta{ width:auto; }
+    .hero1-pack-grid{ gap:20px; }
+  }
+
   .hc-slide{ transition: opacity .6s ease; }
-  .hc-dot{ width:6px; height:6px; border-radius:999px; background:rgba(251,249,245,0.4); transition: all .3s ease; }
+  .hc-dot{ width:6px; height:6px; border-radius:999px; background:rgba(251,249,245,0.55); transition: all .3s ease; }
   .hc-dot.active{ width:22px; border-radius:999px; background:var(--ivory); }
+  .hc-dots-track{ background:rgba(26,26,26,0.35); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); border-radius:999px; padding:8px 10px; }
+  .hc-arrow{ background:rgba(26,26,26,0.32); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); }
+  .hc-arrow:hover{ background:rgba(26,26,26,0.5); }
   .fs-track{ scroll-snap-type:x mandatory; scrollbar-width:none; }
   .fs-track::-webkit-scrollbar{ display:none; }
   .fs-card{ scroll-snap-align:start; }
@@ -334,16 +395,26 @@
 <section id="home" class="relative h-[92vh] md:h-screen overflow-hidden">
   <div id="hcTrack" class="relative w-full h-full">
 
-    <div class="hc-slide absolute inset-0 flex items-center" style="background:linear-gradient(135deg,#2A2118,#4A3624);">
-      <div class="max-w-[1400px] mx-auto px-5 md:px-8 w-full relative">
-        <span class="label block mb-6" style="color:var(--champagne);">Nueva cosecha disponible</span>
-        <h1 class="font-serif text-[40px] leading-[1.1] md:text-[68px] md:leading-[1.04] text-[var(--ivory)] max-w-2xl" style="font-weight:500;">
-          Café peruano, directo del caficultor a tu taza.
-        </h1>
-        <a href="#catalogo" class="inline-block mt-8 px-8 py-4 text-[12px] label-sm font-medium tracking-widest" style="background:var(--ivory);color:var(--graphite);">Ver el marketplace</a>
+    <div class="hc-slide hero1 absolute inset-0 flex items-center" style="background:var(--ivory);">
+      <div class="max-w-[1400px] mx-auto px-5 md:px-8 w-full">
+        <div class="hero1-grid">
 
-        <div class="sticker sticker-spin hidden md:flex absolute -right-2 top-2 w-24 h-24 flex-col leading-tight text-[10px] label-sm" style="color:var(--champagne);">
-          100%<br>PERUANO<br>★★★
+          <span class="label hero1-label" style="grid-area:label; color:var(--taupe);">Amazónika Café</span>
+
+          <h1 class="font-serif hero1-title" style="grid-area:title; color:var(--graphite); font-weight:600;">
+            Café peruano<br>de especialidad
+          </h1>
+
+          <div class="hero1-pack" style="grid-area:image;">
+            <div id="heroPackShot" class="hero1-pack-grid"></div>
+            <span class="hero1-beans" aria-hidden="true"></span>
+          </div>
+
+          <div class="hero1-copy" style="grid-area:copy;">
+            <p class="hero1-subtitle">Seis orígenes. Una experiencia única.</p>
+            <a href="#catalogo" class="hero1-cta">Conoce nuestros cafés <span aria-hidden="true">→</span></a>
+          </div>
+
         </div>
       </div>
     </div>
@@ -371,16 +442,16 @@
 
   </div>
 
-  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10 hc-dots-track">
     <button onclick="goToSlide(0)" class="hc-dot active" data-dot="0" aria-label="Slide 1"></button>
     <button onclick="goToSlide(1)" class="hc-dot" data-dot="1" aria-label="Slide 2"></button>
     <button onclick="goToSlide(2)" class="hc-dot" data-dot="2" aria-label="Slide 3"></button>
   </div>
 
-  <button onclick="prevSlide()" class="hidden md:flex absolute left-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full items-center justify-center border border-[var(--ivory)]/30 hover:border-[var(--ivory)] transition-colors z-10" aria-label="Anterior">
+  <button onclick="prevSlide()" class="hc-arrow hidden md:flex absolute left-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full items-center justify-center border border-[var(--ivory)]/30 hover:border-[var(--ivory)] transition-colors z-10" aria-label="Anterior">
     <svg width="16" height="16" fill="none" stroke="var(--ivory)" stroke-width="1.5"><path d="M11 3L5 9l6 6"/></svg>
   </button>
-  <button onclick="nextSlide()" class="hidden md:flex absolute right-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full items-center justify-center border border-[var(--ivory)]/30 hover:border-[var(--ivory)] transition-colors z-10" aria-label="Siguiente">
+  <button onclick="nextSlide()" class="hc-arrow hidden md:flex absolute right-5 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full items-center justify-center border border-[var(--ivory)]/30 hover:border-[var(--ivory)] transition-colors z-10" aria-label="Siguiente">
     <svg width="16" height="16" fill="none" stroke="var(--ivory)" stroke-width="1.5"><path d="M7 3l6 6-6 6"/></svg>
   </button>
 </section>
@@ -1239,6 +1310,26 @@ document.addEventListener("keydown", (e) => {
 renderGrindGuide();
 
 /* =========================================================================
+   HERO — PACKSHOT (slide 1)
+   Reutiliza las mismas 6 fotos de producto ya incrustadas para el catálogo
+   (IMAGES) en vez de subir una imagen de banner nueva: mismo peso, un solo
+   lugar donde actualizar una foto si cambia el empaque.
+   ========================================================================= */
+function renderHeroPackShot(){
+  const order = [
+    { key: "imperial", name: "Imperial" },
+    { key: "deluxe", name: "Deluxe" },
+    { key: "premium_blend", name: "Premium Blend" },
+    { key: "heritage", name: "Heritage" },
+    { key: "luxe_black", name: "Luxe Black" },
+    { key: "supremo", name: "Supremo" },
+  ];
+  const el = document.getElementById("heroPackShot");
+  if(!el) return;
+  el.innerHTML = order.map(p => `<img src="${IMAGES[p.key]}" alt="Bolsa de café ${p.name} — Amazónika" loading="eager">`).join("");
+}
+
+/* =========================================================================
    TOAST
    ========================================================================= */
 let toastTimer;
@@ -1353,6 +1444,7 @@ window.removeFromCart = function(id){
 renderRegionFilters();
 renderDerivedSections();
 renderCatalog();
+renderHeroPackShot();
 loadCart();
 loadAmazonikaMap();
 
