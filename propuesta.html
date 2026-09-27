@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Amazónika — Marketplace de Café Peruano</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -59,12 +59,19 @@
   .sticker-spin{ animation: sticker-spin 14s linear infinite; }
   @keyframes sticker-spin{ from{ transform:rotate(-8deg);} 50%{ transform:rotate(6deg);} to{ transform:rotate(-8deg);} }
 
-  .ig-tile{ position:relative; overflow:hidden; aspect-ratio:1/1; }
+  .ig-tile{ position:relative; overflow:hidden; aspect-ratio:1/1; display:block; }
+  /* El caption va siempre visible (scrim degradado), no solo en :hover:
+     en touch no existe estado hover, así que un overlay hover-only dejaba
+     las tiles sin ninguna leyenda legible en mobile. */
   .ig-tile .ig-overlay{
-    position:absolute; inset:0; background:rgba(26,26,26,0.55); opacity:0; transition:opacity .3s ease;
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--ivory);
+    position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(26,26,26,.78) 0%, rgba(26,26,26,0) 58%);
+    transition: background .3s ease;
+    display:flex; align-items:flex-end; gap:6px; color:var(--ivory);
+    padding:10px;
   }
-  .ig-tile:hover .ig-overlay{ opacity:1; }
+  .ig-tile:hover .ig-overlay, .ig-tile:focus-visible .ig-overlay{ background:rgba(26,26,26,.6); }
+  .ig-tile .ig-overlay svg{ flex-shrink:0; margin-bottom:1px; }
 
   #toast{
     position:fixed; left:50%; bottom:28px; transform:translate(-50%,16px); z-index:70;
@@ -231,7 +238,7 @@
   .origin-buttons{ display:flex; flex-wrap:wrap; gap:7px; padding:0 18px 18px; }
   .origin-button{
     display:inline-flex; align-items:center; gap:7px;
-    min-height:40px; padding:7px 12px; border-radius:999px;
+    min-height:44px; padding:7px 14px; border-radius:999px;
     border:1px solid var(--line); background:var(--ivory); color:var(--graphite);
     font-size:10.5px; font-weight:500; letter-spacing:.13em; text-transform:uppercase;
     cursor:pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease;
@@ -315,7 +322,7 @@
     .marker-label{ font-size:11px; }
     .marker-region{ font-size:9px; }
     .origin-buttons{ padding:0 14px 14px; gap:6px; }
-    .origin-button{ min-height:38px; padding:6px 10px; font-size:10px; }
+    .origin-button{ min-height:44px; padding:6px 12px; font-size:10px; }
   }
   @media (max-width:520px){
     .map-card-header{ align-items:flex-start; flex-direction:column; gap:4px; }
@@ -331,6 +338,43 @@
     .marquee-track{ animation:none !important; }
     .sticker-spin{ animation:none !important; }
     .fade-up{ opacity:1 !important; transform:none !important; }
+  }
+
+  /* =========================================================
+     OPTIMIZACIÓN MOBILE
+     - viewport-fit=cover (arriba, en el <meta>) habilita env(safe-area-*),
+       así que todo elemento fijo pegado a un borde debe compensarlo o el
+       contenido queda debajo del notch / la isla dinámica / el home
+       indicator en iPhone.
+     - 100vh en mobile no descuenta la barra de direcciones del navegador;
+       100svh (small viewport height) sí, y se usa como mejora progresiva.
+     ========================================================= */
+  header#siteHeader{ padding-top: env(safe-area-inset-top, 0px); }
+
+  #home{ min-height: 100vh; }
+  @supports (height: 100svh){
+    #home{ min-height: 100svh; }
+  }
+
+  #mobileMenu > div{
+    padding-top: calc(1.75rem + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(1.75rem + env(safe-area-inset-bottom, 0px));
+  }
+  #cartDrawer{
+    padding-top: calc(1.75rem + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(1.75rem + env(safe-area-inset-bottom, 0px));
+  }
+  #toast{ bottom: calc(28px + env(safe-area-inset-bottom, 0px)); }
+  #grindGuideModal > div{ margin-bottom: env(safe-area-inset-bottom, 0px); }
+
+  @media (max-width:640px){
+    .hero1-grid{ padding: calc(112px + env(safe-area-inset-top, 0px)) 0 40px; row-gap:22px; }
+    .hero1-pack-grid{ gap:10px; }
+    .hero1-subtitle{ font-size:16px; }
+  }
+  @media (max-width:380px){
+    .hero1-title{ font-size:30px; }
+    .hero1-pack-grid{ gap:8px; }
   }
 </style>
 </head>
@@ -558,7 +602,7 @@
       <span class="label">Comunidad</span>
       <h2 class="font-serif text-[28px] md:text-[36px] mt-2" style="font-weight:500;">@amazonikacafe</h2>
     </div>
-    <a href="#" class="hidden sm:inline label-sm border-b border-[var(--graphite)] pb-0.5 hover:text-[var(--rust)] hover:border-[var(--rust)]">Seguir en Instagram →</a>
+    <a href="https://www.instagram.com/amazonikacafe/" target="_blank" rel="noopener" class="hidden sm:inline label-sm border-b border-[var(--graphite)] pb-0.5 hover:text-[var(--rust)] hover:border-[var(--rust)]">Seguir en Instagram →</a>
   </div>
   <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 md:gap-3 fade-up"></div>
 </section>
@@ -580,7 +624,7 @@
         <ul class="mt-4 space-y-3 text-sm text-[var(--ivory)]/70">
           <li>hola@amazonika.pe</li>
           <li class="flex gap-3 pt-1">
-            <a href="#" class="hover:text-[var(--champagne)]">Instagram</a>
+            <a href="https://www.instagram.com/amazonikacafe/" target="_blank" rel="noopener" class="hover:text-[var(--champagne)]">Instagram</a>
             <a href="#" class="hover:text-[var(--champagne)]">TikTok</a>
           </li>
         </ul>
@@ -1240,21 +1284,26 @@ document.getElementById("sortSelect").addEventListener("change", (e) => {
 /* =========================================================================
    GALERÍA DE COMUNIDAD
    ========================================================================= */
+/* Nota: Instagram bloquea el scraping (robots.txt), así que no es posible
+   traer automáticamente las fotos/captions reales de @amazonikacafe. En vez
+   de simular publicaciones inventadas, cada tile es un enlace real al
+   perfil — el texto solo describe el tipo de contenido, alineado a los 4
+   orígenes y productos reales del catálogo (antes faltaba Villa Rica). */
 const GALLERY = [
-  { caption: "Cosecha en San Ignacio", color: "#9A6237" },
-  { caption: "Secado en camas africanas", color: "#8C6847" },
-  { caption: "Cata del lote Heritage", color: "#3F725F" },
+  { caption: "Cosecha en San Ignacio, Cajamarca", color: "#9A6237" },
+  { caption: "Secado en camas africanas — Pozuzo", color: "#3F725F" },
+  { caption: "Empacando el lote Imperial", color: "#8C6847" },
   { caption: "Selección de cerezas en Bongará", color: "#6E8D4F" },
   { caption: "V60 en el taller de Lima", color: "#C5A880" },
-  { caption: "Empaque del Luxe Black", color: "#3A2E1F" }
+  { caption: "Bolsas Supremo — Villa Rica", color: "#C79A3E" }
 ];
 document.getElementById("galleryGrid").innerHTML = GALLERY.map(g => `
-  <div class="ig-tile" style="background:linear-gradient(160deg,${g.color}33,${g.color}77);">
+  <a href="https://www.instagram.com/amazonikacafe/" target="_blank" rel="noopener" class="ig-tile" style="background:linear-gradient(160deg,${g.color}33,${g.color}77);" aria-label="Ver @amazonikacafe en Instagram">
     <div class="ig-overlay">
-      <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="2" width="16" height="16" rx="4"/><circle cx="10" cy="10" r="3.6"/><circle cx="14.3" cy="5.7" r="0.7" fill="currentColor"/></svg>
-      <span class="text-[10px] label-sm text-center px-2">${g.caption}</span>
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="16" height="16" rx="4"/><circle cx="10" cy="10" r="3.6"/><circle cx="14.3" cy="5.7" r="0.7" fill="currentColor"/></svg>
+      <span class="text-[10px] leading-tight label-sm">${g.caption}</span>
     </div>
-  </div>
+  </a>
 `).join("");
 
 /* =========================================================================
