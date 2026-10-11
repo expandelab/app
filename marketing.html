@@ -1,0 +1,1076 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>LIMAUDIO</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap">
+<style>
+/*
+  Layout: full-bleed dark automotive canvas, sticky nav, section rhythm con max-width 1100px
+  Color: near-black asfalto + rojo LIMAUDIO como acento + ámbar para CTA + verde para métricas
+  Type: Syne 800 (display, potencia técnica) + DM Sans (body, legibilidad)
+*/
+:root {
+  --bg:       #090909;
+  --bg2:      #0f0f10;
+  --bg3:      #161619;
+  --surface:  #1c1c20;
+  --border:   rgba(255,255,255,.08);
+  --border2:  rgba(255,255,255,.15);
+  --fg:       #f0f0f2;
+  --fg2:      #9090a0;
+  --fg3:      #505060;
+  --red:      #e8432a;
+  --red2:     #ff6b4a;
+  --red-dim:  rgba(232,67,42,.12);
+  --red-glow: rgba(232,67,42,.20);
+  --amber:    #f5c842;
+  --amber-dim:rgba(245,200,66,.12);
+  --green:    #2ee8a0;
+  --green-dim:rgba(46,232,160,.12);
+  --blue:     #4a9eff;
+  --purple:   #9a6fff;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 16px;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* ─── UTILS ─────────────────────────────────── */
+.wrap    { max-width: 1100px; margin-inline: auto; padding-inline: 24px; }
+.wrap-sm { max-width: 740px;  margin-inline: auto; padding-inline: 24px; }
+.eyebrow {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--red2);
+}
+.label {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: .10em; text-transform: uppercase;
+  color: var(--fg3);
+}
+
+/* ─── NAV ────────────────────────────────────── */
+nav {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  background: rgba(9,9,9,.85);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border);
+  padding-block: 14px;
+}
+.nav-inner { display: flex; align-items: center; gap: 28px; }
+.nav-logo {
+  font-family: 'Syne', sans-serif;
+  font-size: 19px; font-weight: 800;
+  color: var(--fg);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+.nav-mark {
+  width: 34px; height: 34px;
+  background: var(--red);
+  border-radius: 7px;
+  display: grid; place-items: center;
+  font-size: 13px; font-weight: 800; color: #fff;
+}
+.nav-links { display: flex; gap: 24px; list-style: none; margin-left: auto; }
+.nav-links a { font-size: 14px; color: var(--fg2); text-decoration: none; transition: color .2s; }
+.nav-links a:hover { color: var(--fg); }
+.nav-cta {
+  background: var(--red); color: #fff;
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  padding: 9px 20px; border-radius: 6px;
+  text-decoration: none; white-space: nowrap;
+  transition: opacity .2s;
+}
+.nav-cta:hover { opacity: .86; }
+.nav-toggle { display: none; background: none; border: none; cursor: pointer; color: var(--fg2); }
+@media (max-width: 700px) {
+  .nav-links { display: none; }
+  .nav-cta { display: none; }
+  .nav-toggle { display: block; margin-left: auto; }
+}
+
+/* ─── HERO ───────────────────────────────────── */
+.hero {
+  position: relative;
+  padding-block: 110px 96px;
+  overflow: hidden;
+  text-align: center;
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(232,67,42,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232,67,42,.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black 20%, transparent 100%);
+}
+.hero-glow {
+  position: absolute; top: -80px; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 600px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,67,42,.09) 0%, rgba(232,67,42,.02) 50%, transparent 70%);
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--red-dim);
+  border: 1px solid rgba(232,67,42,.32);
+  border-radius: 20px; padding: 6px 14px;
+  margin-bottom: 28px;
+}
+.hero-badge .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--red2);
+  animation: blink 2s ease-in-out infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+.hero h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(40px, 8vw, 84px); font-weight: 800;
+  line-height: 1.0; letter-spacing: -.025em;
+  text-wrap: balance; margin-bottom: 24px;
+}
+.hero h1 em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--red) 0%, var(--red2) 60%, #ffaa88 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: clamp(16px, 2vw, 19px); color: var(--fg2);
+  font-weight: 300; max-width: 540px;
+  margin-inline: auto; margin-bottom: 40px; line-height: 1.75;
+}
+.hero-actions {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+  margin-bottom: 64px;
+}
+.btn-primary {
+  background: var(--amber); color: #111;
+  font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+  padding: 14px 32px; border-radius: 7px;
+  text-decoration: none; transition: opacity .2s, transform .15s;
+}
+.btn-primary:hover { opacity: .9; transform: translateY(-1px); }
+.btn-ghost {
+  background: transparent; color: var(--fg);
+  font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600;
+  padding: 14px 32px; border-radius: 7px;
+  border: 1px solid var(--border2); text-decoration: none;
+  transition: border-color .2s, background .2s;
+}
+.btn-ghost:hover { border-color: var(--red2); background: var(--red-dim); }
+.hero-canvas-wrap {
+  max-width: 700px; margin-inline: auto;
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid var(--border2); background: var(--bg2);
+  aspect-ratio: 16/9; position: relative;
+}
+.hero-canvas-wrap canvas { width: 100%; height: 100%; display: block; }
+.hero-overlay-badge {
+  position: absolute; top: 16px; right: 16px;
+  background: rgba(9,9,9,.88); border: 1px solid var(--border2);
+  border-radius: 8px; padding: 10px 14px;
+  backdrop-filter: blur(10px); text-align: left;
+}
+.hob-val { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; color: var(--red2); line-height: 1.1; }
+.hob-lbl { font-size: 11px; color: var(--fg3); }
+
+/* ─── STATS BAR ─────────────────────────────── */
+.stats-bar {
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg2); padding-block: 24px;
+}
+.stats-inner { display: flex; flex-wrap: wrap; }
+.stat-cell {
+  flex: 1 1 160px; text-align: center;
+  padding: 8px 20px;
+  border-right: 1px solid var(--border);
+}
+.stat-cell:last-child { border-right: none; }
+.stat-num {
+  font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800;
+  font-variant-numeric: tabular-nums; line-height: 1.1;
+}
+.stat-num .hi { color: var(--red2); }
+.stat-num .gr { color: var(--green); }
+.stat-num .am { color: var(--amber); }
+.stat-dsc { font-size: 12px; color: var(--fg3); margin-top: 2px; }
+
+/* ─── SECTION SHARED ─────────────────────────── */
+.section { padding-block: 96px; }
+.sec-header { text-align: center; margin-bottom: 56px; }
+.sec-header h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(26px, 4vw, 42px); font-weight: 800;
+  letter-spacing: -.02em; text-wrap: balance;
+  margin-top: 12px; margin-bottom: 14px;
+}
+.sec-header p { font-size: 17px; color: var(--fg2); font-weight: 300; max-width: 500px; margin-inline: auto; }
+
+/* ─── MARKET (S1) ────────────────────────────── */
+.tam-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; margin-bottom: 48px;
+}
+.tam-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 22px 18px;
+}
+.tam-label { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--fg3); margin-bottom: 8px; }
+.tam-val { font-family: 'Syne', sans-serif; font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.tam-val.r { color: var(--red2); }
+.tam-val.a { color: var(--amber); }
+.tam-val.g { color: var(--green); }
+.tam-sub { font-size: 12px; color: var(--fg3); margin-top: 4px; }
+
+.seg-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.seg-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 22px 20px;
+}
+.seg-card.s-red  { border-left: 3px solid var(--red); }
+.seg-card.s-gold { border-left: 3px solid var(--amber); }
+.seg-card.s-pur  { border-left: 3px solid var(--purple); }
+.seg-card.s-grn  { border-left: 3px solid var(--green); }
+.seg-pct {
+  font-family: 'Syne', sans-serif; font-size: 36px; font-weight: 800;
+  opacity: .18; line-height: 1; margin-bottom: 8px;
+}
+.seg-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+.seg-desc { font-size: 13px; color: var(--fg2); line-height: 1.7; }
+.seg-tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font-size: 11px; font-weight: 600; padding: 3px 9px;
+  border-radius: 20px;
+}
+.chip-r  { background: var(--red-dim);   color: var(--red2);  border: 1px solid rgba(232,67,42,.3); }
+.chip-a  { background: var(--amber-dim); color: var(--amber); border: 1px solid rgba(245,200,66,.3); }
+.chip-g  { background: var(--green-dim); color: var(--green); border: 1px solid rgba(46,232,160,.3); }
+.chip-p  { background: rgba(154,111,255,.12); color: var(--purple); border: 1px solid rgba(154,111,255,.3); }
+.chip-b  { background: rgba(74,158,255,.12); color: var(--blue);   border: 1px solid rgba(74,158,255,.3); }
+
+/* ─── PERSONAS (S3) ──────────────────────────── */
+.persona-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.persona-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 24px; position: relative; overflow: hidden;
+}
+.persona-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.pc-red::before   { background: var(--red); }
+.pc-gold::before  { background: var(--amber); }
+.pc-pur::before   { background: var(--purple); }
+.pc-grn::before   { background: var(--green); }
+.p-icon  { font-size: 30px; margin-bottom: 10px; }
+.p-name  { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+.p-sub   { font-size: 12px; color: var(--fg3); margin-bottom: 14px; }
+.p-row   { display: flex; gap: 8px; margin-bottom: 5px; font-size: 13px; }
+.p-key   { color: var(--fg3); min-width: 76px; flex-shrink: 0; }
+.p-val   { color: var(--fg2); min-width: 0; }
+
+/* ─── CONTENT MATRIX (S5) ────────────────────── */
+.funnel-pills { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-bottom: 40px; }
+.f-pill {
+  padding: 10px 24px; border-radius: 8px;
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  border: 1px solid var(--border2);
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.f-pill .pct { font-size: 28px; line-height: 1; }
+.f-pill.tofu { border-color: rgba(232,67,42,.4); background: var(--red-dim); }
+.f-pill.mofu { border-color: rgba(245,200,66,.4); background: var(--amber-dim); }
+.f-pill.bofu { border-color: rgba(46,232,160,.4); background: var(--green-dim); }
+
+.pillar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.pillar-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 22px;
+}
+.pillar-emo  { font-size: 26px; margin-bottom: 10px; }
+.pillar-pct  { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; opacity: .2; line-height: 1; }
+.pillar-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.pillar-desc { font-size: 13px; color: var(--fg2); line-height: 1.7; }
+.hook-box {
+  background: color-mix(in srgb, var(--red) 8%, var(--bg3));
+  border: 1px solid rgba(232,67,42,.25); border-radius: 8px;
+  padding: 12px 14px; font-size: 12px; font-style: italic;
+  color: var(--fg); margin-top: 10px; line-height: 1.6;
+}
+.hook-box strong { color: var(--red2); font-style: normal; }
+
+/* ─── FLYWHEEL (S7) ──────────────────────────── */
+.fw-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 2px; background: var(--border); border-radius: 14px; overflow: hidden; }
+.fw-node { background: var(--bg2); padding: 28px 22px; }
+.fw-n { font-family: 'Syne', sans-serif; font-size: 48px; font-weight: 800; color: var(--red); opacity: .18; line-height: 1; margin-bottom: 10px; }
+.fw-t { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+.fw-d { font-size: 12px; color: var(--fg3); line-height: 1.65; }
+
+/* ─── MONETIZATION (S8) ─────────────────────── */
+.stream-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.stream-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 20px;
+}
+.s-num   { font-size: 11px; font-weight: 700; color: var(--fg3); margin-bottom: 4px; }
+.s-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 6px; }
+.s-range { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: var(--green); margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+.s-desc  { font-size: 12px; color: var(--fg3); }
+
+/* ─── TABLE ──────────────────────────────────── */
+.tw { overflow-x: auto; border-radius: 10px; border: 1px solid var(--border); margin: 20px 0; }
+table { width: 100%; border-collapse: collapse; min-width: 480px; }
+thead { background: var(--bg3); }
+th { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--fg3); padding: 12px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+td { padding: 12px 14px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--fg2); vertical-align: top; }
+tr:last-child td { border-bottom: none; }
+tbody tr:hover { background: var(--bg3); }
+td strong { color: var(--fg); }
+
+/* ─── ROADMAP (S10) ──────────────────────────── */
+.phase-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.phase-card {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 22px;
+}
+.ph-week  { font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--fg3); margin-bottom: 6px; }
+.ph-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 12px; }
+.ph-item  { font-size: 13px; color: var(--fg2); padding: 5px 0; border-bottom: 1px solid var(--border); }
+.ph-item:last-child { border-bottom: none; }
+.ph-item::before { content: '→ '; color: var(--red2); font-weight: 700; }
+
+/* ─── RACI ───────────────────────────────────── */
+.raci { display: inline-block; width: 28px; height: 28px; border-radius: 6px; text-align: center; line-height: 28px; font-size: 12px; font-weight: 700; }
+.rR { background: rgba(232,67,42,.22); color: var(--red2); }
+.rA { background: rgba(245,200,66,.22); color: var(--amber); }
+.rC { background: rgba(74,158,255,.22); color: var(--blue); }
+.rI { background: rgba(80,80,96,.22);   color: var(--fg3); }
+
+/* ─── BOT CARDS ──────────────────────────────── */
+.bot-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.bot-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+.bot-icon { font-size: 28px; margin-bottom: 10px; }
+.bot-name { font-family: 'Syne', sans-serif; font-weight: 700; margin-bottom: 2px; }
+.bot-sub  { font-size: 12px; color: var(--fg3); margin-bottom: 12px; }
+.bot-flow { font-size: 12px; color: var(--fg2); line-height: 1.9; }
+.bot-flow .arr { color: var(--red2); display: block; }
+
+/* ─── CTA SECTION ────────────────────────────── */
+.cta-section {
+  padding-block: 100px; text-align: center; position: relative; overflow: hidden;
+}
+.cta-glow {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(232,67,42,.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-section h2 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(28px, 5vw, 52px); font-weight: 800;
+  letter-spacing: -.02em; text-wrap: balance;
+  max-width: 640px; margin-inline: auto; margin-bottom: 18px;
+}
+.cta-section p { color: var(--fg2); font-size: 17px; font-weight: 300; margin-bottom: 36px; max-width: 440px; margin-inline: auto; }
+.cta-form { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; max-width: 440px; margin-inline: auto; }
+.cta-input {
+  flex: 1 1 210px; background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 7px; padding: 13px 16px; color: var(--fg);
+  font-family: 'DM Sans', sans-serif; font-size: 15px; outline: none;
+  transition: border-color .2s;
+}
+.cta-input::placeholder { color: var(--fg3); }
+.cta-input:focus { border-color: var(--red); }
+.cta-btn {
+  background: var(--amber); color: #111;
+  font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 700;
+  padding: 13px 26px; border-radius: 7px; border: none;
+  cursor: pointer; white-space: nowrap; transition: opacity .2s;
+}
+.cta-btn:hover { opacity: .9; }
+.cta-ok { font-size: 13px; color: var(--red2); margin-top: 12px; min-height: 18px; }
+.cta-note { font-size: 12px; color: var(--fg3); margin-top: 8px; }
+
+/* ─── FOOTER ─────────────────────────────────── */
+footer { border-top: 1px solid var(--border); background: var(--bg2); padding-block: 48px 28px; }
+.ft-grid { display: grid; grid-template-columns: 1.8fr repeat(3, 1fr); gap: 36px; margin-bottom: 40px; }
+@media (max-width: 680px) { .ft-grid { grid-template-columns: 1fr 1fr; } }
+.ft-brand p { font-size: 14px; color: var(--fg3); margin-top: 10px; max-width: 230px; line-height: 1.7; }
+.ft-col h4 { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--fg3); margin-bottom: 14px; }
+.ft-col ul { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.ft-col a { font-size: 14px; color: var(--fg2); text-decoration: none; transition: color .2s; }
+.ft-col a:hover { color: var(--fg); }
+.ft-bottom { border-top: 1px solid var(--border); padding-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; font-size: 12px; color: var(--fg3); }
+
+/* ─── ANIMATIONS ─────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  .fade { opacity: 0; transform: translateY(20px); transition: opacity .55s ease, transform .55s ease; }
+  .fade.in { opacity: 1; transform: none; }
+}
+@media (max-width: 600px) {
+  .wrap { padding-inline: 16px; }
+  .section { padding-block: 72px; }
+}
+</style>
+
+<!-- NAV -->
+<nav>
+  <div class="wrap nav-inner">
+    <a href="#hero" class="nav-logo">
+      <div class="nav-mark">LA</div>
+      LIMAUDIO
+    </a>
+    <ul class="nav-links">
+      <li><a href="#mercado">Mercado</a></li>
+      <li><a href="#personas">Clientes</a></li>
+      <li><a href="#contenido">Contenido</a></li>
+      <li><a href="#monetizacion">Monetización</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+    </ul>
+    <a href="#contacto" class="nav-cta">Cotizar ahora</a>
+    <button class="nav-toggle" aria-label="Menú" onclick="
+      var nl = this.closest('nav').querySelector('.nav-links');
+      var vis = nl.style.display === 'flex';
+      nl.style.cssText = vis ? '' : 'display:flex;flex-direction:column;position:absolute;top:100%;left:0;right:0;background:rgba(9,9,9,.97);padding:16px 24px;border-bottom:1px solid rgba(255,255,255,.08)';
+    ">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M3 6h16M3 11h16M3 16h16"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="wrap" style="position:relative">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      <span class="eyebrow">Lima, Perú · Car Audio · Soundproofing · Multimedia</span>
+    </div>
+    <h1>El sonido que te<br>hace <em>quedarte en el auto.</em></h1>
+    <p class="hero-sub">LIMAUDIO transforma cualquier habitáculo en una experiencia acústica calibrada. Instaladores certificados, garantía de 12 meses y post-venta real por WhatsApp.</p>
+    <div class="hero-actions">
+      <a href="#contacto" class="btn-primary">Cotiza tu proyecto</a>
+      <a href="#mercado" class="btn-ghost">Ver plan estratégico →</a>
+    </div>
+    <div class="hero-canvas-wrap fade">
+      <canvas id="heroCanvas"></canvas>
+      <div class="hero-overlay-badge">
+        <div class="hob-val" id="heroVal">+40%</div>
+        <div class="hob-lbl">Crecimiento leads M1→M6</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div class="wrap stats-inner">
+    <div class="stat-cell">
+      <div class="stat-num"><span class="hi">$480M</span></div>
+      <div class="stat-dsc">TAM · Accesorios Perú</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num"><span class="am">$112M</span></div>
+      <div class="stat-dsc">SAM · Lima car audio</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num"><span class="gr">2.4M</span></div>
+      <div class="stat-dsc">Vehículos activos Lima</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num">9.4<span class="hi">%</span></div>
+      <div class="stat-dsc">CAGR del mercado</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-num"><span class="gr">15K</span></div>
+      <div class="stat-dsc">Seguidores objetivo M6</div>
+    </div>
+  </div>
+</div>
+
+<!-- S1: MERCADO -->
+<section class="section" id="mercado">
+  <div class="wrap">
+    <div class="sec-header fade">
+      <div class="eyebrow">S1 · Diagnóstico de Mercado</div>
+      <h2>TAM / SAM / SOM<br>Car Audio en Perú</h2>
+      <p>Mercado de accesorios automotrices creciendo al 9.4% CAGR. Sin marca premium dominante en redes sociales. La ventana está abierta.</p>
+    </div>
+    <div class="tam-grid fade">
+      <div class="tam-card">
+        <div class="tam-label">TAM · Perú total</div>
+        <div class="tam-val r">$480M</div>
+        <div class="tam-sub">Accesorios automotrices + audio</div>
+      </div>
+      <div class="tam-card">
+        <div class="tam-label">SAM · Lima Metro</div>
+        <div class="tam-val a">$112M</div>
+        <div class="tam-sub">Car audio, soundproof & multimedia</div>
+      </div>
+      <div class="tam-card">
+        <div class="tam-label">SOM · Objetivo Y1</div>
+        <div class="tam-val g">$1.8M</div>
+        <div class="tam-sub">~1.6% del SAM con posicionamiento digital</div>
+      </div>
+      <div class="tam-card">
+        <div class="tam-label">Parque vehicular</div>
+        <div class="tam-val">2.4M</div>
+        <div class="tam-sub">Unidades activas registradas</div>
+      </div>
+    </div>
+
+    <div class="seg-grid fade">
+      <div class="seg-card s-red">
+        <div class="seg-pct">35%</div>
+        <div class="seg-title">SPL / Bass Heads</div>
+        <div class="seg-desc">Jóvenes 18–32 años. Subwoofers, amplificadores, competencias SPL. Ticket S/ 800–2,500. Alta viralidad en TikTok e Instagram.</div>
+        <div class="seg-tags"><span class="chip chip-r">Alta viralidad</span><span class="chip chip-r">Recompra 8–14m</span></div>
+      </div>
+      <div class="seg-card s-gold">
+        <div class="seg-pct">28%</div>
+        <div class="seg-title">SQ / Audiophile</div>
+        <div class="seg-desc">Ejecutivos 30–50 años. Focal, Hertz, Audison, DSP. Ticket S/ 3,500–12,000. Canal: YouTube + recomendación directa.</div>
+        <div class="seg-tags"><span class="chip chip-a">Ticket alto</span><span class="chip chip-a">NPS elevado</span></div>
+      </div>
+      <div class="seg-card s-pur">
+        <div class="seg-pct">22%</div>
+        <div class="seg-title">Entry / Comfort</div>
+        <div class="seg-desc">Propietarios 25–45 años. Pantallas Android, cámaras retroceso, Bluetooth. Ticket S/ 400–1,200. Canal: Google Maps + Facebook.</div>
+        <div class="seg-tags"><span class="chip chip-p">Alto volumen</span><span class="chip chip-p">Margen 32–40%</span></div>
+      </div>
+      <div class="seg-card s-grn">
+        <div class="seg-pct">15%</div>
+        <div class="seg-title">B2B · Flotas</div>
+        <div class="seg-desc">Uber fleet, concesionarios, rental car. Ticket por contrato S/ 15,000–80,000. MRR predecible, bajo costo de adquisición.</div>
+        <div class="seg-tags"><span class="chip chip-g">MRR recurrente</span><span class="chip chip-g">Bajo CAC</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S3: PERSONAS -->
+<section class="section" id="personas" style="background: var(--bg2);">
+  <div class="wrap">
+    <div class="sec-header fade">
+      <div class="eyebrow">S3 · Buyer Personas</div>
+      <h2>Los 4 perfiles<br>que compran en LIMAUDIO</h2>
+      <p>Cada persona tiene un trigger diferente, un canal preferido y un precio emocional distinto.</p>
+    </div>
+    <div class="persona-grid fade">
+      <div class="persona-card pc-red">
+        <div class="p-icon">🔊</div>
+        <div class="p-name">Carlos — Entusiasta de Graves</div>
+        <div class="p-sub">SPL / Bass Head · 20–32 años</div>
+        <div class="p-row"><span class="p-key">Vehículo</span><span class="p-val">Corolla, Yaris, Civic 2010–2019</span></div>
+        <div class="p-row"><span class="p-key">Budget</span><span class="p-val">S/ 800–2,500</span></div>
+        <div class="p-row"><span class="p-key">Trigger</span><span class="p-val">Ver un bass test viral</span></div>
+        <div class="p-row"><span class="p-key">Canal</span><span class="p-val">TikTok, Instagram Reels</span></div>
+        <div class="p-row"><span class="p-key">Keyword</span><span class="p-val">BASS · SUBWOOFER · GRAVES</span></div>
+      </div>
+      <div class="persona-card pc-gold">
+        <div class="p-icon">🎧</div>
+        <div class="p-name">Miguel — Ejecutivo Audiófilo SQ</div>
+        <div class="p-sub">Sound Quality · 32–52 años</div>
+        <div class="p-row"><span class="p-key">Vehículo</span><span class="p-val">BMW Serie 3, Audi A4, Hilux SRV</span></div>
+        <div class="p-row"><span class="p-key">Budget</span><span class="p-val">S/ 3,500–12,000</span></div>
+        <div class="p-row"><span class="p-key">Trigger</span><span class="p-val">Escuchar "Focal" en reseña técnica</span></div>
+        <div class="p-row"><span class="p-key">Canal</span><span class="p-val">YouTube, Google, referidos</span></div>
+        <div class="p-row"><span class="p-key">Keyword</span><span class="p-val">FOCAL · DSP · CALIDAD · SQ</span></div>
+      </div>
+      <div class="persona-card pc-pur">
+        <div class="p-icon">📱</div>
+        <div class="p-name">Daniela — Conductora Práctica</div>
+        <div class="p-sub">Entry / Comfort · 25–45 años</div>
+        <div class="p-row"><span class="p-key">Vehículo</span><span class="p-val">Kia Rio, Grand i10, MG 5</span></div>
+        <div class="p-row"><span class="p-key">Budget</span><span class="p-val">S/ 400–1,200</span></div>
+        <div class="p-row"><span class="p-key">Trigger</span><span class="p-val">Cámara retroceso de una amiga</span></div>
+        <div class="p-row"><span class="p-key">Canal</span><span class="p-val">Facebook, Google Maps, Stories</span></div>
+        <div class="p-row"><span class="p-key">Keyword</span><span class="p-val">PANTALLA · CÁMARA · PRECIO</span></div>
+      </div>
+      <div class="persona-card pc-grn">
+        <div class="p-icon">🤝</div>
+        <div class="p-name">Jorge — Broker B2B</div>
+        <div class="p-sub">Flotas / Concesionarios · 30–55 años</div>
+        <div class="p-row"><span class="p-key">Empresa</span><span class="p-val">Concesionario, transporte, rental</span></div>
+        <div class="p-row"><span class="p-key">Budget</span><span class="p-val">S/ 15,000–80,000 / contrato</span></div>
+        <div class="p-row"><span class="p-key">Trigger</span><span class="p-val">Proveedor sin SLA ni factura E</span></div>
+        <div class="p-row"><span class="p-key">Canal</span><span class="p-val">LinkedIn, WhatsApp Business</span></div>
+        <div class="p-row"><span class="p-key">Keyword</span><span class="p-val">FLOTA · EMPRESA · CONTRATO</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S5: CONTENIDO -->
+<section class="section" id="contenido">
+  <div class="wrap">
+    <div class="sec-header fade">
+      <div class="eyebrow">S5 · Matriz de Contenido Viral</div>
+      <h2>TOFU 80% / MOFU 15% / BOFU 5%</h2>
+      <p>El 80% del contenido no puede verse como publicidad. Si la audiencia siente que le vendes, ya perdiste su atención.</p>
+    </div>
+    <div class="funnel-pills fade">
+      <div class="f-pill tofu"><span class="pct">80%</span><span>TOFU · Atracción</span></div>
+      <div class="f-pill mofu"><span class="pct">15%</span><span>MOFU · Consideración</span></div>
+      <div class="f-pill bofu"><span class="pct">5%</span><span>BOFU · Conversión</span></div>
+    </div>
+    <div class="pillar-grid fade">
+      <div class="pillar-card">
+        <div class="pillar-emo">🎬</div>
+        <div class="pillar-pct">35%</div>
+        <div class="pillar-name">Proceso / Instalación</div>
+        <div class="pillar-desc">Capa a capa de soundproofing, tendido de cables, corte de cajón. Estilo @dienstmotor_mx: cámara fija, cortes rítmicos, ASMR de herramientas.</div>
+        <div class="hook-box"><strong>Hook 0–3s:</strong> "Lo que hay detrás del panel de tu puerta antes de poner el parlante"</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-emo">🔊</div>
+        <div class="pillar-pct">25%</div>
+        <div class="pillar-name">Reveal / Antes & Después</div>
+        <div class="pillar-desc">Medición de dB antes y después con la misma canción, mismo volumen, misma posición de micrófono. El delta es el contenido.</div>
+        <div class="hook-box"><strong>Hook 0–3s:</strong> "Este Kia Rio medía 78 dB de ruido. Ahora mide 61 dB"</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-emo">📚</div>
+        <div class="pillar-pct">20%</div>
+        <div class="pillar-name">Educación Técnica</div>
+        <div class="pillar-desc">Estilo @madridaudio. Impedancia, RMS vs peak, crossover pasivo vs activo, ganancia de amplificador. Tono par a par, sin condescendencia.</div>
+        <div class="hook-box"><strong>Hook 0–3s:</strong> "La mayoría de amplificadores en Lima están mal ganados"</div>
+      </div>
+      <div class="pillar-card">
+        <div class="pillar-emo">⭐</div>
+        <div class="pillar-pct">20%</div>
+        <div class="pillar-name">Prueba Social</div>
+        <div class="pillar-desc">Testimonios mientras escuchan la primera canción en el auto recién instalado. La reacción auténtica es el contenido.</div>
+        <div class="hook-box"><strong>Hook 0–3s:</strong> [silencio, cliente cierra los ojos] "Así quedó el BMW de Miguel"</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S7: FLYWHEEL -->
+<section class="section" id="flywheel" style="background: var(--bg2);">
+  <div class="wrap">
+    <div class="sec-header fade">
+      <div class="eyebrow">S7 · Flywheel de Crecimiento</div>
+      <h2>El motor que<br>se acelera solo</h2>
+      <p>Cada cliente nuevo es más barato de adquirir que el anterior. El activo que lo impulsa: contenido de proceso real que genera prueba social orgánica.</p>
+    </div>
+    <div class="fw-grid fade">
+      <div class="fw-node"><div class="fw-n">1</div><div class="fw-t">Contenido Viral</div><div class="fw-d">Instalación documentada → TikTok / Reels → alcance orgánico</div></div>
+      <div class="fw-node"><div class="fw-n">2</div><div class="fw-t">Tráfico Caliente</div><div class="fw-d">Leads DM + WhatsApp activados por keywords ManyChat</div></div>
+      <div class="fw-node"><div class="fw-n">3</div><div class="fw-t">Instalación Premium</div><div class="fw-d">Proceso certificado, garantía real, cliente satisfecho</div></div>
+      <div class="fw-node"><div class="fw-n">4</div><div class="fw-t">Prueba Social</div><div class="fw-d">Cliente publica en sus redes, menciona @LIMAUDIO, genera reseñas 5★</div></div>
+      <div class="fw-node"><div class="fw-n">5</div><div class="fw-t">Referidos + SEO</div><div class="fw-d">1.4 referidos promedio por cliente. Google Maps sube ranking.</div></div>
+      <div class="fw-node"><div class="fw-n">6</div><div class="fw-t">Más Instalaciones</div><div class="fw-d">Mayor volumen → mejores precios de proveedor → más margen → más contenido</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- S8: MONETIZACIÓN -->
+<section class="section" id="monetizacion">
+  <div class="wrap">
+    <div class="sec-header fade">
+      <div class="eyebrow">S8 · Modelo de Monetización</div>
+      <h2>7 Streams de Ingresos</h2>
+      <p>Una sola fuente de ingresos en car audio = riesgo de estacionalidad. Los streams recurrentes cubren los meses bajos.</p>
+    </div>
+    <div class="stream-grid fade">
+      <div class="stream-card">
+        <div class="s-num">Stream 01</div>
+        <div class="s-title">Instalación B2C</div>
+        <div class="s-range">S/ 400–12K</div>
+        <div class="s-desc">Core del negocio. Margen 45–55%.</div>
+      </div>
+      <div class="stream-card">
+        <div class="s-num">Stream 02</div>
+        <div class="s-title">Contratos B2B Flota</div>
+        <div class="s-range">S/ 15K–80K</div>
+        <div class="s-desc">Facturación empresarial. Contrato semestral.</div>
+      </div>
+      <div class="stream-card">
+        <div class="s-num">Stream 03</div>
+        <div class="s-title">Mantenimiento Semestral</div>
+        <div class="s-range">S/ 280–450</div>
+        <div class="s-desc">MRR predecible. Margen 65%.</div>
+      </div>
+      <div class="stream-card">
+        <div class="s-num">Stream 04</div>
+        <div class="s-title">Venta de Productos</div>
+        <div class="s-range">S/ 150–4K</div>
+        <div class="s-desc">E-commerce propio + MercadoLibre. Margen 30–38%.</div>
+      </div>
+      <div class="stream-card">
+        <div class="s-num">Stream 05</div>
+        <div class="s-title">Cursos de Instalación</div>
+        <div class="s-range">S/ 490/persona</div>
+        <div class="s-desc">Talleres presenciales 8 cupos. Margen 80%.</div>
+      </div>
+      <div class="stream-card">
+        <div class="s-num">Stream 06</div>
+        <div class="s-title">Certificación Instaladores</div>
+        <div class="s-range">S/ 490–890</div>
+        <div class="s-desc">Red de instaladores certificados LIMAUDIO.</div>
+      </div>
+      <div class="stream-card">
+        <div class="s-num">Stream 07</div>
+        <div class="s-title">Contenido Patrocinado</div>
+        <div class="s-range">S/ 800–3K</div>
+        <div class="s-desc">A partir de 10K seguidores: marcas pagan por aparecer.</div>
+      </div>
+    </div>
+
+    <h2 style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-top:48px;margin-bottom:20px;">Proyección Revenue 6 Meses (S/)</h2>
+    <div class="tw fade">
+      <table>
+        <thead><tr><th>Mes</th><th>B2C</th><th>B2B Flotas</th><th>Recurrente</th><th>Otros</th><th>Total</th></tr></thead>
+        <tbody>
+          <tr><td><strong>M1</strong></td><td>6,800</td><td>—</td><td>—</td><td>400</td><td><strong>7,200</strong></td></tr>
+          <tr><td><strong>M2</strong></td><td>11,040</td><td>—</td><td>800</td><td>600</td><td><strong>12,440</strong></td></tr>
+          <tr><td><strong>M3</strong></td><td>17,600</td><td>18,000</td><td>1,200</td><td>980</td><td><strong>37,780</strong></td></tr>
+          <tr><td><strong>M4</strong></td><td>24,700</td><td>—</td><td>2,400</td><td>1,470</td><td><strong>28,570</strong></td></tr>
+          <tr><td><strong>M5</strong></td><td>31,900</td><td>22,000</td><td>3,200</td><td>1,960</td><td><strong>59,060</strong></td></tr>
+          <tr><td><strong>M6</strong></td><td>40,000</td><td>—</td><td>4,800</td><td>2,450</td><td><strong>47,250</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- S9: RACI + BOTS -->
+<section class="section" id="bots" style="background: var(--bg2);">
+  <div class="wrap">
+    <div class="sec-header fade">
+      <div class="eyebrow">S9 · RACI + Bots IA</div>
+      <h2>3 bots. 4 personas.<br>Operación de 8.</h2>
+      <p>Ninguna consulta de venta espera más de 2 minutos en horario comercial ni 15 minutos en horario nocturno.</p>
+    </div>
+    <div class="bot-grid fade">
+      <div class="bot-card">
+        <div class="bot-icon">🤖</div>
+        <div class="bot-name">Bot Cotizador</div>
+        <div class="bot-sub">WhatsApp Business · IA + Condicionales</div>
+        <div class="bot-flow">
+          <span>1. Trigger: keyword en DM o comentario</span>
+          <span class="arr">↓</span>
+          <span>2. "¿Qué modelo y año tiene tu auto?"</span>
+          <span class="arr">↓</span>
+          <span>3. "¿Qué quieres mejorar: graves / pantalla / silencio?"</span>
+          <span class="arr">↓</span>
+          <span>4. Calificación de presupuesto (3 rangos)</span>
+          <span class="arr">↓</span>
+          <span>5. Cotización estimada + agenda cita</span>
+          <span class="arr">↓</span>
+          <span>6. Notifica a vendedor con ficha completa</span>
+        </div>
+      </div>
+      <div class="bot-card">
+        <div class="bot-icon">📣</div>
+        <div class="bot-name">Bot ManyChat IG</div>
+        <div class="bot-sub">Instagram · Comentarios y DMs</div>
+        <div class="bot-flow">
+          <span>1. Monitorea comentarios con keywords</span>
+          <span class="arr">↓</span>
+          <span>2. Responde comentario en público (1 línea)</span>
+          <span class="arr">↓</span>
+          <span>3. DM automático con link a WhatsApp</span>
+          <span class="arr">↓</span>
+          <span>4. Mini encuesta de necesidad (3 preguntas)</span>
+          <span class="arr">↓</span>
+          <span>5. Transfiere a vendedor humano con contexto</span>
+          <span class="arr">↓</span>
+          <span>6. Follow-up automático si no responde en 24h</span>
+        </div>
+      </div>
+      <div class="bot-card">
+        <div class="bot-icon">✅</div>
+        <div class="bot-name">Bot Post-Venta</div>
+        <div class="bot-sub">WhatsApp · NPS y Upsell</div>
+        <div class="bot-flow">
+          <span>1. Trigger: 48h después de instalación</span>
+          <span class="arr">↓</span>
+          <span>2. "¿Cómo está sonando tu auto? Del 1 al 10"</span>
+          <span class="arr">↓</span>
+          <span>3. Si ≥8: pide reseña Google Maps + referido</span>
+          <span class="arr">↓</span>
+          <span>4. Si &lt;8: escala a técnico en menos de 2h</span>
+          <span class="arr">↓</span>
+          <span>5. A los 5 meses: oferta mantenimiento preventivo</span>
+          <span class="arr">↓</span>
+          <span>6. Al año: upgrade + descuento fidelidad</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- S10: ROADMAP -->
+<section class="section" id="roadmap">
+  <div class="wrap">
+    <div class="sec-header fade">
+      <div class="eyebrow">S10 · Roadmap 90 Días</div>
+      <h2>4 fases. 90 días.<br>Primera venta en 7.</h2>
+      <p>Los primeros 90 días no se optimizan — se ejecutan. El foco: 25 instalaciones documentadas, 3 bots activos, 1 contrato B2B firmado.</p>
+    </div>
+    <div class="phase-grid fade">
+      <div class="phase-card" style="border-top:3px solid var(--red)">
+        <div class="ph-week">Fase 1 · Días 1–21</div>
+        <div class="ph-title" style="color:var(--red2)">Fundamentos</div>
+        <div class="ph-item">Crear perfil IG + TikTok optimizado</div>
+        <div class="ph-item">Grabar 8 videos proceso (stock)</div>
+        <div class="ph-item">Configurar WhatsApp Business API</div>
+        <div class="ph-item">Instalar ManyChat + keywords</div>
+        <div class="ph-item">Definir 3 paquetes (Básico/Estándar/Premium)</div>
+        <div class="ph-item">Google Maps: ficha + 10 fotos</div>
+      </div>
+      <div class="phase-card" style="border-top:3px solid var(--amber)">
+        <div class="ph-week">Fase 2 · Días 22–45</div>
+        <div class="ph-title" style="color:var(--amber)">Tracción</div>
+        <div class="ph-item">3 Reels/TikToks semanales sin falta</div>
+        <div class="ph-item">Primeros 8 clientes documentados</div>
+        <div class="ph-item">Activar bot cotizador en WhatsApp</div>
+        <div class="ph-item">Meta Ads S/ 300/mes remarketing</div>
+        <div class="ph-item">Primer taller: 8 cupos a S/ 490</div>
+        <div class="ph-item">Contactar 5 concesionarios B2B</div>
+      </div>
+      <div class="phase-card" style="border-top:3px solid var(--blue)">
+        <div class="ph-week">Fase 3 · Días 46–70</div>
+        <div class="ph-title" style="color:var(--blue)">Escala</div>
+        <div class="ph-item">Activar bot post-venta + referidos</div>
+        <div class="ph-item">Primer contrato B2B firmado (10+ u)</div>
+        <div class="ph-item">Lanzar programa mantenimiento semestral</div>
+        <div class="ph-item">Colaboración con creador automotriz Lima</div>
+        <div class="ph-item">MercadoLibre: 15 SKUs publicados</div>
+        <div class="ph-item">Dashboard KPIs semanal</div>
+      </div>
+      <div class="phase-card" style="border-top:3px solid var(--green)">
+        <div class="ph-week">Fase 4 · Días 71–90</div>
+        <div class="ph-title" style="color:var(--green)">Optimización</div>
+        <div class="ph-item">Análisis: top 3 videos CTR→lead</div>
+        <div class="ph-item">A/B test hooks primeros 3 segundos</div>
+        <div class="ph-item">Primer certificado instalador externo</div>
+        <div class="ph-item">Negociar precios por volumen</div>
+        <div class="ph-item">Propuesta concesionario mediano (100+ u)</div>
+        <div class="ph-item">Revisión 90 días: ajuste OKRs M4–M6</div>
+      </div>
+    </div>
+
+    <div class="tw fade" style="margin-top: 40px;">
+      <table>
+        <thead><tr><th>Día</th><th>Hito</th><th>Evidencia de éxito</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Día 7</strong></td><td>Primer Reel publicado + bot configurado</td><td>Video live + bot responde keywords</td></tr>
+          <tr><td><strong>Día 21</strong></td><td>500 seguidores + 20 leads WhatsApp</td><td>Screenshot + CRM básico</td></tr>
+          <tr><td><strong>Día 45</strong></td><td>8 instalaciones documentadas + primer taller</td><td>8 videos + S/ 3,920 en cursos</td></tr>
+          <tr><td><strong>Día 60</strong></td><td>Primer contrato B2B cerrado</td><td>Contrato firmado + 50% adelanto</td></tr>
+          <tr><td><strong>Día 90</strong></td><td>S/ 37,000+ en revenue acumulado</td><td>Estado de cuenta + reporte instalaciones</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section" id="contacto">
+  <div class="cta-glow"></div>
+  <div class="wrap" style="position:relative">
+    <div class="eyebrow fade">Cotiza tu proyecto</div>
+    <h2 class="fade">El mercado no espera.<br>La ventana existe hoy.</h2>
+    <p class="fade">El primero en posicionarse con contenido de calidad en IG y TikTok captura el 60% de la atención orgánica del nicho. En 12 meses puede estar cerrada.</p>
+    <form class="cta-form fade" id="ctaForm">
+      <input class="cta-input" id="ctaEmail" type="email" placeholder="tu@correo.com" required autocomplete="email">
+      <button class="cta-btn" type="submit">Cotizar ahora</button>
+    </form>
+    <div class="cta-ok" id="ctaOk"></div>
+    <p class="cta-note fade">Te respondemos en menos de 2 horas en horario comercial.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="ft-grid">
+      <div class="ft-brand">
+        <a href="#hero" class="nav-logo" style="font-size:17px;">
+          <div class="nav-mark" style="width:28px;height:28px;font-size:12px;">LA</div>
+          LIMAUDIO
+        </a>
+        <p>Car Audio · Soundproofing · Multimedia. Instalación certificada en Lima, Perú.</p>
+      </div>
+      <div class="ft-col">
+        <h4>Servicios</h4>
+        <ul>
+          <li><a href="#mercado">Car Audio SPL</a></li>
+          <li><a href="#mercado">Sound Quality</a></li>
+          <li><a href="#mercado">Soundproofing</a></li>
+          <li><a href="#mercado">Flotas B2B</a></li>
+        </ul>
+      </div>
+      <div class="ft-col">
+        <h4>Estrategia</h4>
+        <ul>
+          <li><a href="#contenido">Matriz de contenido</a></li>
+          <li><a href="#flywheel">Flywheel</a></li>
+          <li><a href="#monetizacion">Monetización</a></li>
+          <li><a href="#roadmap">Roadmap 90d</a></li>
+        </ul>
+      </div>
+      <div class="ft-col">
+        <h4>Contacto</h4>
+        <ul>
+          <li><a href="#contacto">WhatsApp Business</a></li>
+          <li><a href="#contacto">Instagram</a></li>
+          <li><a href="#contacto">TikTok</a></li>
+          <li><a href="#contacto">Google Maps</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="ft-bottom">
+      <span>© 2025 LIMAUDIO · Lima, Perú</span>
+      <span>Instalación certificada · Garantía 12 meses · SUNAT RUC activo</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ─── HERO CANVAS: Sound waveform / speaker rings ────────────
+const hc = document.getElementById('heroCanvas');
+const hctx = hc.getContext('2d');
+let hTime = 0, hNodes = [];
+
+function initHero() {
+  hc.width  = hc.offsetWidth  * devicePixelRatio;
+  hc.height = hc.offsetHeight * devicePixelRatio;
+  hctx.scale(devicePixelRatio, devicePixelRatio);
+  hNodes = [];
+  const W = hc.offsetWidth, H = hc.offsetHeight;
+  const count = Math.floor(W / 28);
+  for (let i = 0; i < count; i++) {
+    hNodes.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - .5) * .5,
+      vy: (Math.random() - .5) * .5,
+      r: Math.random() * 2.2 + .8,
+      phase: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function drawHero() {
+  const W = hc.width / devicePixelRatio, H = hc.height / devicePixelRatio;
+  hctx.clearRect(0, 0, W, H);
+  hctx.fillStyle = '#0f0f10';
+  hctx.fillRect(0, 0, W, H);
+  hTime += .01;
+
+  for (const n of hNodes) {
+    n.x += n.vx; n.y += n.vy;
+    if (n.x < 0 || n.x > W) n.vx *= -1;
+    if (n.y < 0 || n.y > H) n.vy *= -1;
+  }
+
+  for (let i = 0; i < hNodes.length; i++) {
+    for (let j = i + 1; j < hNodes.length; j++) {
+      const dx = hNodes[i].x - hNodes[j].x, dy = hNodes[i].y - hNodes[j].y;
+      const d = Math.sqrt(dx*dx + dy*dy);
+      if (d < 110) {
+        const a = (1 - d/110) * .3;
+        hctx.beginPath();
+        hctx.strokeStyle = `rgba(232,67,42,${a})`;
+        hctx.lineWidth = .7;
+        hctx.moveTo(hNodes[i].x, hNodes[i].y);
+        hctx.lineTo(hNodes[j].x, hNodes[j].y);
+        hctx.stroke();
+      }
+    }
+  }
+
+  // Speaker-ring pulse from center
+  const cx = W/2, cy = H/2;
+  for (let r = 0; r < 4; r++) {
+    const radius = 40 + r * 40 + (Math.sin(hTime * 2 + r * 1.2) * 12);
+    const alpha = (.25 - r * .05) * (.5 + .5 * Math.sin(hTime * 1.5 + r));
+    hctx.beginPath();
+    hctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    hctx.strokeStyle = `rgba(232,67,42,${alpha})`;
+    hctx.lineWidth = 1.2;
+    hctx.stroke();
+  }
+
+  for (const n of hNodes) {
+    const g = .4 + .6 * (.5 + .5 * Math.sin(hTime * 1.8 + n.phase));
+    hctx.beginPath();
+    hctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
+    hctx.fillStyle = `rgba(232,67,42,${g})`;
+    hctx.fill();
+  }
+
+  // Waveform bar at bottom
+  const barY = H * .82, barW = W * .7, barX = W * .15;
+  const barStep = barW / 60;
+  hctx.beginPath();
+  for (let i = 0; i <= 60; i++) {
+    const x = barX + i * barStep;
+    const amp = 14 + 10 * Math.sin(hTime * 5 + i * .4) + 6 * Math.sin(hTime * 2.3 + i * .8);
+    const y = barY - (i % 2 === 0 ? amp : -amp * .7);
+    i === 0 ? hctx.moveTo(x, y) : hctx.lineTo(x, y);
+  }
+  hctx.strokeStyle = 'rgba(232,67,42,.5)';
+  hctx.lineWidth = 1.5;
+  hctx.lineJoin = 'round';
+  hctx.stroke();
+
+  requestAnimationFrame(drawHero);
+}
+
+// ─── SCROLL FADE ────────────────────────────────────────────
+function setupFade() {
+  const els = document.querySelectorAll('.fade');
+  const obs = new IntersectionObserver(e => {
+    e.forEach(x => { if (x.isIntersecting) { x.target.classList.add('in'); obs.unobserve(x.target); } });
+  }, { threshold: .1 });
+  els.forEach(el => obs.observe(el));
+}
+
+// ─── HERO BADGE COUNTER ─────────────────────────────────────
+function animateBadge() {
+  const el = document.getElementById('heroVal');
+  const vals = ['+40%', 'S/ 40K', '15K subs', '150 leads', 'S/ 40K/mes'];
+  let i = 0;
+  setInterval(() => {
+    i = (i + 1) % vals.length;
+    el.style.opacity = '0';
+    setTimeout(() => { el.textContent = vals[i]; el.style.opacity = '1'; }, 200);
+  }, 2800);
+  el.style.transition = 'opacity .2s';
+}
+
+// ─── FORM ───────────────────────────────────────────────────
+document.getElementById('ctaForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const email = document.getElementById('ctaEmail').value;
+  document.getElementById('ctaOk').textContent = `✓ ${email} registrado. Te contactamos en menos de 2 horas.`;
+  this.reset();
+});
+
+// ─── INIT ───────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  initHero();
+  drawHero();
+  setupFade();
+  animateBadge();
+});
+window.addEventListener('resize', initHero);
+</script>
+
+</body></html>
