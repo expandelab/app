@@ -1,1 +1,1642 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ExpandeLab · Growth Marketing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap">
+<style>
+/* ─── TOKENS ─── */
+:root {
+  --bg:      #060c0e;
+  --bg2:     #0a1215;
+  --bg3:     #0f1a1d;
+  --surface: #122028;
+  --line:    #1a2e35;
+  --fg:      #e2f0eb;
+  --fg2:     #7aada0;
+  --fg3:     #3d6b60;
+  --green:   #00e5a0;
+  --green2:  #33edbb;
+  --green-d: #00e5a018;
+  --teal:    #00bcd4;
+  --teal-d:  #00bcd418;
+  --red:     #ff4d6a;
+  --yellow:  #ffd166;
+  --accent:  #00e5a0;
+  color-scheme: dark;
+  --nav-h: 62px;
+  --r: 10px;
+  --ff-d: 'Barlow Condensed', sans-serif;
+  --ff: 'Barlow', sans-serif;
+}
 
+/* ─── RESET ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--ff);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+a { color: var(--green); text-decoration: none; }
+img { max-width: 100%; display: block; }
+button { cursor: pointer; font-family: inherit; }
+
+.wrap {
+  max-width: 1100px;
+  margin-inline: auto;
+  padding-inline: clamp(16px, 4vw, 48px);
+}
+
+/* fade-in scroll */
+.fade-init { opacity: 0; transform: translateY(22px); transition: opacity .55s ease, transform .55s ease; }
+.fade-init.in { opacity: 1; transform: none; }
+
+/* ─── NAV ─── */
+nav {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  height: var(--nav-h);
+  background: rgba(6,12,14,.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+}
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  width: 100%;
+}
+.logo {
+  font-family: var(--ff-d);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -.5px;
+  color: var(--fg);
+  line-height: 1;
+}
+.logo span { color: var(--green); }
+.logo small {
+  display: block;
+  font-family: var(--ff);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--fg3);
+  margin-top: 2px;
+}
+.nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg2);
+  letter-spacing: .3px;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--green); }
+.nav-cta {
+  background: var(--green);
+  color: #060c0e;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .4px;
+  transition: background .2s, transform .15s;
+  white-space: nowrap;
+}
+.nav-cta:hover { background: var(--green2); transform: translateY(-1px); }
+.nav-burger { display: none; background: none; border: none; color: var(--fg2); font-size: 22px; }
+
+/* ─── HERO ─── */
+#hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+#heroCanvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding-block: 80px 60px;
+}
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 20px;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 28px; height: 2px;
+  background: var(--green);
+  border-radius: 2px;
+}
+.hero-h1 {
+  font-family: var(--ff-d);
+  font-size: clamp(46px, 8vw, 88px);
+  font-weight: 900;
+  line-height: .96;
+  letter-spacing: -1.5px;
+  text-wrap: balance;
+  margin-bottom: 24px;
+}
+.hero-h1 em {
+  font-style: normal;
+  color: var(--green);
+}
+.hero-sub {
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 300;
+  color: var(--fg2);
+  max-width: 560px;
+  margin-bottom: 36px;
+  line-height: 1.7;
+}
+.hero-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 60px;
+}
+.btn-primary {
+  background: var(--green);
+  color: #060c0e;
+  border: none;
+  border-radius: 8px;
+  padding: 15px 28px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  transition: background .2s, transform .15s, box-shadow .2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-primary:hover { background: var(--green2); transform: translateY(-2px); box-shadow: 0 8px 28px #00e5a035; }
+.btn-outline {
+  background: transparent;
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 500;
+  transition: border-color .2s, color .2s;
+}
+.btn-outline:hover { border-color: var(--green); color: var(--green); }
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2px;
+  max-width: 640px;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+.hero-stat {
+  padding: 18px 16px;
+  background: var(--surface);
+  text-align: center;
+}
+.hero-stat-n {
+  font-family: var(--ff-d);
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--green);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.hero-stat-l {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--fg3);
+  letter-spacing: .5px;
+  margin-top: 4px;
+}
+
+/* ─── SECTION LABELS ─── */
+section { padding-block: 90px; }
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 10px;
+}
+.section-h2 {
+  font-family: var(--ff-d);
+  font-size: clamp(34px, 5vw, 56px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  margin-bottom: 14px;
+  text-wrap: balance;
+}
+.section-sub {
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--fg2);
+  max-width: 540px;
+  line-height: 1.65;
+  margin-bottom: 52px;
+}
+
+/* ─── FUNNEL ─── */
+#funnel { background: var(--bg2); }
+.funnel-layout {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 64px;
+  align-items: start;
+}
+.funnel-vis {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.funnel-stage {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: opacity .2s;
+}
+.funnel-stage:hover { opacity: .9; }
+.funnel-bar {
+  height: 52px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  padding-inline: 18px;
+  font-family: var(--ff-d);
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  color: #060c0e;
+  gap: 10px;
+  transition: filter .2s;
+  flex-shrink: 0;
+}
+.funnel-stage:hover .funnel-bar { filter: brightness(1.12); }
+.funnel-stage-meta { flex: 1; }
+.funnel-stage-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  line-height: 1;
+}
+.funnel-stage-desc {
+  font-size: 12px;
+  color: var(--fg3);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+/* widths narrow = funnel shape */
+.funnel-stage:nth-child(1) .funnel-bar { width: 100%; background: #00e5a0; }
+.funnel-stage:nth-child(2) .funnel-bar { width: 85%; background: #00d494; }
+.funnel-stage:nth-child(3) .funnel-bar { width: 70%; background: #00bc82; }
+.funnel-stage:nth-child(4) .funnel-bar { width: 56%; background: #009e6c; }
+.funnel-stage:nth-child(5) .funnel-bar { width: 44%; background: #007c55; color: #e2f0eb; }
+
+.funnel-modules {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: sticky;
+  top: calc(var(--nav-h) + 16px);
+}
+.fmod-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 18px 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  transition: border-color .2s;
+}
+.fmod-card:hover { border-color: var(--green); }
+.fmod-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--green-d);
+  border: 1px solid var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.fmod-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  margin-bottom: 3px;
+}
+.fmod-desc {
+  font-size: 12px;
+  color: var(--fg3);
+  line-height: 1.4;
+}
+
+/* ─── SECTORES ─── */
+#sectores { background: var(--bg); }
+.sector-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 36px;
+}
+.stab {
+  padding: 9px 20px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--fg2);
+  font-size: 14px;
+  font-weight: 500;
+  transition: all .2s;
+}
+.stab.active {
+  background: var(--green-d);
+  border-color: var(--green);
+  color: var(--green);
+}
+.stab:hover:not(.active) { border-color: var(--fg3); color: var(--fg); }
+.sector-panel { display: none; }
+.sector-panel.active { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.scard {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 28px;
+}
+.scard-icon { font-size: 30px; margin-bottom: 14px; }
+.scard-title {
+  font-family: var(--ff-d);
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+.scard-desc {
+  font-size: 14px;
+  color: var(--fg2);
+  line-height: 1.65;
+  margin-bottom: 16px;
+}
+.scard-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .5px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--green-d);
+  border: 1px solid var(--green);
+  color: var(--green);
+}
+
+/* ─── RESULTADOS ─── */
+#resultados { background: var(--bg2); }
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.rcard {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 28px 24px;
+  text-align: center;
+  transition: border-color .25s, transform .25s;
+}
+.rcard:hover { border-color: var(--green); transform: translateY(-4px); }
+.rcard-icon { font-size: 36px; margin-bottom: 14px; }
+.rcard-n {
+  font-family: var(--ff-d);
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--green);
+  line-height: 1;
+  letter-spacing: -1px;
+}
+.rcard-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  margin-top: 6px;
+}
+.rcard-desc {
+  font-size: 12px;
+  color: var(--fg3);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* ─── PLAN ─── */
+#plan { background: var(--bg3); }
+.plan-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 28px;
+}
+.plan-pill {
+  padding: 7px 15px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--fg2);
+  font-size: 12px;
+  font-weight: 500;
+  transition: all .2s;
+  cursor: pointer;
+}
+.plan-pill.active {
+  background: var(--green-d);
+  border-color: var(--green);
+  color: var(--green);
+}
+.plan-pill.done {
+  border-color: #007c55;
+  color: #00d494;
+}
+.plan-pill.done::after { content: ' ✓'; }
+
+.plan-progress {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.prog-bar-wrap {
+  flex: 1;
+  height: 6px;
+  background: var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  background: var(--green);
+  border-radius: 3px;
+  transition: width .35s ease;
+  width: 0%;
+}
+.prog-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fg2);
+  white-space: nowrap;
+}
+
+.plan-nav-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.plan-nav-btn {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--fg2);
+  border-radius: 6px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all .2s;
+}
+.plan-nav-btn:hover:not(:disabled) { border-color: var(--green); color: var(--green); }
+.plan-nav-btn:disabled { opacity: .35; cursor: default; }
+.plan-pos {
+  font-size: 13px;
+  color: var(--fg3);
+  flex: 1;
+  text-align: center;
+}
+
+.plan-mod { display: none; }
+.mod-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.mod-num {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 2px solid var(--green);
+  color: var(--green);
+  font-family: var(--ff-d);
+  font-size: 18px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.mod-title-wrap {}
+.mod-kpi {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 4px;
+}
+.mod-title {
+  font-family: var(--ff-d);
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+.mod-body {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  padding: 28px;
+  margin-bottom: 16px;
+}
+.mod-body p { font-size: 15px; color: var(--fg2); margin-bottom: 14px; line-height: 1.7; }
+.mod-body p:last-child { margin-bottom: 0; }
+.mod-body h4 {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: var(--fg3);
+  margin-bottom: 10px;
+  margin-top: 20px;
+}
+.mod-body h4:first-child { margin-top: 0; }
+.mod-checklist {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.mod-checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--fg2);
+}
+.mod-checklist li::before {
+  content: '▸';
+  color: var(--green);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.mod-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 16px;
+}
+.mod-tool-chip {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .3px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--teal-d);
+  border: 1px solid var(--teal);
+  color: var(--teal);
+}
+
+.mod-notes-wrap { margin-bottom: 16px; }
+.mod-notes-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--fg3);
+  margin-bottom: 6px;
+}
+.mod-notes {
+  width: 100%;
+  min-height: 72px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 12px 14px;
+  color: var(--fg);
+  font-family: var(--ff);
+  font-size: 14px;
+  resize: vertical;
+  transition: border-color .2s;
+}
+.mod-notes:focus { outline: none; border-color: var(--green); }
+.mod-notes::placeholder { color: var(--fg3); }
+
+.mod-check-btn {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--fg2);
+  border-radius: 8px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all .2s;
+}
+.mod-check-btn:hover { border-color: var(--green); color: var(--green); }
+.mod-check-btn.done { background: var(--green-d); border-color: var(--green); color: var(--green); }
+
+.plan-complete {
+  display: none;
+  margin-top: 28px;
+  background: linear-gradient(135deg, #007c55 0%, #00a874 100%);
+  border-radius: var(--r);
+  padding: 32px 28px;
+  text-align: center;
+}
+.plan-complete h3 {
+  font-family: var(--ff-d);
+  font-size: 28px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.plan-complete p { font-size: 15px; opacity: .85; }
+
+/* ─── CTA ─── */
+#contacto {
+  background: linear-gradient(160deg, #0a1215 0%, #060c0e 100%);
+  border-top: 1px solid var(--line);
+}
+.cta-box {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: clamp(36px, 6vw, 72px);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-box::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(135deg, var(--green) 0%, transparent 60%);
+  border-radius: 16px;
+  opacity: .08;
+  pointer-events: none;
+}
+.cta-eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 16px;
+}
+.cta-h2 {
+  font-family: var(--ff-d);
+  font-size: clamp(32px, 5vw, 56px);
+  font-weight: 900;
+  line-height: 1.05;
+  letter-spacing: -1px;
+  margin-bottom: 14px;
+}
+.cta-sub {
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--fg2);
+  max-width: 480px;
+  margin-inline: auto;
+  margin-bottom: 32px;
+  line-height: 1.65;
+}
+.cta-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 28px;
+}
+.cta-chip {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--fg2);
+  background: var(--bg3);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--bg);
+  border-top: 1px solid var(--line);
+  padding-block: 40px;
+}
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.footer-copy {
+  font-size: 13px;
+  color: var(--fg3);
+}
+.footer-links {
+  display: flex;
+  gap: 20px;
+  list-style: none;
+}
+.footer-links a {
+  font-size: 12px;
+  color: var(--fg3);
+  transition: color .2s;
+}
+.footer-links a:hover { color: var(--green); }
+.footer-seals {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.seal {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  color: var(--fg3);
+}
+
+/* ─── WHATSAPP FLOAT ─── */
+.wa-float {
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 22px);
+  right: 22px;
+  z-index: 200;
+  width: 52px; height: 52px;
+  background: #25d366;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 20px #25d36640;
+  transition: transform .2s, box-shadow .2s;
+  text-decoration: none;
+}
+.wa-float:hover { transform: scale(1.1); box-shadow: 0 6px 28px #25d36660; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .funnel-layout { grid-template-columns: 1fr; }
+  .funnel-modules { position: static; }
+  .results-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 760px) {
+  .nav-links { display: none; }
+  .nav-burger { display: block; }
+  .sector-panel.active { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .results-grid { grid-template-columns: repeat(2, 1fr); }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+  .plan-nav-row { flex-wrap: wrap; }
+}
+</style>
+
+<!-- NAV -->
+<nav>
+  <div class="wrap nav-inner">
+    <a href="#" class="logo" aria-label="ExpandeLab">
+      e<span>X</span>pande.Lab
+      <small>IDEAS · PRODUCTOS · CRECIMIENTO</small>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#funnel">Funnel</a></li>
+      <li><a href="#sectores">Sectores</a></li>
+      <li><a href="#resultados">Resultados</a></li>
+      <li><a href="#plan">Plan</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <button class="nav-cta" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">Agenda asesoría →</button>
+    <button class="nav-burger" aria-label="Menú">☰</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="wrap hero-content">
+    <div class="hero-eyebrow">Growth Marketing Digital</div>
+    <h1 class="hero-h1">
+      Conecta todo<br>
+      tu <em>funnel.</em><br>
+      Crece de verdad.
+    </h1>
+    <p class="hero-sub">Estrategia integral de marketing y crecimiento para restaurantes, cafeterías, retail y servicios. Del primer clic a la fidelización total.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="document.getElementById('plan').scrollIntoView({behavior:'smooth'})">Ver plan de crecimiento →</button>
+      <button class="btn-outline" onclick="document.getElementById('funnel').scrollIntoView({behavior:'smooth'})">Explorar el funnel</button>
+    </div>
+    <div class="hero-stats fade-init">
+      <div class="hero-stat"><div class="hero-stat-n">+340%</div><div class="hero-stat-l">Alcance orgánico</div></div>
+      <div class="hero-stat"><div class="hero-stat-n">3.8×</div><div class="hero-stat-l">ROI promedio</div></div>
+      <div class="hero-stat"><div class="hero-stat-n">62%</div><div class="hero-stat-l">+Recompra</div></div>
+      <div class="hero-stat"><div class="hero-stat-n">4.9★</div><div class="hero-stat-l">Reputación</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FUNNEL -->
+<section id="funnel">
+  <div class="wrap">
+    <div class="section-label fade-init">Growth Funnel</div>
+    <h2 class="section-h2 fade-init">5 etapas, un solo sistema.</h2>
+    <p class="section-sub fade-init">Cada etapa del funnel tiene su estrategia, sus canales y sus métricas. Nada queda al azar.</p>
+    <div class="funnel-layout">
+      <div class="funnel-vis fade-init">
+        <div class="funnel-stage">
+          <div class="funnel-bar">📢 Atracción</div>
+          <div class="funnel-stage-meta">
+            <div class="funnel-stage-title">Visibilidad y alcance</div>
+            <div class="funnel-stage-desc">SEO local, redes sociales, Google Ads, contenido viral</div>
+          </div>
+        </div>
+        <div class="funnel-stage">
+          <div class="funnel-bar">🎯 Captación</div>
+          <div class="funnel-stage-meta">
+            <div class="funnel-stage-title">Conversión a leads</div>
+            <div class="funnel-stage-desc">Formularios, reservas online, landing pages optimizadas</div>
+          </div>
+        </div>
+        <div class="funnel-stage">
+          <div class="funnel-bar">💡 Nutrición</div>
+          <div class="funnel-stage-meta">
+            <div class="funnel-stage-title">Educar y activar</div>
+            <div class="funnel-stage-desc">Email marketing, WhatsApp flows, retargeting</div>
+          </div>
+        </div>
+        <div class="funnel-stage">
+          <div class="funnel-bar">❤️ Fidelización</div>
+          <div class="funnel-stage-meta">
+            <div class="funnel-stage-title">Clientes recurrentes</div>
+            <div class="funnel-stage-desc">Programas de lealtad, NPS, comunidad de marca</div>
+          </div>
+        </div>
+        <div class="funnel-stage">
+          <div class="funnel-bar">💸 Conversión</div>
+          <div class="funnel-stage-meta">
+            <div class="funnel-stage-title">Máximo ticket y upsell</div>
+            <div class="funnel-stage-desc">Automatización CRM, ofertas personalizadas, cross-sell</div>
+          </div>
+        </div>
+      </div>
+      <div class="funnel-modules">
+        <div class="fmod-card fade-init">
+          <div class="fmod-icon">🗺️</div>
+          <div>
+            <div class="fmod-title">Estrategia</div>
+            <div class="fmod-desc">Audiencia, canales, mensajes clave y calendar de contenidos.</div>
+          </div>
+        </div>
+        <div class="fmod-card fade-init">
+          <div class="fmod-icon">⚡</div>
+          <div>
+            <div class="fmod-title">Automatización</div>
+            <div class="fmod-desc">Flujos de WhatsApp, email nurturing y segmentación dinámica.</div>
+          </div>
+        </div>
+        <div class="fmod-card fade-init">
+          <div class="fmod-icon">📊</div>
+          <div>
+            <div class="fmod-title">Data & Analytics</div>
+            <div class="fmod-desc">Dashboard unificado, KPIs en tiempo real y A/B testing.</div>
+          </div>
+        </div>
+        <div class="fmod-card fade-init">
+          <div class="fmod-icon">🤝</div>
+          <div>
+            <div class="fmod-title">CRM & Retención</div>
+            <div class="fmod-desc">Base de clientes, scoring y seguimiento post-venta.</div>
+          </div>
+        </div>
+        <div class="fmod-card fade-init">
+          <div class="fmod-icon">🏆</div>
+          <div>
+            <div class="fmod-title">Conversión</div>
+            <div class="fmod-desc">Ofertas, upsells y maximización de ticket promedio.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTORES -->
+<section id="sectores">
+  <div class="wrap">
+    <div class="section-label fade-init">Sectores</div>
+    <h2 class="section-h2 fade-init">Soluciones para cada comercio.</h2>
+    <p class="section-sub fade-init">Estrategias adaptadas a las dinámicas únicas de cada tipo de negocio.</p>
+    <div class="sector-tabs">
+      <button class="stab active" data-tab="restaurantes">🍽️ Restaurantes</button>
+      <button class="stab" data-tab="cafeterias">☕ Cafeterías</button>
+      <button class="stab" data-tab="retail">🛍️ Retail</button>
+      <button class="stab" data-tab="servicios">🔧 Servicios</button>
+    </div>
+    <div id="tab-restaurantes" class="sector-panel active fade-init">
+      <div class="scard">
+        <div class="scard-icon">🍽️</div>
+        <div class="scard-title">Marketing Gastronómico</div>
+        <div class="scard-desc">Atrae nuevos comensales con contenido visual de alto impacto, gestión de reseñas y campañas geolocalizadas que llenan mesas en horarios valle.</div>
+        <div class="scard-chips">
+          <span class="chip">Google My Business</span>
+          <span class="chip">Instagram Reels</span>
+          <span class="chip">Reservas Online</span>
+          <span class="chip">Email CRM</span>
+        </div>
+      </div>
+      <div class="scard">
+        <div class="scard-icon">📅</div>
+        <div class="scard-title">Fidelización y Eventos</div>
+        <div class="scard-desc">Programas de puntos, cenas especiales, maridajes y eventos privados que convierten comensales en embajadores de tu marca.</div>
+        <div class="scard-chips">
+          <span class="chip">Programa Lealtad</span>
+          <span class="chip">WhatsApp Flows</span>
+          <span class="chip">Eventos Exclusivos</span>
+          <span class="chip">NPS</span>
+        </div>
+      </div>
+    </div>
+    <div id="tab-cafeterias" class="sector-panel fade-init">
+      <div class="scard">
+        <div class="scard-icon">☕</div>
+        <div class="scard-title">Comunidad de Café</div>
+        <div class="scard-desc">Construye una comunidad apasionada. Contenido de origen, barismo y cultura del café que genera conexión emocional y visitas recurrentes.</div>
+        <div class="scard-chips">
+          <span class="chip">TikTok Content</span>
+          <span class="chip">Micro-influencers</span>
+          <span class="chip">Suscripciones</span>
+          <span class="chip">Reseñas</span>
+        </div>
+      </div>
+      <div class="scard">
+        <div class="scard-icon">🎨</div>
+        <div class="scard-title">Branding Experiencial</div>
+        <div class="scard-desc">Desde el packaging hasta el playlist, cada detalle comunica. Identidad visual consistente que convierte tu cafetería en destino.</div>
+        <div class="scard-chips">
+          <span class="chip">Brand Identity</span>
+          <span class="chip">UGC Strategy</span>
+          <span class="chip">Loyalty App</span>
+          <span class="chip">Merch Digital</span>
+        </div>
+      </div>
+    </div>
+    <div id="tab-retail" class="sector-panel fade-init">
+      <div class="scard">
+        <div class="scard-icon">🛍️</div>
+        <div class="scard-title">Omnicanalidad Retail</div>
+        <div class="scard-desc">Integra tienda física y online. Estrategia de tráfico, catálogo digital, campañas de temporada y remarketing para maximizar ventas.</div>
+        <div class="scard-chips">
+          <span class="chip">Google Shopping</span>
+          <span class="chip">Meta Ads</span>
+          <span class="chip">Email Flows</span>
+          <span class="chip">SEO Producto</span>
+        </div>
+      </div>
+      <div class="scard">
+        <div class="scard-icon">📦</div>
+        <div class="scard-title">Inventario Inteligente</div>
+        <div class="scard-desc">Campañas sincronizadas con tu inventario. Liquida stock con urgencia, lanza nuevos productos con anticipación y optimiza el mix.</div>
+        <div class="scard-chips">
+          <span class="chip">Flash Sales</span>
+          <span class="chip">Preventa</span>
+          <span class="chip">Retargeting</span>
+          <span class="chip">Bundle Offers</span>
+        </div>
+      </div>
+    </div>
+    <div id="tab-servicios" class="sector-panel fade-init">
+      <div class="scard">
+        <div class="scard-icon">🔧</div>
+        <div class="scard-title">Lead Generation</div>
+        <div class="scard-desc">Genera leads calificados con funnel de contenido, SEO local y campañas de búsqueda. Convierte consultas en contratos con automatización.</div>
+        <div class="scard-chips">
+          <span class="chip">Google Ads</span>
+          <span class="chip">SEO Local</span>
+          <span class="chip">Lead Magnets</span>
+          <span class="chip">CRM Automation</span>
+        </div>
+      </div>
+      <div class="scard">
+        <div class="scard-icon">⭐</div>
+        <div class="scard-title">Reputación y Referidos</div>
+        <div class="scard-desc">Construye autoridad con casos de éxito, testimonios y un programa de referidos que hace crecer tu base de clientes de forma orgánica.</div>
+        <div class="scard-chips">
+          <span class="chip">Reseñas Google</span>
+          <span class="chip">Casos de Éxito</span>
+          <span class="chip">Programa Referidos</span>
+          <span class="chip">LinkedIn</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTADOS -->
+<section id="resultados">
+  <div class="wrap">
+    <div class="section-label fade-init">Resultados</div>
+    <h2 class="section-h2 fade-init">Lo que obtienes con ExpandeLab.</h2>
+    <p class="section-sub fade-init">Métricas reales de negocios que implementaron el sistema completo.</p>
+    <div class="results-grid">
+      <div class="rcard fade-init">
+        <div class="rcard-icon">👁️</div>
+        <div class="rcard-n">+340%</div>
+        <div class="rcard-label">Más visibilidad</div>
+        <div class="rcard-desc">Alcance orgánico multiplicado en 90 días con SEO local y contenido estratégico.</div>
+      </div>
+      <div class="rcard fade-init">
+        <div class="rcard-icon">🏃</div>
+        <div class="rcard-n">+62%</div>
+        <div class="rcard-label">Más clientes nuevos</div>
+        <div class="rcard-desc">Captación mensual por campañas geolocalizadas y optimización de conversión.</div>
+      </div>
+      <div class="rcard fade-init">
+        <div class="rcard-icon">💰</div>
+        <div class="rcard-n">+28%</div>
+        <div class="rcard-label">Mayor ticket promedio</div>
+        <div class="rcard-desc">Upselling automatizado y comunicación personalizada que incrementa el gasto.</div>
+      </div>
+      <div class="rcard fade-init">
+        <div class="rcard-icon">🔄</div>
+        <div class="rcard-n">3.8×</div>
+        <div class="rcard-label">Más clientes fieles</div>
+        <div class="rcard-desc">Programa de fidelización y automatización post-venta que dispara la recompra.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLAN DE MARKETING -->
+<section id="plan">
+  <div class="wrap">
+    <div class="section-label fade-init">Plan de Crecimiento</div>
+    <h2 class="section-h2 fade-init">Tu plan de marketing, paso a paso.</h2>
+    <p class="section-sub fade-init">Revisa cada módulo con tu asesor. Toma notas, marca tu avance y construye tu estrategia integral.</p>
+
+    <!-- Pills -->
+    <div class="plan-pills">
+      <button class="plan-pill" data-mod="0">1 · Diagnóstico</button>
+      <button class="plan-pill" data-mod="1">2 · Audiencia</button>
+      <button class="plan-pill" data-mod="2">3 · Canales</button>
+      <button class="plan-pill" data-mod="3">4 · Contenido</button>
+      <button class="plan-pill" data-mod="4">5 · Automatización</button>
+      <button class="plan-pill" data-mod="5">6 · Conversión</button>
+      <button class="plan-pill" data-mod="6">7 · Métricas</button>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="plan-progress">
+      <div class="prog-bar-wrap"><div class="prog-fill" id="progFill"></div></div>
+      <span class="prog-count" id="progCount">0 / 7 módulos revisados</span>
+    </div>
+
+    <!-- Prev / Next -->
+    <div class="plan-nav-row">
+      <button class="plan-nav-btn" id="planPrev">← Anterior</button>
+      <span class="plan-pos" id="planPos">Módulo 1 de 7</span>
+      <button class="plan-nav-btn" id="planNext">Siguiente →</button>
+    </div>
+
+    <!-- ── MÓDULO 1: Diagnóstico ── -->
+    <div class="plan-mod" id="mod-0">
+      <div class="mod-header">
+        <div class="mod-num">1</div>
+        <div class="mod-title-wrap">
+          <div class="mod-kpi">Módulo 1 · Base estratégica</div>
+          <div class="mod-title">Diagnóstico de tu negocio</div>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p>Antes de activar cualquier canal, entendemos a fondo tu negocio: dónde estás, quién es tu competencia y qué oportunidades hay en tu mercado local.</p>
+        <h4>Análisis que realizamos</h4>
+        <ul class="mod-checklist">
+          <li>Auditoría de presencia digital actual (Google, redes, reseñas)</li>
+          <li>Análisis de competencia local (top 5 competidores)</li>
+          <li>Revisión de ticket promedio, frecuencia de visita y retención actual</li>
+          <li>Diagnóstico de herramientas y sistemas (CRM, POS, delivery)</li>
+          <li>Mapa de fortalezas y brechas de crecimiento</li>
+        </ul>
+        <h4>Entregables del módulo</h4>
+        <ul class="mod-checklist">
+          <li>Reporte de diagnóstico ejecutivo (PDF)</li>
+          <li>Benchmark vs. competencia con puntuación</li>
+          <li>Matriz FODA digital del negocio</li>
+        </ul>
+        <div class="mod-tools">
+          <span class="mod-tool-chip">Google Analytics</span>
+          <span class="mod-tool-chip">Google My Business</span>
+          <span class="mod-tool-chip">SEMrush</span>
+          <span class="mod-tool-chip">Social Listening</span>
+        </div>
+      </div>
+      <div class="mod-notes-wrap">
+        <div class="mod-notes-label">Notas del cliente</div>
+        <textarea class="mod-notes" id="notes-0" placeholder="Escribe aquí tus observaciones, preguntas o acuerdos de este módulo…"></textarea>
+      </div>
+      <button class="mod-check-btn" id="check-0">Marcar como revisado</button>
+    </div>
+
+    <!-- ── MÓDULO 2: Audiencia ── -->
+    <div class="plan-mod" id="mod-1">
+      <div class="mod-header">
+        <div class="mod-num">2</div>
+        <div class="mod-title-wrap">
+          <div class="mod-kpi">Módulo 2 · Buyer Persona</div>
+          <div class="mod-title">Conoce a tu cliente ideal</div>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p>Definimos con precisión quiénes son tus mejores clientes, qué los motiva, cómo toman decisiones y qué canales usan. Sin esto, toda inversión en marketing es ruido.</p>
+        <h4>Perfiles que construimos</h4>
+        <ul class="mod-checklist">
+          <li>3 buyer personas con demografía, psicografía y comportamiento</li>
+          <li>Customer journey map por tipo de cliente</li>
+          <li>Puntos de dolor y motivadores de compra por segmento</li>
+          <li>Análisis de clientes actuales vs. cliente deseado</li>
+          <li>Segmentación por frecuencia, ticket y canal</li>
+        </ul>
+        <h4>Insights clave para tu negocio</h4>
+        <ul class="mod-checklist">
+          <li>Horarios y días de mayor intención de compra</li>
+          <li>Palabras y mensajes que resuenen con tu audiencia</li>
+          <li>Objeciones frecuentes y cómo neutralizarlas</li>
+        </ul>
+        <div class="mod-tools">
+          <span class="mod-tool-chip">Google Forms</span>
+          <span class="mod-tool-chip">Meta Audience Insights</span>
+          <span class="mod-tool-chip">Hotjar</span>
+          <span class="mod-tool-chip">CRM Data</span>
+        </div>
+      </div>
+      <div class="mod-notes-wrap">
+        <div class="mod-notes-label">Notas del cliente</div>
+        <textarea class="mod-notes" id="notes-1" placeholder="Describe tus clientes actuales, características importantes, observaciones…"></textarea>
+      </div>
+      <button class="mod-check-btn" id="check-1">Marcar como revisado</button>
+    </div>
+
+    <!-- ── MÓDULO 3: Canales ── -->
+    <div class="plan-mod" id="mod-2">
+      <div class="mod-header">
+        <div class="mod-num">3</div>
+        <div class="mod-title-wrap">
+          <div class="mod-kpi">Módulo 3 · Mix de canales</div>
+          <div class="mod-title">Estrategia multicanal</div>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p>No todos los canales son para todos los negocios. Seleccionamos el mix óptimo según tu audiencia, presupuesto y objetivos de crecimiento.</p>
+        <h4>Canales de atracción orgánica</h4>
+        <ul class="mod-checklist">
+          <li>Google My Business: optimización para búsquedas locales</li>
+          <li>SEO local: palabras clave de alta intención en tu zona</li>
+          <li>Instagram / TikTok: contenido visual y reels de alto alcance</li>
+          <li>Facebook: comunidad local y eventos</li>
+        </ul>
+        <h4>Canales de pago (performance)</h4>
+        <ul class="mod-checklist">
+          <li>Google Ads: campañas de búsqueda local + Smart campaigns</li>
+          <li>Meta Ads: campañas de tráfico, leads y retargeting</li>
+          <li>Plataformas delivery: Rappi, PedidosYa, UberEats (si aplica)</li>
+        </ul>
+        <h4>Canales de fidelización</h4>
+        <ul class="mod-checklist">
+          <li>Email marketing: secuencias automatizadas y newsletters</li>
+          <li>WhatsApp Business API: flujos de atención y ofertas</li>
+          <li>SMS / Push: reactivación y campañas de urgencia</li>
+        </ul>
+        <div class="mod-tools">
+          <span class="mod-tool-chip">Google Ads</span>
+          <span class="mod-tool-chip">Meta Business</span>
+          <span class="mod-tool-chip">Mailchimp</span>
+          <span class="mod-tool-chip">Twilio</span>
+          <span class="mod-tool-chip">WhatsApp API</span>
+        </div>
+      </div>
+      <div class="mod-notes-wrap">
+        <div class="mod-notes-label">Notas del cliente</div>
+        <textarea class="mod-notes" id="notes-2" placeholder="¿Qué canales ya usas? ¿Cuál es tu presupuesto de medios? Anota aquí…"></textarea>
+      </div>
+      <button class="mod-check-btn" id="check-2">Marcar como revisado</button>
+    </div>
+
+    <!-- ── MÓDULO 4: Contenido ── -->
+    <div class="plan-mod" id="mod-3">
+      <div class="mod-header">
+        <div class="mod-num">4</div>
+        <div class="mod-title-wrap">
+          <div class="mod-kpi">Módulo 4 · Contenido estratégico</div>
+          <div class="mod-title">Content que convierte</div>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p>El contenido es la gasolina del funnel. Desarrollamos un plan editorial alineado a cada etapa del customer journey: atraer, educar, convencer y retener.</p>
+        <h4>Pilares de contenido</h4>
+        <ul class="mod-checklist">
+          <li>Contenido de valor: tips, recetas, behind the scenes, educación</li>
+          <li>Contenido social: testimonios, UGC, reseñas en formato visual</li>
+          <li>Contenido de oferta: promociones, lanzamientos, temporadas</li>
+          <li>Contenido de comunidad: encuestas, retos, colabs locales</li>
+        </ul>
+        <h4>Calendario editorial</h4>
+        <ul class="mod-checklist">
+          <li>Plan de 30 días de contenido por canal</li>
+          <li>Frecuencia y formatos recomendados (Reels, Stories, Carruseles)</li>
+          <li>Fechas clave del sector (días especiales, temporadas)</li>
+          <li>Plantillas de diseño personalizadas con tu marca</li>
+        </ul>
+        <div class="mod-tools">
+          <span class="mod-tool-chip">Canva Pro</span>
+          <span class="mod-tool-chip">Later / Buffer</span>
+          <span class="mod-tool-chip">CapCut</span>
+          <span class="mod-tool-chip">Notion</span>
+        </div>
+      </div>
+      <div class="mod-notes-wrap">
+        <div class="mod-notes-label">Notas del cliente</div>
+        <textarea class="mod-notes" id="notes-3" placeholder="¿Tienes fotógrafo o haces el contenido en casa? ¿Qué temas quieres comunicar? Anota aquí…"></textarea>
+      </div>
+      <button class="mod-check-btn" id="check-3">Marcar como revisado</button>
+    </div>
+
+    <!-- ── MÓDULO 5: Automatización ── -->
+    <div class="plan-mod" id="mod-4">
+      <div class="mod-header">
+        <div class="mod-num">5</div>
+        <div class="mod-title-wrap">
+          <div class="mod-kpi">Módulo 5 · Marketing automation</div>
+          <div class="mod-title">Automatización inteligente</div>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p>Implementamos flujos automatizados que trabajan 24/7: capturan leads, nutren clientes y reactivan inactivos sin que tengas que hacer nada manualmente.</p>
+        <h4>Flujos de automatización que activamos</h4>
+        <ul class="mod-checklist">
+          <li>Bienvenida: primer mensaje tras registro o primera compra</li>
+          <li>Nurturing: secuencia de 5 correos educativos + oferta</li>
+          <li>Reactivación: clientes sin actividad en 30/60/90 días</li>
+          <li>Post-compra: reseña, upsell y programa de referidos</li>
+          <li>Abandono: recupera leads que no completaron la acción</li>
+        </ul>
+        <h4>WhatsApp Business Flows</h4>
+        <ul class="mod-checklist">
+          <li>Confirmación de reservas y recordatorios automáticos</li>
+          <li>Respuestas rápidas y chatbot de primer nivel</li>
+          <li>Campañas segmentadas por comportamiento</li>
+        </ul>
+        <div class="mod-tools">
+          <span class="mod-tool-chip">ActiveCampaign</span>
+          <span class="mod-tool-chip">HubSpot</span>
+          <span class="mod-tool-chip">ManyChat</span>
+          <span class="mod-tool-chip">Zapier</span>
+          <span class="mod-tool-chip">Klaviyo</span>
+        </div>
+      </div>
+      <div class="mod-notes-wrap">
+        <div class="mod-notes-label">Notas del cliente</div>
+        <textarea class="mod-notes" id="notes-4" placeholder="¿Tienes base de datos de clientes? ¿Usas algún CRM actualmente? Anota aquí…"></textarea>
+      </div>
+      <button class="mod-check-btn" id="check-4">Marcar como revisado</button>
+    </div>
+
+    <!-- ── MÓDULO 6: Conversión ── -->
+    <div class="plan-mod" id="mod-5">
+      <div class="mod-header">
+        <div class="mod-num">6</div>
+        <div class="mod-title-wrap">
+          <div class="mod-kpi">Módulo 6 · Revenue growth</div>
+          <div class="mod-title">Maximizar ingresos</div>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p>Optimizamos cada punto de venta: aumentamos el ticket promedio, reducimos la fricción de compra y creamos programas que multiplican la frecuencia de visita.</p>
+        <h4>Estrategias de conversión</h4>
+        <ul class="mod-checklist">
+          <li>Upselling y cross-selling en el punto de venta y digital</li>
+          <li>Diseño de combos y paquetes de alto margen</li>
+          <li>Campañas de temporada con urgencia genuina</li>
+          <li>Programa de lealtad (puntos, cashback, membresías)</li>
+          <li>Optimización de menú o catálogo (ingeniería de menú)</li>
+        </ul>
+        <h4>Reducción de fricción</h4>
+        <ul class="mod-checklist">
+          <li>Landing page de oferta optimizada para conversión</li>
+          <li>Proceso de reserva o compra en menos de 3 clics</li>
+          <li>Social proof: reseñas, contadores y urgencia visual</li>
+          <li>Garantía de satisfacción y política de devolución clara</li>
+        </ul>
+        <div class="mod-tools">
+          <span class="mod-tool-chip">Unbounce</span>
+          <span class="mod-tool-chip">Google Optimize</span>
+          <span class="mod-tool-chip">Hotjar</span>
+          <span class="mod-tool-chip">Stripe / Wompi</span>
+        </div>
+      </div>
+      <div class="mod-notes-wrap">
+        <div class="mod-notes-label">Notas del cliente</div>
+        <textarea class="mod-notes" id="notes-5" placeholder="¿Cuál es tu ticket promedio actual? ¿Qué oportunidades de upsell ves? Anota aquí…"></textarea>
+      </div>
+      <button class="mod-check-btn" id="check-5">Marcar como revisado</button>
+    </div>
+
+    <!-- ── MÓDULO 7: Métricas ── -->
+    <div class="plan-mod" id="mod-6">
+      <div class="mod-header">
+        <div class="mod-num">7</div>
+        <div class="mod-title-wrap">
+          <div class="mod-kpi">Módulo 7 · Data-driven</div>
+          <div class="mod-title">Medir, aprender y escalar</div>
+        </div>
+      </div>
+      <div class="mod-body">
+        <p>Lo que no se mide no crece. Configuramos un sistema de métricas que te permite tomar decisiones basadas en datos y optimizar continuamente tu inversión.</p>
+        <h4>Dashboard de KPIs principal</h4>
+        <ul class="mod-checklist">
+          <li>CAC (Costo de Adquisición de Cliente) por canal</li>
+          <li>LTV (Lifetime Value) por segmento de cliente</li>
+          <li>ROAS por campaña pagada</li>
+          <li>Tasa de retención y churn mensual</li>
+          <li>NPS (Net Promoter Score) trimestral</li>
+        </ul>
+        <h4>Rituales de revisión</h4>
+        <ul class="mod-checklist">
+          <li>Reporte semanal automatizado por email (30 segundos de lectura)</li>
+          <li>Reunión mensual de análisis y ajuste de estrategia</li>
+          <li>Revisión trimestral de objetivos y escenarios de crecimiento</li>
+          <li>A/B testing continuo en anuncios, emails y landing pages</li>
+        </ul>
+        <div class="mod-tools">
+          <span class="mod-tool-chip">Google Analytics 4</span>
+          <span class="mod-tool-chip">Looker Studio</span>
+          <span class="mod-tool-chip">Meta Insights</span>
+          <span class="mod-tool-chip">Notion</span>
+        </div>
+      </div>
+      <div class="mod-notes-wrap">
+        <div class="mod-notes-label">Notas del cliente</div>
+        <textarea class="mod-notes" id="notes-6" placeholder="¿Actualmente mides algo? ¿Qué métricas son más importantes para ti? Anota aquí…"></textarea>
+      </div>
+      <button class="mod-check-btn" id="check-6">Marcar como revisado</button>
+    </div>
+
+    <!-- Completion -->
+    <div class="plan-complete">
+      <h3>🎉 ¡Plan completado!</h3>
+      <p>Has revisado los 7 módulos. Tu estrategia de crecimiento está lista. El equipo de ExpandeLab preparará el plan personalizado en las próximas 24 horas.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTO / CTA -->
+<section id="contacto">
+  <div class="wrap">
+    <div class="cta-box fade-init">
+      <div class="cta-eyebrow">Empieza hoy</div>
+      <h2 class="cta-h2">Agenda tu asesoría<br>gratuita →</h2>
+      <p class="cta-sub">30 minutos para analizar tu negocio, identificar las mayores oportunidades y presentarte un plan de acción sin compromiso.</p>
+      <button class="btn-primary" style="font-size:17px;padding:18px 36px;" onclick="window.open('https://wa.me/+1234567890?text=Hola%2C%20quiero%20agendar%20mi%20asesoría%20gratuita%20de%20ExpandeLab','_blank')">
+        Hablar con un asesor →
+      </button>
+      <div class="cta-chips">
+        <span class="cta-chip">✓ Sin costo ni compromiso</span>
+        <span class="cta-chip">✓ Plan personalizado en 24h</span>
+        <span class="cta-chip">✓ Expertos en tu sector</span>
+        <span class="cta-chip">✓ Resultados medibles</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap footer-inner">
+    <div>
+      <div class="logo" style="font-size:18px;">e<span style="color:var(--green)">X</span>pande.Lab</div>
+      <div class="footer-copy" style="margin-top:6px;">© 2024 ExpandeLab · Todos los derechos reservados</div>
+    </div>
+    <ul class="footer-links">
+      <li><a href="#funnel">Funnel</a></li>
+      <li><a href="#sectores">Sectores</a></li>
+      <li><a href="#plan">Plan</a></li>
+      <li><a href="#contacto">Contacto</a></li>
+    </ul>
+    <div class="footer-seals">
+      <span class="seal">Growth Marketing</span>
+      <span class="seal">Data Driven</span>
+      <span class="seal">Full Funnel</span>
+    </div>
+  </div>
+</footer>
+
+<!-- WhatsApp Float -->
+<a class="wa-float" href="https://wa.me/+1234567890?text=Hola%2C%20quiero%20información%20sobre%20ExpandeLab" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+
+<script>
+/* ─── HERO CANVAS ─── */
+(function() {
+  const canvas = document.getElementById('heroCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, pts;
+  const GREEN = '#00e5a0';
+  const N = 55;
+
+  function resize() {
+    W = canvas.width = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+    pts = Array.from({length: N}, () => ({
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random() - .5) * .4, vy: (Math.random() - .5) * .4,
+      r: Math.random() * 1.8 + .6
+    }));
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    for (let i = 0; i < pts.length; i++) {
+      const p = pts[i];
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > W) p.vx *= -1;
+      if (p.y < 0 || p.y > H) p.vy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = GREEN + '99';
+      ctx.fill();
+      for (let j = i + 1; j < pts.length; j++) {
+        const q = pts[j];
+        const dx = p.x - q.x, dy = p.y - q.y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < 130) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = GREEN + Math.round((1 - d/130) * 44).toString(16).padStart(2,'0');
+          ctx.lineWidth = .5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ─── SCROLL FADE ─── */
+(function() {
+  const els = document.querySelectorAll('.fade-init');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: .12 });
+  els.forEach(el => io.observe(el));
+})();
+
+/* ─── SECTOR TABS ─── */
+(function() {
+  const tabs = document.querySelectorAll('.stab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.sector-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      const panel = document.getElementById('tab-' + tab.dataset.tab);
+      if (panel) { panel.classList.add('active'); panel.classList.add('in'); }
+    });
+  });
+})();
+
+/* ─── PLAN MODULE INTERACTIVITY ─── */
+(function initPlan() {
+  const TOTAL = 7;
+  const done = new Array(TOTAL).fill(false);
+  let current = 0;
+  const mods      = Array.from({length: TOTAL}, (_, i) => document.getElementById('mod-' + i));
+  const pills     = Array.from(document.querySelectorAll('.plan-pill'));
+  const checkBtns = Array.from({length: TOTAL}, (_, i) => document.getElementById('check-' + i));
+  const prevBtn   = document.getElementById('planPrev');
+  const nextBtn   = document.getElementById('planNext');
+  const posEl     = document.getElementById('planPos');
+  const progFill  = document.getElementById('progFill');
+  const progCount = document.getElementById('progCount');
+  const planComplete = document.querySelector('.plan-complete');
+
+  // Load from localStorage
+  try {
+    for (let i = 0; i < TOTAL; i++) {
+      const sn = localStorage.getItem('xl_note_' + i);
+      const sd = localStorage.getItem('xl_done_' + i);
+      if (sn) { const ta = document.getElementById('notes-' + i); if (ta) ta.value = sn; }
+      if (sd === '1') done[i] = true;
+    }
+  } catch(e) {}
+
+  // Persist notes
+  for (let i = 0; i < TOTAL; i++) {
+    const ta = document.getElementById('notes-' + i);
+    if (!ta) continue;
+    ta.addEventListener('input', () => {
+      try { localStorage.setItem('xl_note_' + i, ta.value); } catch(e) {}
+    });
+  }
+
+  function render() {
+    mods.forEach((m, i) => { if (m) m.style.display = i === current ? 'block' : 'none'; });
+    pills.forEach((p, i) => {
+      p.classList.toggle('active', i === current);
+      p.classList.toggle('done', done[i]);
+    });
+    checkBtns.forEach((btn, i) => {
+      if (!btn) return;
+      btn.classList.toggle('done', done[i]);
+      btn.textContent = done[i] ? '✓ Revisado' : 'Marcar como revisado';
+    });
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === TOTAL - 1;
+    posEl.textContent = 'Módulo ' + (current + 1) + ' de ' + TOTAL;
+    const dc = done.filter(Boolean).length;
+    const pct = Math.round((dc / TOTAL) * 100);
+    progFill.style.width = pct + '%';
+    progCount.textContent = dc + ' / ' + TOTAL + ' módulos revisados';
+    if (planComplete) planComplete.style.display = dc === TOTAL ? 'block' : 'none';
+  }
+
+  function goTo(idx) {
+    if (idx < 0 || idx >= TOTAL) return;
+    current = idx;
+    render();
+    const sec = document.getElementById('plan');
+    if (sec) window.scrollTo({ top: sec.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+  }
+
+  pills.forEach((p, i) => p.addEventListener('click', () => goTo(i)));
+  checkBtns.forEach((btn, i) => {
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      done[i] = !done[i];
+      try { localStorage.setItem('xl_done_' + i, done[i] ? '1' : '0'); } catch(e) {}
+      render();
+      if (done[i] && current < TOTAL - 1) setTimeout(() => goTo(current + 1), 420);
+    });
+  });
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+  render();
+})();
+</script>
+
+</body></html>
