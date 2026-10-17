@@ -1,0 +1,2066 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>LIMAUDIO</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Barlow:wght@300;400;500;600&display=swap">
+
+<style>
+/* ─── DESIGN SYSTEM ─────────────────────────────────────────────────────────
+   Layout: full-bleed dark sections, sticky nav, horizontal stats rail
+   Color: graphite base + orange neon primary + electric blue secondary
+   Type: Barlow Condensed (display/headlines) + Barlow (body)
+   Single dark theme — automotive workshop aesthetic, committed
+─────────────────────────────────────────────────────────────────────────── */
+:root {
+  --bg:        #0d0e10;
+  --bg2:       #111316;
+  --bg3:       #161a1f;
+  --surface:   #1c2027;
+  --line:      #252b34;
+  --fg:        #e8eaed;
+  --fg2:       #9aa3b0;
+  --fg3:       #5c6470;
+  --orange:    #ff6b1a;
+  --orange2:   #ff8c48;
+  --orange-dim:#ff6b1a28;
+  --blue:      #2196f3;
+  --blue2:     #42a5f5;
+  --blue-dim:  #2196f328;
+  --green:     #00e676;
+  --green-dim: #00e67620;
+  --red:       #ff3d3d;
+  color-scheme: dark;
+  font-family: 'Barlow', system-ui, sans-serif;
+  font-size: 16px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  overflow-x: hidden;
+  padding-inline: 0;
+}
+
+/* TYPOGRAPHY */
+.label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: var(--fg3);
+}
+.overline {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: .18em; text-transform: uppercase;
+}
+h1, h2, h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  text-wrap: balance; line-height: 1.05;
+}
+h1 { font-size: clamp(2.6rem, 6vw, 4.8rem); font-weight: 900; }
+h2 { font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 800; }
+h3 { font-size: clamp(1.2rem, 2.5vw, 1.6rem); font-weight: 700; }
+p { line-height: 1.65; color: var(--fg2); }
+a { color: inherit; text-decoration: none; }
+
+/* LAYOUT HELPERS */
+.wrap { max-width: 1160px; margin-inline: auto; padding-inline: 20px; }
+.grid2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+@media (max-width: 760px) {
+  .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+}
+@media (max-width: 960px) {
+  .grid4 { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* FADE IN */
+.fade { opacity: 1; transform: translateY(0); }
+.fade-init { opacity: 0; transform: translateY(28px); transition: opacity .55s ease, transform .55s ease; }
+.fade-init.in { opacity: 1; transform: translateY(0); }
+
+/* ─── NAV ─── */
+nav {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  background: rgba(13,14,16,.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+  padding: 0 20px;
+  height: 56px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.3rem; font-weight: 900; letter-spacing: .04em;
+}
+.nav-logo span { color: var(--orange); }
+.nav-links { display: flex; gap: 28px; }
+.nav-links a {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--fg2); transition: color .2s;
+}
+.nav-links a:hover { color: var(--orange); }
+.nav-cta {
+  background: var(--orange);
+  color: #fff; font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 8px 18px; border-radius: 4px;
+  transition: background .2s;
+  cursor: pointer; border: none;
+}
+.nav-cta:hover { background: var(--orange2); }
+@media (max-width: 640px) {
+  .nav-links { display: none; }
+}
+
+/* ─── HERO ─── */
+.hero {
+  position: relative;
+  min-height: 92vh;
+  display: flex; align-items: center;
+  overflow: hidden;
+}
+#heroCanvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+}
+.hero-content {
+  position: relative; z-index: 2;
+  width: 100%;
+  padding: 80px 20px 100px;
+  max-width: 1160px; margin-inline: auto;
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(255,107,26,.12);
+  border: 1px solid rgba(255,107,26,.35);
+  border-radius: 3px;
+  padding: 6px 14px; margin-bottom: 24px;
+}
+.badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--orange);
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(1.4); }
+}
+.hero h1 { max-width: 14ch; }
+.hero h1 em { font-style: normal; color: var(--orange); }
+.hero-sub {
+  font-size: 1.05rem; color: var(--fg2);
+  max-width: 48ch; margin: 20px 0 36px;
+  line-height: 1.7;
+}
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: var(--orange); color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: 14px 28px; border-radius: 4px;
+  transition: background .2s, transform .15s;
+  cursor: pointer; border: none;
+}
+.btn-primary:hover { background: var(--orange2); transform: translateY(-1px); }
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: transparent; color: var(--fg);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: 14px 28px; border-radius: 4px;
+  border: 1px solid var(--line);
+  transition: border-color .2s;
+  cursor: pointer;
+}
+.btn-secondary:hover { border-color: var(--fg2); }
+.hero-float-wa {
+  position: fixed;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  right: 24px; z-index: 99;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: #25D366;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(37,211,102,.4);
+  transition: transform .2s;
+  cursor: pointer;
+}
+.hero-float-wa:hover { transform: scale(1.08); }
+.wa-icon { width: 28px; height: 28px; fill: #fff; }
+
+/* HERO STATS */
+.hero-stats {
+  display: flex; gap: 32px; flex-wrap: wrap;
+  margin-top: 52px; padding-top: 36px;
+  border-top: 1px solid var(--line);
+}
+.hero-stat {}
+.hero-stat .num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 2rem; font-weight: 900;
+  color: var(--fg); letter-spacing: -.01em;
+  font-variant-numeric: tabular-nums;
+}
+.hero-stat .num span { color: var(--orange); }
+.hero-stat .desc { font-size: .8rem; color: var(--fg3); margin-top: 2px; }
+
+/* ─── STATS RAIL ─── */
+.stats-rail {
+  background: var(--bg2);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 20px;
+}
+.stats-rail-inner {
+  max-width: 1160px; margin-inline: auto;
+  display: flex; gap: 0; flex-wrap: wrap;
+}
+.rail-item {
+  flex: 1; min-width: 160px;
+  display: flex; flex-direction: column; align-items: center;
+  padding: 16px 20px;
+  border-right: 1px solid var(--line);
+  text-align: center;
+}
+.rail-item:last-child { border-right: none; }
+.rail-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.75rem; font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  color: var(--orange);
+}
+.rail-label { font-size: .78rem; color: var(--fg3); margin-top: 2px; }
+
+/* ─── SECTION WRAPPER ─── */
+.section {
+  padding-block: 80px;
+}
+.section-head { margin-bottom: 48px; }
+.section-head .overline { color: var(--orange); margin-bottom: 10px; display: block; }
+.section-head p { max-width: 56ch; }
+.divider { width: 36px; height: 3px; background: var(--orange); border-radius: 2px; margin-top: 14px; }
+
+/* ─── DUAL TAB (B2C / B2B) ─── */
+.dual-section { background: var(--bg2); }
+.tab-bar {
+  display: flex; gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  width: fit-content;
+  margin-bottom: 44px;
+}
+.tab-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .95rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase;
+  padding: 12px 28px; background: transparent;
+  color: var(--fg3); border: none; cursor: pointer;
+  transition: background .2s, color .2s;
+}
+.tab-btn.active {
+  background: var(--orange);
+  color: #fff;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+.dual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+@media (max-width: 760px) { .dual-grid { grid-template-columns: 1fr; } }
+
+.value-list { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+.value-list li {
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.value-check {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--orange-dim);
+  border: 1px solid rgba(255,107,26,.4);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+  font-size: 11px; color: var(--orange);
+}
+.value-list li h4 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem; font-weight: 700; margin-bottom: 2px;
+}
+.value-list li p { font-size: .875rem; line-height: 1.6; }
+
+.b2b-highlight {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px; padding: 28px;
+}
+.b2b-highlight h3 { margin-bottom: 16px; }
+.metric-row {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding: 12px 0; border-bottom: 1px solid var(--line);
+}
+.metric-row:last-child { border-bottom: none; }
+.metric-label { font-size: .9rem; color: var(--fg2); }
+.metric-val {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.3rem; font-weight: 800;
+  color: var(--blue2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── CONDUCTOR PROFILES ─── */
+.profiles-section { background: var(--bg); }
+.profile-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px; padding: 28px;
+  position: relative; overflow: hidden;
+  transition: border-color .25s, transform .2s;
+}
+.profile-card:hover { border-color: var(--orange); transform: translateY(-3px); }
+.profile-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--card-accent, var(--orange));
+}
+.profile-icon {
+  width: 48px; height: 48px; border-radius: 8px;
+  background: var(--card-accent-dim, var(--orange-dim));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4rem; margin-bottom: 18px;
+}
+.profile-card h3 { margin-bottom: 6px; }
+.profile-type {
+  font-size: .8rem; color: var(--fg3); letter-spacing: .06em;
+  text-transform: uppercase; margin-bottom: 14px;
+}
+.profile-card p { font-size: .88rem; line-height: 1.65; margin-bottom: 16px; }
+.profile-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag {
+  font-size: .75rem; font-weight: 600; letter-spacing: .04em;
+  padding: 4px 10px; border-radius: 3px;
+  background: var(--card-accent-dim, var(--orange-dim));
+  color: var(--card-accent, var(--orange));
+  text-transform: uppercase;
+}
+
+/* ─── BEFORE / AFTER ─── */
+.ba-section { background: var(--bg2); }
+.ba-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 2px; border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--line);
+}
+@media (max-width: 640px) { .ba-grid { grid-template-columns: 1fr; } }
+.ba-panel {
+  padding: 36px 28px;
+}
+.ba-panel.before { background: var(--surface); }
+.ba-panel.after  { background: #0d1a12; border-left: 1px solid var(--line); }
+.ba-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 24px;
+}
+.ba-badge {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 4px 12px; border-radius: 3px;
+}
+.before .ba-badge { background: rgba(255,61,61,.15); color: var(--red); }
+.after  .ba-badge { background: var(--green-dim); color: var(--green); }
+.ba-title { font-family: 'Barlow Condensed', sans-serif; font-size: 1.1rem; font-weight: 700; }
+.ba-items { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.ba-items li { display: flex; gap: 12px; align-items: flex-start; font-size: .88rem; line-height: 1.55; }
+.ba-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.ba-vs {
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg3); padding: 24px 0;
+  border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+  grid-column: 1 / -1;
+}
+.vs-pill {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 14px; font-weight: 800; letter-spacing: .1em;
+  background: var(--orange); color: #fff;
+  padding: 8px 20px; border-radius: 100px;
+}
+
+/* ─── PROCESO / ROADMAP ─── */
+.proceso-section { background: var(--bg3); }
+.proceso-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px; overflow: hidden;
+}
+@media (max-width: 900px) {
+  .proceso-steps { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px) {
+  .proceso-steps { grid-template-columns: 1fr; }
+}
+.paso {
+  padding: 32px 24px;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
+  position: relative;
+}
+.paso:last-child { border-right: none; }
+.paso-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 3rem; font-weight: 900;
+  color: var(--line); line-height: 1;
+  margin-bottom: 16px;
+  font-variant-numeric: tabular-nums;
+}
+.paso-icon {
+  font-size: 1.6rem; margin-bottom: 12px; display: block;
+}
+.paso h3 { font-size: 1.1rem; margin-bottom: 8px; }
+.paso p { font-size: .84rem; line-height: 1.6; }
+.paso-tag {
+  display: inline-block;
+  margin-top: 16px;
+  font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 3px;
+  background: var(--orange-dim); color: var(--orange);
+}
+
+/* ─── GARANTÍAS / TRUST BADGES ─── */
+.trust-section { background: var(--bg2); }
+.trust-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+@media (max-width: 640px) { .trust-grid { grid-template-columns: 1fr; } }
+.trust-card {
+  background: var(--bg3);
+  border: 1px solid var(--line);
+  border-radius: 8px; padding: 28px;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 14px;
+  transition: border-color .2s;
+}
+.trust-card:hover { border-color: var(--orange); }
+.trust-seal {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 2px solid var(--orange);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+}
+.trust-card h4 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: .04em; color: var(--fg);
+}
+.trust-card p { font-size: .84rem; }
+
+/* ─── CTA SECTION ─── */
+.cta-section {
+  background: var(--bg);
+  padding-block: 100px;
+  text-align: center;
+}
+.cta-section h2 { margin-bottom: 14px; }
+.cta-section p { max-width: 52ch; margin-inline: auto; margin-bottom: 36px; }
+.cta-group { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+
+.cta-form-wrapper {
+  max-width: 540px; margin-inline: auto;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: 32px;
+  margin-top: 40px; text-align: left;
+}
+.form-row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
+.form-row label { font-size: .85rem; color: var(--fg2); }
+.form-row input, .form-row select, .form-row textarea {
+  background: var(--bg3); border: 1px solid var(--line);
+  color: var(--fg); border-radius: 5px; padding: 10px 14px;
+  font-family: 'Barlow', sans-serif; font-size: .9rem;
+  width: 100%; transition: border-color .2s;
+}
+.form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+  outline: none; border-color: var(--orange);
+}
+.form-row select option { background: var(--bg3); }
+.form-submit {
+  width: 100%; padding: 14px;
+  background: var(--orange); color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  border: none; border-radius: 5px; cursor: pointer;
+  transition: background .2s;
+}
+.form-submit:hover { background: var(--orange2); }
+.form-note { font-size: .8rem; color: var(--fg3); text-align: center; margin-top: 12px; }
+.form-success { display: none; text-align: center; padding: 24px 0; }
+.form-success h4 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; color: var(--green);
+}
+.form-success p { font-size: .9rem; }
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--bg2);
+  border-top: 1px solid var(--line);
+  padding: 40px 20px calc(40px + env(safe-area-inset-bottom, 0px));
+}
+.footer-inner {
+  max-width: 1160px; margin-inline: auto;
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 32px;
+}
+.footer-brand .nav-logo { font-size: 1.5rem; display: block; margin-bottom: 8px; }
+.footer-brand p { font-size: .84rem; max-width: 28ch; }
+.footer-seals { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.seal-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid rgba(255,107,26,.3);
+  border-radius: 3px; padding: 5px 12px;
+  font-size: .75rem; font-weight: 600; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--orange);
+  background: var(--orange-dim);
+}
+.footer-links h5 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .95rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.footer-links ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.footer-links ul li a { font-size: .85rem; color: var(--fg2); transition: color .2s; }
+.footer-links ul li a:hover { color: var(--orange); }
+.footer-bottom {
+  max-width: 1160px; margin-inline: auto;
+  border-top: 1px solid var(--line);
+  padding-top: 20px; margin-top: 32px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 10px;
+}
+.footer-bottom p { font-size: .8rem; color: var(--fg3); }
+
+/* ─── CANVAS ANIMATIONS ─── */
+#heroCanvas { display: block; }
+</style>
+
+<!-- ─── FLOATING WHATSAPP ─── -->
+<a href="https://wa.me/51999999999?text=Hola%20LIMAUDIO%2C%20quiero%20una%20cotizaci%C3%B3n" class="hero-float-wa" target="_blank" aria-label="Contactar por WhatsApp">
+  <svg class="wa-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+</a>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <div class="nav-logo">LIM<span>AUDIO</span></div>
+  <div class="nav-links">
+    <a href="#propuesta">Servicios</a>
+    <a href="#conductores">Perfiles</a>
+    <a href="#proceso">Proceso</a>
+    <a href="#garantia">Garantía</a>
+    <a href="#contacto">Cotizar</a>
+  </div>
+  <button class="nav-cta" onclick="document.getElementById('contacto').scrollIntoView({behavior:'smooth'})">
+    Cotizar Ahora
+  </button>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-content wrap">
+    <div class="hero-badge">
+      <div class="badge-dot"></div>
+      <span class="overline" style="color:var(--orange);font-size:11px;">Lima, Perú · Instalación profesional</span>
+    </div>
+    <h1>Ingeniería de <em>Sonido</em> sin cortar cables.<br>Garantía de por vida.</h1>
+    <p class="hero-sub">
+      Instalamos sistemas de Car Audio, Soundproofing e integración Multimedia Plug&amp;Play con arneses originales, calibración RTA y cero corte de cableado OEM.
+    </p>
+    <div class="hero-actions">
+      <a href="https://wa.me/51999999999?text=Hola%20LIMAUDIO%2C%20quiero%20una%20cotizaci%C3%B3n" target="_blank" class="btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Cotizar por WhatsApp
+      </a>
+      <button class="btn-secondary" onclick="document.getElementById('proceso').scrollIntoView({behavior:'smooth'})">
+        Ver Proceso →
+      </button>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="num">+<span>1,200</span></div>
+        <div class="desc">instalaciones completadas</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num"><span>0</span></div>
+        <div class="desc">cables OEM cortados</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num"><span>∞</span></div>
+        <div class="desc">garantía de por vida</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num"><span>48</span>h</div>
+        <div class="desc">tiempo promedio de entrega</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── STATS RAIL ─── -->
+<div class="stats-rail">
+  <div class="stats-rail-inner">
+    <div class="rail-item">
+      <div class="rail-num">S/ 480M</div>
+      <div class="rail-label">TAM mercado car audio Perú</div>
+    </div>
+    <div class="rail-item">
+      <div class="rail-num">2.4M</div>
+      <div class="rail-label">vehículos registrados Lima</div>
+    </div>
+    <div class="rail-item">
+      <div class="rail-num">9.4%</div>
+      <div class="rail-label">CAGR mercado 2024–2029</div>
+    </div>
+    <div class="rail-item">
+      <div class="rail-num">15K</div>
+      <div class="rail-label">suscriptores activos</div>
+    </div>
+    <div class="rail-item">
+      <div class="rail-num">4.9★</div>
+      <div class="rail-label">valoración promedio Google</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── PROPUESTA DUAL B2C / B2B ─── -->
+<section class="section dual-section" id="propuesta">
+  <div class="wrap">
+    <div class="section-head fade-init">
+      <span class="overline">Propuesta de valor</span>
+      <h2>Solución para cada tipo de cliente</h2>
+      <p>Ya seas conductor particular o representante de concesionario, tenemos un modelo de trabajo diseñado para ti.</p>
+      <div class="divider"></div>
+    </div>
+    <div class="tab-bar fade-init">
+      <button class="tab-btn active" data-tab="b2c">Para Conductores (B2C)</button>
+      <button class="tab-btn" data-tab="b2b">Para Concesionarios (B2B)</button>
+    </div>
+
+    <!-- B2C -->
+    <div class="tab-panel active" id="tab-b2c">
+      <div class="dual-grid">
+        <div>
+          <h3 style="margin-bottom:24px;">Tu auto merece sonar como fue diseñado — o mejor.</h3>
+          <ul class="value-list">
+            <li>
+              <div class="value-check">✓</div>
+              <div>
+                <h4>Diagnóstico técnico gratuito</h4>
+                <p>Medición RTA en cabina antes de cotizar. Sabes exactamente qué pasa con tu sistema antes de gastar.</p>
+              </div>
+            </li>
+            <li>
+              <div class="value-check">✓</div>
+              <div>
+                <h4>Instalación Plug &amp; Play OEM</h4>
+                <p>Arneses originales, sin cortes, sin empalmes. Tu garantía de fábrica se mantiene intacta.</p>
+              </div>
+            </li>
+            <li>
+              <div class="value-check">✓</div>
+              <div>
+                <h4>Calibración DSP certificada</h4>
+                <p>Ecualizador paramétrico, time alignment y ajuste de crossover. Tu instalador mide, no adivina.</p>
+              </div>
+            </li>
+            <li>
+              <div class="value-check">✓</div>
+              <div>
+                <h4>Garantía de por vida en mano de obra</h4>
+                <p>Si algo falla por instalación, lo corregimos sin costo, sin letra pequeña.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <div class="b2b-highlight" style="background:var(--bg3);">
+            <h3 style="color:var(--orange);margin-bottom:20px;">Taller de Referencia TikTok/Meta</h3>
+            <p style="font-size:.9rem;margin-bottom:20px;">Nuestros resultados en redes sociales son tu prueba social antes de la visita.</p>
+            <div class="metric-row">
+              <span class="metric-label">Reach orgánico mensual</span>
+              <span class="metric-val" style="color:var(--orange);">+480K</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Leads generados/mes</span>
+              <span class="metric-val" style="color:var(--orange);">150+</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Conversión lead → visita</span>
+              <span class="metric-val" style="color:var(--orange);">38%</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Ticket promedio B2C</span>
+              <span class="metric-val" style="color:var(--orange);">S/ 2,400</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B2B -->
+    <div class="tab-panel" id="tab-b2b">
+      <div class="dual-grid">
+        <div>
+          <h3 style="margin-bottom:24px;">Partner técnico para concesionarios y flotillas.</h3>
+          <ul class="value-list">
+            <li>
+              <div class="value-check" style="background:var(--blue-dim);border-color:rgba(33,150,243,.4);color:var(--blue2);">✓</div>
+              <div>
+                <h4>Integración OEM certificada</h4>
+                <p>Garantizamos compatibilidad CANBUS con mandos al timón. Sin errores en pantalla, sin pérdida de funciones.</p>
+              </div>
+            </li>
+            <li>
+              <div class="value-check" style="background:var(--blue-dim);border-color:rgba(33,150,243,.4);color:var(--blue2);">✓</div>
+              <div>
+                <h4>Programa White Label</h4>
+                <p>Instalamos bajo tu marca en tus instalaciones. Tu cliente no sabe quién lo hizo; tú te llevas el margen.</p>
+              </div>
+            </li>
+            <li>
+              <div class="value-check" style="background:var(--blue-dim);border-color:rgba(33,150,243,.4);color:var(--blue2);">✓</div>
+              <div>
+                <h4>SLA de 24h para flotillas</h4>
+                <p>Retiro, instalación y devolución de unidades en 24 horas. Disponibilidad de flota garantizada.</p>
+              </div>
+            </li>
+            <li>
+              <div class="value-check" style="background:var(--blue-dim);border-color:rgba(33,150,243,.4);color:var(--blue2);">✓</div>
+              <div>
+                <h4>Volumen y facturación B2B</h4>
+                <p>Tarifas por volumen, crédito a 30 días y soporte técnico post-instalación incluido.</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <div class="b2b-highlight">
+            <h3 style="color:var(--blue2);margin-bottom:20px;">Métricas del Programa B2B</h3>
+            <div class="metric-row">
+              <span class="metric-label">Partners activos</span>
+              <span class="metric-val">12 concesionarios</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Unidades/mes promedio</span>
+              <span class="metric-val">38 unidades</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Ticket promedio B2B</span>
+              <span class="metric-val">S/ 1,100</span>
+            </div>
+            <div class="metric-row">
+              <span class="metric-label">Revenue B2B mensual</span>
+              <span class="metric-val">S/ 41,800</span>
+            </div>
+            <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--line);">
+              <a href="https://wa.me/51999999999?text=Hola%20LIMAUDIO%2C%20soy%20concesionario%20y%20quiero%20info%20del%20programa%20B2B" target="_blank" class="btn-primary" style="font-size:.9rem;padding:12px 20px;">
+                Solicitar Info Programa B2B →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PERFILES DE CONDUCTOR ─── -->
+<section class="section profiles-section" id="conductores">
+  <div class="wrap">
+    <div class="section-head fade-init">
+      <span class="overline">Soluciones por perfil</span>
+      <h2>¿Cuál es tu estilo de escucha?</h2>
+      <p>Cada instalación parte del mismo compromiso: cero cortes, calibración medida y garantía vitalicia. Lo que varía es la dirección técnica.</p>
+      <div class="divider"></div>
+    </div>
+    <div class="grid4">
+      <div class="profile-card fade-init" style="--card-accent:var(--orange);--card-accent-dim:var(--orange-dim);">
+        <div class="profile-icon">🔊</div>
+        <div class="profile-type">Tipo 01</div>
+        <h3>Graves SPL</h3>
+        <p>Buscas presión, impacto y decibelios. Construimos etapas de amplificación de alta corriente con cableado AWG dimensionado para picos de 2,000W RMS.</p>
+        <div class="profile-tags">
+          <span class="tag">Subwoofer</span>
+          <span class="tag">Amplificador</span>
+          <span class="tag">Big 3</span>
+        </div>
+      </div>
+      <div class="profile-card fade-init" style="--card-accent:var(--blue2);--card-accent-dim:var(--blue-dim);">
+        <div class="profile-icon">🎧</div>
+        <div class="profile-type">Tipo 02</div>
+        <h3>Fidelidad SQ</h3>
+        <p>Escenas acústicas, stage imaging y respuesta plana. DSP de 8 canales, tweeter de seda y midrange instalado en escáner de puertas a medida.</p>
+        <div class="profile-tags">
+          <span class="tag" style="background:var(--blue-dim);color:var(--blue2);">DSP</span>
+          <span class="tag" style="background:var(--blue-dim);color:var(--blue2);">Componentes</span>
+          <span class="tag" style="background:var(--blue-dim);color:var(--blue2);">RTA Cal.</span>
+        </div>
+      </div>
+      <div class="profile-card fade-init" style="--card-accent:var(--green);--card-accent-dim:var(--green-dim);">
+        <div class="profile-icon">📱</div>
+        <div class="profile-type">Tipo 03</div>
+        <h3>Upgrade Multimedia</h3>
+        <p>Pantalla Android Auto/CarPlay, cámara de reversa, sensores de parqueo y conectividad sin toco de fábrica. Tu auto moderno, sin perder garantía.</p>
+        <div class="profile-tags">
+          <span class="tag" style="background:var(--green-dim);color:var(--green);">Android Auto</span>
+          <span class="tag" style="background:var(--green-dim);color:var(--green);">CarPlay</span>
+          <span class="tag" style="background:var(--green-dim);color:var(--green);">CANBUS</span>
+        </div>
+      </div>
+      <div class="profile-card fade-init" style="--card-accent:var(--orange2);--card-accent-dim:var(--orange-dim);">
+        <div class="profile-icon">🏢</div>
+        <div class="profile-type">Tipo 04</div>
+        <h3>Brokers / Reventa</h3>
+        <p>Programa de comisión para vendedores de autos y brokers. Tú refiers, nosotros instalamos, tú cobras S/ 200–500 por unidad completada.</p>
+        <div class="profile-tags">
+          <span class="tag">Comisión</span>
+          <span class="tag">B2B2C</span>
+          <span class="tag">Referidos</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BEFORE / AFTER ─── -->
+<section class="section ba-section" id="comparativa">
+  <div class="wrap">
+    <div class="section-head fade-init">
+      <span class="overline">La diferencia es visible</span>
+      <h2>Instalación informal vs. Instalación OEM LIMAUDIO</h2>
+      <p>No solo suena mejor. Se ve mejor, protege los sistemas eléctricos del vehículo y mantiene la garantía de fábrica.</p>
+      <div class="divider"></div>
+    </div>
+    <div class="ba-grid fade-init">
+      <div class="ba-panel before">
+        <div class="ba-header">
+          <span class="ba-badge">Instalación informal</span>
+        </div>
+        <ul class="ba-items">
+          <li><span class="ba-icon">✗</span><span>Cables cortados directamente del mazo OEM, sin arnés adaptador</span></li>
+          <li><span class="ba-icon">✗</span><span>Empalmes con cinta aislante expuestos a humedad y vibración</span></li>
+          <li><span class="ba-icon">✗</span><span>Pérdida de señal CANBUS → mandos al timón dejan de funcionar</span></li>
+          <li><span class="ba-icon">✗</span><span>Sin medición RTA: calibración a oído, respuesta de frecuencia arbitraria</span></li>
+          <li><span class="ba-icon">✗</span><span>Cables de potencia sin fusible de protección cerca de batería</span></li>
+          <li><span class="ba-icon">✗</span><span>Garantía de fábrica anulada. Sin documentación de instalación</span></li>
+          <li><span class="ba-icon">✗</span><span>Cableado sin peinado, sin canal de conducción, con rozamiento en tapizado</span></li>
+        </ul>
+      </div>
+      <div class="ba-panel after">
+        <div class="ba-header">
+          <span class="ba-badge">Instalación OEM LIMAUDIO</span>
+        </div>
+        <ul class="ba-items">
+          <li><span class="ba-icon" style="color:var(--green);">✓</span><span>Arnés ISO/OEM de fábrica: conectores originales sin cortar un solo cable</span></li>
+          <li><span class="ba-icon" style="color:var(--green);">✓</span><span>Insonorización en puertas con Dynamat® antes de instalar parlantes</span></li>
+          <li><span class="ba-icon" style="color:var(--green);">✓</span><span>Interface CANBUS certificada: mandos al timón, sensores y cámara intactos</span></li>
+          <li><span class="ba-icon" style="color:var(--green);">✓</span><span>Calibración RTA medida con micrófono de referencia UMIK-1 en cabina</span></li>
+          <li><span class="ba-icon" style="color:var(--green);">✓</span><span>Fusible ANL cerca de batería. Cableado AWG dimensionado a la carga</span></li>
+          <li><span class="ba-icon" style="color:var(--green);">✓</span><span>Reporte de instalación digital. Garantía vitalicia de mano de obra</span></li>
+          <li><span class="ba-icon" style="color:var(--green);">✓</span><span>Peinado de cables con espiral y canal de conducción. Tapizado recolocado a fábrica</span></li>
+        </ul>
+      </div>
+      <div class="ba-vs">
+        <span class="vs-pill">LIMAUDIO = Cero cortes + Calibración medida + Garantía vitalicia</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PROCESO 4 ETAPAS ─── -->
+<section class="section proceso-section" id="proceso">
+  <div class="wrap">
+    <div class="section-head fade-init">
+      <span class="overline">Proceso &amp; Garantía LIMAUDIO</span>
+      <h2>4 etapas. Sin sorpresas. Con medición en cada paso.</h2>
+      <p>Cada instalación sigue el mismo protocolo técnico, documentado y entregado al cliente al finalizar.</p>
+      <div class="divider"></div>
+    </div>
+    <div class="proceso-steps fade-init">
+      <div class="paso">
+        <div class="paso-num">01</div>
+        <span class="paso-icon">📐</span>
+        <h3>Diagnóstico RTA</h3>
+        <p>Medición de la respuesta en frecuencia de tu sistema actual con micrófono UMIK-1. Mapa de problemas acústicos antes de cotizar.</p>
+        <span class="paso-tag">Gratis · 45 min</span>
+      </div>
+      <div class="paso">
+        <div class="paso-num">02</div>
+        <span class="paso-icon">🔌</span>
+        <h3>Instalación OEM</h3>
+        <p>Arneses adaptadores OEM por modelo. Insonorización Dynamat® en puertas. Tendido de cableado con peinado y canal de conducción.</p>
+        <span class="paso-tag">Cero cortes</span>
+      </div>
+      <div class="paso">
+        <div class="paso-num">03</div>
+        <span class="paso-icon">🎛️</span>
+        <h3>Calibración DSP</h3>
+        <p>Equalización paramétrica, time alignment por canal, ajuste de crossover y nivel de subwoofer medido con software REW.</p>
+        <span class="paso-tag">Certificada</span>
+      </div>
+      <div class="paso" style="border-right:none;">
+        <div class="paso-num">04</div>
+        <span class="paso-icon">🛡️</span>
+        <h3>Garantía Vitalicia</h3>
+        <p>Reporte digital de instalación, fotos del proceso, ficha de calibración DSP exportada. Mano de obra garantizada de por vida.</p>
+        <span class="paso-tag" style="background:var(--green-dim);color:var(--green);">De por vida</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PLAN DE MARKETING (MODO REVISIÓN) ─── -->
+<section class="section" id="plan" style="background:var(--bg);">
+  <div class="wrap">
+    <div class="section-head fade-init">
+      <span class="overline">Plan estratégico de marketing</span>
+      <h2>Revisión paso a paso con el cliente</h2>
+      <p>Navega cada módulo del plan en orden. Marca como revisado antes de avanzar.</p>
+      <div class="divider"></div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="plan-progress fade-init">
+      <div class="plan-prog-header">
+        <span class="overline" style="color:var(--fg3);">Progreso de sesión</span>
+        <span class="prog-count" id="progCount">0 / 7 módulos revisados</span>
+      </div>
+      <div class="prog-track">
+        <div class="prog-fill" id="progFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- MODULE NAV PILLS -->
+    <div class="plan-pills fade-init" id="planPills">
+      <button class="plan-pill active" data-mod="0">01 Mercado</button>
+      <button class="plan-pill" data-mod="1">02 Personas</button>
+      <button class="plan-pill" data-mod="2">03 Contenido</button>
+      <button class="plan-pill" data-mod="3">04 Canales</button>
+      <button class="plan-pill" data-mod="4">05 Monetización</button>
+      <button class="plan-pill" data-mod="5">06 Automatización</button>
+      <button class="plan-pill" data-mod="6">07 Roadmap 90d</button>
+    </div>
+
+    <!-- MODULES -->
+    <div class="plan-modules">
+
+      <!-- 01 MERCADO -->
+      <div class="plan-mod active" data-mod="0">
+        <div class="mod-header">
+          <div>
+            <span class="overline" style="color:var(--orange);">Módulo 01</span>
+            <h3>Análisis de Mercado TAM/SAM/SOM</h3>
+          </div>
+          <button class="mod-check-btn" data-mod="0">Marcar como revisado</button>
+        </div>
+        <div class="mod-body">
+          <div class="mod-grid">
+            <div class="mod-main">
+              <p style="margin-bottom:20px;">El mercado peruano de car audio está fragmentado entre instaladores informales y cadenas de retail. LIMAUDIO tiene una oportunidad de posicionarse como el único taller técnico certificado con garantía OEM.</p>
+              <div class="tam-row">
+                <div class="tam-card" style="--tam-color:var(--orange);">
+                  <div class="tam-label">TAM</div>
+                  <div class="tam-val">S/ 480M</div>
+                  <div class="tam-desc">Total Addressable Market — Mercado total de car audio, multimedia y soundproofing en Perú</div>
+                </div>
+                <div class="tam-card" style="--tam-color:var(--blue2);">
+                  <div class="tam-label">SAM</div>
+                  <div class="tam-val">S/ 112M</div>
+                  <div class="tam-desc">Lima Metropolitana, vehículos año 2018+, segmento medio-alto</div>
+                </div>
+                <div class="tam-card" style="--tam-color:var(--green);">
+                  <div class="tam-label">SOM</div>
+                  <div class="tam-val">S/ 1.8M</div>
+                  <div class="tam-desc">Meta año 1 — 1.6% del SAM con estrategia digital y referidos</div>
+                </div>
+              </div>
+              <div class="mod-insight">
+                <span class="insight-icon">💡</span>
+                <div>
+                  <strong>Punto de conversación:</strong>
+                  <p>El 78% de instalaciones en Lima son realizadas por talleres sin certificación OEM. Ese gap es la oportunidad de posicionamiento de LIMAUDIO.</p>
+                </div>
+              </div>
+            </div>
+            <div class="mod-side">
+              <div class="mod-notes-box">
+                <div class="notes-header">📋 Notas de sesión</div>
+                <textarea class="notes-area" placeholder="Anota las observaciones del cliente aquí..." id="notes-0"></textarea>
+              </div>
+              <div class="mod-segments">
+                <div class="seg-title">4 Segmentos objetivo</div>
+                <div class="seg-item"><span class="seg-dot" style="background:var(--orange);"></span><span>Entusiastas 25–35 años (SPL/SQ)</span></div>
+                <div class="seg-item"><span class="seg-dot" style="background:var(--blue2);"></span><span>Profesionales 30–45 años (Multimedia)</span></div>
+                <div class="seg-item"><span class="seg-dot" style="background:var(--green);"></span><span>Concesionarios B2B (Flotillas)</span></div>
+                <div class="seg-item"><span class="seg-dot" style="background:var(--orange2);"></span><span>Brokers y revendedores B2B2C</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 02 PERSONAS -->
+      <div class="plan-mod" data-mod="1">
+        <div class="mod-header">
+          <div>
+            <span class="overline" style="color:var(--orange);">Módulo 02</span>
+            <h3>Buyer Personas</h3>
+          </div>
+          <button class="mod-check-btn" data-mod="1">Marcar como revisado</button>
+        </div>
+        <div class="mod-body">
+          <div class="personas-grid">
+            <div class="persona-item">
+              <div class="persona-avatar" style="background:linear-gradient(135deg,#ff6b1a22,#ff6b1a44);">🔊</div>
+              <h4>El SPL Hunter</h4>
+              <div class="persona-age">Hombre · 22–30 · NSE B/C+</div>
+              <p>Sigue competencias de sonido en YouTube. Compara marcas en foros. Dolor: pagó instalación barata que le quemó el amp.</p>
+              <div class="persona-trigger">Trigger: "la instalación más potente de Lima"</div>
+            </div>
+            <div class="persona-item">
+              <div class="persona-avatar" style="background:linear-gradient(135deg,#2196f322,#2196f344);">🎧</div>
+              <h4>El SQ Audiófilo</h4>
+              <div class="persona-age">Hombre · 28–40 · NSE A/B</div>
+              <p>Escucha jazz y rock progresivo. Investiga mucho antes de comprar. Dolor: instalaciones previas sin calibración RTA.</p>
+              <div class="persona-trigger" style="border-color:var(--blue2);color:var(--blue2);">Trigger: "calibración DSP Lima"</div>
+            </div>
+            <div class="persona-item">
+              <div class="persona-avatar" style="background:linear-gradient(135deg,#00e67622,#00e67644);">📱</div>
+              <h4>El Ejecutivo Digital</h4>
+              <div class="persona-age">Hombre/Mujer · 30–45 · NSE A/B</div>
+              <p>Viaja mucho en auto. Quiere CarPlay/Android Auto en su Hilux o RAV4 2022. Dolor: miedo de perder garantía del carro.</p>
+              <div class="persona-trigger" style="border-color:var(--green);color:var(--green);">Trigger: "Android Auto sin cortar cables"</div>
+            </div>
+            <div class="persona-item">
+              <div class="persona-avatar" style="background:linear-gradient(135deg,#ff8c4822,#ff8c4844);">🏢</div>
+              <h4>El Concesionario</h4>
+              <div class="persona-age">Decisor · 35–50 · Empresa</div>
+              <p>Busca proveedor confiable para diferencial en entrega. Dolor: instaladores informales causan reclamos post-venta.</p>
+              <div class="persona-trigger" style="border-color:var(--orange2);color:var(--orange2);">Trigger: "instalador certificado OEM Lima B2B"</div>
+            </div>
+          </div>
+          <div class="mod-notes-box" style="margin-top:24px;">
+            <div class="notes-header">📋 Notas de sesión</div>
+            <textarea class="notes-area" placeholder="¿Cuál persona resuena más con el cliente? Notas..." id="notes-1"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 03 CONTENIDO -->
+      <div class="plan-mod" data-mod="2">
+        <div class="mod-header">
+          <div>
+            <span class="overline" style="color:var(--orange);">Módulo 03</span>
+            <h3>Estrategia de Contenido TOFU / MOFU / BOFU</h3>
+          </div>
+          <button class="mod-check-btn" data-mod="2">Marcar como revisado</button>
+        </div>
+        <div class="mod-body">
+          <div class="funnel-visual">
+            <div class="funnel-stage" style="--fc:var(--blue2);--fw:100%;">
+              <div class="funnel-bar"></div>
+              <div class="funnel-info">
+                <div class="funnel-label">TOFU — Atracción (80%)</div>
+                <div class="funnel-content">Reels de instalaciones en proceso · "¿Por qué tu carro suena mal?" · Antes/Después · Tutoriales OEM</div>
+                <div class="funnel-kw">Keywords: "instalar parlantes", "soundproofing auto Lima", "Android Auto sin cortar cables"</div>
+              </div>
+            </div>
+            <div class="funnel-stage" style="--fc:var(--orange);--fw:66%;">
+              <div class="funnel-bar"></div>
+              <div class="funnel-info">
+                <div class="funnel-label">MOFU — Consideración (15%)</div>
+                <div class="funnel-content">Comparativas técnicas · Reviews de equipos · Demo de calibración RTA · FAQ en Stories</div>
+                <div class="funnel-kw">Keywords: "DSP carro", "calibración RTA Lima", "mejor instalador car audio Lima"</div>
+              </div>
+            </div>
+            <div class="funnel-stage" style="--fc:var(--green);--fw:33%;">
+              <div class="funnel-bar"></div>
+              <div class="funnel-info">
+                <div class="funnel-label">BOFU — Conversión (5%)</div>
+                <div class="funnel-content">Testimoniales técnicos · Cotizaciones personalizadas · Garantías en video · WhatsApp directo</div>
+                <div class="funnel-kw">Keywords: "cotización car audio Lima", "taller car audio garantía Lima"</div>
+              </div>
+            </div>
+          </div>
+          <div class="content-calendar">
+            <div class="cal-title">Frecuencia editorial recomendada</div>
+            <div class="cal-row">
+              <span class="cal-platform">TikTok</span>
+              <span class="cal-freq">5x/semana</span>
+              <span class="cal-type">Reels instalación · Before/After · POV técnico</span>
+            </div>
+            <div class="cal-row">
+              <span class="cal-platform">Instagram</span>
+              <span class="cal-freq">3x/semana</span>
+              <span class="cal-type">Posts técnicos · Stories FAQ · Carruseles comparativos</span>
+            </div>
+            <div class="cal-row">
+              <span class="cal-platform">WhatsApp</span>
+              <span class="cal-freq">Diario</span>
+              <span class="cal-type">Status · Respuesta lead &lt; 2h · Seguimiento post-instalación</span>
+            </div>
+            <div class="cal-row" style="border-bottom:none;">
+              <span class="cal-platform">YouTube</span>
+              <span class="cal-freq">1x/semana</span>
+              <span class="cal-type">Tutorial largo · Review técnico · Calibración completa en video</span>
+            </div>
+          </div>
+          <div class="mod-notes-box" style="margin-top:20px;">
+            <div class="notes-header">📋 Notas de sesión</div>
+            <textarea class="notes-area" placeholder="¿Qué tipo de contenido puede producir el equipo hoy?" id="notes-2"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 04 CANALES -->
+      <div class="plan-mod" data-mod="3">
+        <div class="mod-header">
+          <div>
+            <span class="overline" style="color:var(--orange);">Módulo 04</span>
+            <h3>Canales de Captación y ManyChat</h3>
+          </div>
+          <button class="mod-check-btn" data-mod="3">Marcar como revisado</button>
+        </div>
+        <div class="mod-body">
+          <div class="channels-grid">
+            <div class="channel-card" style="--ch:var(--blue2);">
+              <div class="channel-icon">📱</div>
+              <h4>TikTok Ads + Orgánico</h4>
+              <p>Formato vertical 9:16. Primeros 3 segundos de impacto visual. Hook: sonido dramático + revelación de instalación limpia.</p>
+              <div class="channel-kpi">Meta: 50K views/reel · CTR &gt; 2.8%</div>
+            </div>
+            <div class="channel-card" style="--ch:var(--orange);">
+              <div class="channel-icon">📸</div>
+              <h4>Meta Ads (Instagram/Facebook)</h4>
+              <p>Retargeting a seguidores de competidores. Carruseles Before/After. CTA directo a WhatsApp con keyword trigger ManyChat.</p>
+              <div class="channel-kpi">Meta: CPL &lt; S/ 18 · ROAS &gt; 4x</div>
+            </div>
+            <div class="channel-card" style="--ch:var(--green);">
+              <div class="channel-icon">💬</div>
+              <h4>WhatsApp + ManyChat</h4>
+              <p>Flujo automatizado: keyword "COTIZAR" → bot califica lead → asigna a asesor. Seguimiento a los 3 días para leads fríos.</p>
+              <div class="channel-kpi">Keywords: COTIZAR · GARANTÍA · B2B · DEMO</div>
+            </div>
+            <div class="channel-card" style="--ch:var(--orange2);">
+              <div class="channel-icon">🔍</div>
+              <h4>Google Ads (Search)</h4>
+              <p>Palabras clave de alta intención: "instalar android auto Lima", "taller car audio garantía". Extensión de llamada activa.</p>
+              <div class="channel-kpi">Meta: CPC &lt; S/ 2.5 · Conv. &gt; 8%</div>
+            </div>
+          </div>
+          <div class="manychat-box fade-init">
+            <div class="mc-header">
+              <span class="overline" style="color:var(--green);">Arquitectura ManyChat</span>
+              <h4>Flujos de automatización WhatsApp / Instagram DM</h4>
+            </div>
+            <div class="mc-flows">
+              <div class="mc-flow">
+                <div class="mc-keyword">Keyword: "COTIZAR"</div>
+                <div class="mc-arrow">→</div>
+                <div class="mc-action">Bot pide: marca, modelo, año, servicio → pasa a asesor humano</div>
+              </div>
+              <div class="mc-flow">
+                <div class="mc-keyword">Keyword: "GARANTÍA"</div>
+                <div class="mc-arrow">→</div>
+                <div class="mc-action">Envía PDF de sellos Zero Cut Wire + RTA + CANBUS → CTA cotización</div>
+              </div>
+              <div class="mc-flow">
+                <div class="mc-keyword">Keyword: "B2B"</div>
+                <div class="mc-arrow">→</div>
+                <div class="mc-action">Ruta concesionarios: volumen, SLA, programa white label → agenda llamada</div>
+              </div>
+            </div>
+          </div>
+          <div class="mod-notes-box" style="margin-top:20px;">
+            <div class="notes-header">📋 Notas de sesión</div>
+            <textarea class="notes-area" placeholder="¿Qué canales están activos hoy? ¿Presupuesto ads disponible?" id="notes-3"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 05 MONETIZACIÓN -->
+      <div class="plan-mod" data-mod="4">
+        <div class="mod-header">
+          <div>
+            <span class="overline" style="color:var(--orange);">Módulo 05</span>
+            <h3>7 Streams de Monetización</h3>
+          </div>
+          <button class="mod-check-btn" data-mod="4">Marcar como revisado</button>
+        </div>
+        <div class="mod-body">
+          <div class="streams-grid">
+            <div class="stream-item" style="--sc:var(--orange);">
+              <div class="stream-num">S1</div>
+              <div>
+                <h4>Instalación B2C Directa</h4>
+                <div class="stream-rev">S/ 18,000/mes · Ticket S/ 2,400 avg</div>
+                <p>Core del negocio. SPL, SQ y Multimedia. Margen 62%.</p>
+              </div>
+            </div>
+            <div class="stream-item" style="--sc:var(--blue2);">
+              <div class="stream-num">S2</div>
+              <div>
+                <h4>Programa B2B Concesionarios</h4>
+                <div class="stream-rev">S/ 41,800/mes · 38 unidades/mes</div>
+                <p>12 partners activos. SLA 24h. Facturación quincenal.</p>
+              </div>
+            </div>
+            <div class="stream-item" style="--sc:var(--green);">
+              <div class="stream-num">S3</div>
+              <div>
+                <h4>Soundproofing Premium</h4>
+                <div class="stream-rev">S/ 8,500/mes · Ticket S/ 1,700 avg</div>
+                <p>Dynamat® + Fatmat en puertas, techo y piso. Servicio de alto margen.</p>
+              </div>
+            </div>
+            <div class="stream-item" style="--sc:var(--orange2);">
+              <div class="stream-num">S4</div>
+              <div>
+                <h4>Brokers / Referidos B2B2C</h4>
+                <div class="stream-rev">S/ 4,200/mes · Comisión S/ 350/unidad</div>
+                <p>Red de 12 brokers activos. Pago mensual automático.</p>
+              </div>
+            </div>
+            <div class="stream-item" style="--sc:var(--blue);">
+              <div class="stream-num">S5</div>
+              <div>
+                <h4>Venta de Equipos (Retail)</h4>
+                <div class="stream-rev">S/ 6,300/mes · Margen 28%</div>
+                <p>Marcas: Pioneer, Sony, Kenwood, Skar Audio. Cross-selling en instalación.</p>
+              </div>
+            </div>
+            <div class="stream-item" style="--sc:var(--green);">
+              <div class="stream-num">S6</div>
+              <div>
+                <h4>Mantenimiento y Post-venta</h4>
+                <div class="stream-rev">S/ 2,800/mes recurrente</div>
+                <p>Re-calibración anual, actualización de firmware DSP, revisión de instalación.</p>
+              </div>
+            </div>
+            <div class="stream-item" style="--sc:var(--orange);">
+              <div class="stream-num">S7</div>
+              <div>
+                <h4>Contenido + Afiliados</h4>
+                <div class="stream-rev">S/ 1,200/mes (proyectado)</div>
+                <p>Links de afiliado en YouTube. Marca patrocinadora para TikTok. Curso online en desarrollo.</p>
+              </div>
+            </div>
+          </div>
+          <div class="revenue-total">
+            <span class="rt-label">Revenue total proyectado mes 6</span>
+            <span class="rt-val">S/ 82,800 / mes</span>
+          </div>
+          <div class="mod-notes-box" style="margin-top:20px;">
+            <div class="notes-header">📋 Notas de sesión</div>
+            <textarea class="notes-area" placeholder="¿Qué streams están activos hoy? ¿Cuáles son prioridad?" id="notes-4"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 06 AUTOMATIZACIÓN -->
+      <div class="plan-mod" data-mod="5">
+        <div class="mod-header">
+          <div>
+            <span class="overline" style="color:var(--orange);">Módulo 06</span>
+            <h3>Automatización con IA: 3 Bots</h3>
+          </div>
+          <button class="mod-check-btn" data-mod="5">Marcar como revisado</button>
+        </div>
+        <div class="mod-body">
+          <div class="bots-grid">
+            <div class="bot-card">
+              <div class="bot-header">
+                <div class="bot-icon" style="background:var(--blue-dim);color:var(--blue2);">🤖</div>
+                <div>
+                  <h4>Bot 1 — LeadQualifier</h4>
+                  <span class="bot-channel">WhatsApp · Instagram DM</span>
+                </div>
+              </div>
+              <p>Recibe lead → hace 3 preguntas (vehículo, servicio, urgencia) → asigna score → desvía a asesor o nurturing.</p>
+              <div class="bot-flow">
+                <div class="bot-step">Lead entra</div>
+                <div class="bot-arrow">→</div>
+                <div class="bot-step">3 preguntas</div>
+                <div class="bot-arrow">→</div>
+                <div class="bot-step">Score &gt;7 → Asesor</div>
+              </div>
+            </div>
+            <div class="bot-card">
+              <div class="bot-header">
+                <div class="bot-icon" style="background:var(--orange-dim);color:var(--orange);">⚡</div>
+                <div>
+                  <h4>Bot 2 — FollowUp Pro</h4>
+                  <span class="bot-channel">WhatsApp · Email</span>
+                </div>
+              </div>
+              <p>Lead frío sin respuesta → secuencia de 3 toques (día 1, día 3, día 7) con contenido educativo + oferta de diagnóstico gratuito.</p>
+              <div class="bot-flow">
+                <div class="bot-step">Lead frío</div>
+                <div class="bot-arrow">→</div>
+                <div class="bot-step">D1/D3/D7</div>
+                <div class="bot-arrow">→</div>
+                <div class="bot-step">CTA diagnóstico</div>
+              </div>
+            </div>
+            <div class="bot-card">
+              <div class="bot-header">
+                <div class="bot-icon" style="background:var(--green-dim);color:var(--green);">🛡️</div>
+                <div>
+                  <h4>Bot 3 — PostInstall Care</h4>
+                  <span class="bot-channel">WhatsApp post-servicio</span>
+                </div>
+              </div>
+              <p>48h después de instalación → solicita reseña Google → ofrece re-calibración en 6 meses → activa programa de referidos.</p>
+              <div class="bot-flow">
+                <div class="bot-step">Instalación OK</div>
+                <div class="bot-arrow">→</div>
+                <div class="bot-step">+48h Review</div>
+                <div class="bot-arrow">→</div>
+                <div class="bot-step">Referido activo</div>
+              </div>
+            </div>
+          </div>
+          <div class="mod-notes-box" style="margin-top:24px;">
+            <div class="notes-header">📋 Notas de sesión</div>
+            <textarea class="notes-area" placeholder="¿ManyChat o Kommo activos? ¿Qué CRM usa hoy el taller?" id="notes-5"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- 07 ROADMAP -->
+      <div class="plan-mod" data-mod="6">
+        <div class="mod-header">
+          <div>
+            <span class="overline" style="color:var(--orange);">Módulo 07</span>
+            <h3>Roadmap 90 días</h3>
+          </div>
+          <button class="mod-check-btn" data-mod="6">Marcar como revisado</button>
+        </div>
+        <div class="mod-body">
+          <div class="roadmap-phases">
+            <div class="rm-phase" style="--rmc:var(--blue2);">
+              <div class="rm-phase-header">
+                <div class="rm-phase-num">Fase 1</div>
+                <div class="rm-phase-label">Días 1–30 · Fundación</div>
+              </div>
+              <ul class="rm-tasks">
+                <li>Configurar ManyChat + flujos de 3 keywords</li>
+                <li>Producir 20 reels de instalación (stock)</li>
+                <li>Lanzar Google My Business optimizado</li>
+                <li>Activar primeros 3 concesionarios B2B</li>
+                <li>Meta: 50 leads/mes · S/ 28,000 revenue</li>
+              </ul>
+            </div>
+            <div class="rm-phase" style="--rmc:var(--orange);">
+              <div class="rm-phase-header">
+                <div class="rm-phase-num">Fase 2</div>
+                <div class="rm-phase-label">Días 31–60 · Aceleración</div>
+              </div>
+              <ul class="rm-tasks">
+                <li>Lanzar Meta Ads (presupuesto S/ 2,000/mes)</li>
+                <li>Activar Bot 2 FollowUp en leads fríos</li>
+                <li>Programa de brokers: 5 activos mínimo</li>
+                <li>Primera serie de YouTube (calibración RTA)</li>
+                <li>Meta: 100 leads/mes · S/ 52,000 revenue</li>
+              </ul>
+            </div>
+            <div class="rm-phase" style="--rmc:var(--green);">
+              <div class="rm-phase-header">
+                <div class="rm-phase-num">Fase 3</div>
+                <div class="rm-phase-label">Días 61–90 · Escala</div>
+              </div>
+              <ul class="rm-tasks">
+                <li>TikTok Ads (formato Spark Ads con orgánico)</li>
+                <li>Lanzar servicio Soundproofing Premium</li>
+                <li>Bot 3 PostInstall → ciclo de reseñas activo</li>
+                <li>Programa B2B: 8–10 concesionarios activos</li>
+                <li>Meta: 150 leads/mes · S/ 82,800 revenue</li>
+              </ul>
+            </div>
+          </div>
+          <div class="rm-milestones">
+            <div class="rm-ms-title">KPIs de hito al día 90</div>
+            <div class="rm-ms-grid">
+              <div class="rm-ms-item"><span class="rm-ms-val" style="color:var(--orange);">150+</span><span class="rm-ms-label">Leads/mes</span></div>
+              <div class="rm-ms-item"><span class="rm-ms-val" style="color:var(--blue2);">38%</span><span class="rm-ms-label">Conv. lead→visita</span></div>
+              <div class="rm-ms-item"><span class="rm-ms-val" style="color:var(--green);">S/ 82.8K</span><span class="rm-ms-label">Revenue/mes</span></div>
+              <div class="rm-ms-item"><span class="rm-ms-val" style="color:var(--orange);">10+</span><span class="rm-ms-label">Partners B2B</span></div>
+              <div class="rm-ms-item"><span class="rm-ms-val" style="color:var(--blue2);">4.9★</span><span class="rm-ms-label">Google rating</span></div>
+              <div class="rm-ms-item"><span class="rm-ms-val" style="color:var(--green);">25K+</span><span class="rm-ms-label">Seguidores TikTok</span></div>
+            </div>
+          </div>
+          <div class="mod-notes-box" style="margin-top:24px;">
+            <div class="notes-header">📋 Notas de sesión</div>
+            <textarea class="notes-area" placeholder="Fecha de inicio, responsables, próximos pasos acordados..." id="notes-6"></textarea>
+          </div>
+        </div>
+        <!-- COMPLETION STATE -->
+        <div class="plan-complete" id="planComplete" style="display:none;">
+          <div class="complete-icon">🎯</div>
+          <h3>Plan revisado al 100%</h3>
+          <p>Todos los módulos han sido validados en sesión. Las notas quedan guardadas localmente para tu referencia.</p>
+          <a href="https://wa.me/51999999999?text=Hola%20LIMAUDIO%2C%20hemos%20revisado%20el%20plan%20y%20queremos%20avanzar" target="_blank" class="btn-primary" style="margin-top:20px;">Activar plan → WhatsApp</a>
+        </div>
+      </div>
+
+    </div><!-- /plan-modules -->
+
+    <!-- NAV ARROWS -->
+    <div class="plan-nav fade-init">
+      <button class="plan-nav-btn" id="planPrev" disabled>← Anterior</button>
+      <span class="plan-nav-pos" id="planPos">Módulo 1 de 7</span>
+      <button class="plan-nav-btn" id="planNext">Siguiente →</button>
+    </div>
+  </div>
+</section>
+
+<style>
+/* ─── PLAN DE MARKETING STYLES ─── */
+.plan-progress { margin-bottom: 28px; }
+.plan-prog-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.prog-count { font-family: 'Barlow Condensed', sans-serif; font-size: .9rem; font-weight: 700; color: var(--orange); }
+.prog-track { height: 4px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.prog-fill { height: 100%; background: var(--orange); transition: width .4s ease; }
+
+.plan-pills {
+  display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px;
+}
+.plan-pill {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .8rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+  padding: 8px 16px; border-radius: 4px;
+  background: var(--surface); border: 1px solid var(--line);
+  color: var(--fg3); cursor: pointer; transition: all .2s;
+  position: relative;
+}
+.plan-pill:hover { border-color: var(--orange); color: var(--fg); }
+.plan-pill.active { background: var(--orange-dim); border-color: var(--orange); color: var(--orange); }
+.plan-pill.done { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+.plan-pill.done::after { content: ' ✓'; }
+
+.plan-mod { display: none; }
+.plan-mod.active { display: block; }
+
+.mod-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  flex-wrap: wrap; gap: 16px;
+  padding: 28px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 8px 8px 0 0;
+}
+.mod-check-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .85rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: 10px 20px; border-radius: 4px;
+  background: var(--orange-dim); border: 1px solid rgba(255,107,26,.4);
+  color: var(--orange); cursor: pointer; transition: all .2s; white-space: nowrap;
+}
+.mod-check-btn:hover { background: var(--orange); color: #fff; }
+.mod-check-btn.done { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+.mod-body {
+  background: var(--bg3); border: 1px solid var(--line); border-top: none;
+  border-radius: 0 0 8px 8px; padding: 28px;
+}
+.mod-grid { display: grid; grid-template-columns: 1fr 280px; gap: 28px; }
+@media (max-width: 760px) { .mod-grid { grid-template-columns: 1fr; } }
+.mod-main {}
+.mod-side {}
+
+.tam-row { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 24px; }
+.tam-card {
+  flex: 1; min-width: 140px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-top: 3px solid var(--tam-color, var(--orange));
+  border-radius: 6px; padding: 16px;
+}
+.tam-label { font-family: 'Barlow Condensed', sans-serif; font-size: .75rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--tam-color, var(--orange)); margin-bottom: 6px; }
+.tam-val { font-family: 'Barlow Condensed', sans-serif; font-size: 1.6rem; font-weight: 900; color: var(--fg); margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+.tam-desc { font-size: .78rem; color: var(--fg3); line-height: 1.5; }
+
+.mod-insight {
+  background: var(--surface); border-left: 3px solid var(--orange);
+  border-radius: 0 6px 6px 0; padding: 14px 18px;
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.insight-icon { font-size: 1.2rem; flex-shrink: 0; }
+.mod-insight strong { font-family: 'Barlow Condensed', sans-serif; font-size: .9rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; display: block; margin-bottom: 4px; }
+.mod-insight p { font-size: .85rem; }
+
+.mod-notes-box {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 6px; overflow: hidden;
+}
+.notes-header {
+  padding: 10px 14px; background: var(--bg2); border-bottom: 1px solid var(--line);
+  font-family: 'Barlow Condensed', sans-serif; font-size: .85rem; font-weight: 700;
+  letter-spacing: .06em; text-transform: uppercase; color: var(--fg3);
+}
+.notes-area {
+  width: 100%; min-height: 80px; padding: 14px;
+  background: var(--surface); border: none; resize: vertical;
+  font-family: 'Barlow', sans-serif; font-size: .85rem;
+  color: var(--fg); line-height: 1.6;
+}
+.notes-area:focus { outline: 1px solid var(--orange); }
+.notes-area::placeholder { color: var(--fg3); }
+
+.mod-segments { margin-top: 16px; }
+.seg-title { font-family: 'Barlow Condensed', sans-serif; font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--fg3); margin-bottom: 10px; }
+.seg-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: .84rem; }
+.seg-item:last-child { border-bottom: none; }
+.seg-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* PERSONAS */
+.personas-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+@media (max-width: 640px) { .personas-grid { grid-template-columns: 1fr; } }
+.persona-item {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 8px; padding: 20px;
+}
+.persona-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; margin-bottom: 12px;
+}
+.persona-item h4 { font-family: 'Barlow Condensed', sans-serif; font-size: 1.05rem; font-weight: 800; margin-bottom: 4px; }
+.persona-age { font-size: .75rem; color: var(--fg3); margin-bottom: 10px; letter-spacing: .04em; }
+.persona-item p { font-size: .84rem; margin-bottom: 12px; }
+.persona-trigger {
+  font-size: .75rem; font-weight: 600; letter-spacing: .04em;
+  border: 1px solid rgba(255,107,26,.4); border-radius: 3px;
+  padding: 4px 10px; color: var(--orange); background: var(--orange-dim);
+  display: inline-block;
+}
+
+/* FUNNEL */
+.funnel-visual { display: flex; flex-direction: column; gap: 3px; margin-bottom: 28px; }
+.funnel-stage { display: flex; gap: 16px; align-items: stretch; }
+.funnel-bar {
+  width: var(--fw); min-width: 12px; max-width: var(--fw);
+  background: var(--fc); border-radius: 3px; flex-shrink: 0;
+  min-height: 60px;
+}
+.funnel-info { flex: 1; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+.funnel-label { font-family: 'Barlow Condensed', sans-serif; font-size: .85rem; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: var(--fc); margin-bottom: 6px; }
+.funnel-content { font-size: .84rem; color: var(--fg); margin-bottom: 8px; }
+.funnel-kw { font-size: .78rem; color: var(--fg3); font-style: italic; }
+
+/* CONTENT CALENDAR */
+.content-calendar { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.cal-title { padding: 12px 16px; background: var(--bg2); border-bottom: 1px solid var(--line); font-family: 'Barlow Condensed', sans-serif; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--fg3); }
+.cal-row { display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--line); align-items: baseline; flex-wrap: wrap; }
+.cal-platform { font-family: 'Barlow Condensed', sans-serif; font-size: .9rem; font-weight: 800; color: var(--orange); min-width: 80px; }
+.cal-freq { font-size: .8rem; font-weight: 600; color: var(--fg2); min-width: 90px; }
+.cal-type { font-size: .8rem; color: var(--fg3); }
+
+/* CHANNELS */
+.channels-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 24px; }
+@media (max-width: 640px) { .channels-grid { grid-template-columns: 1fr; } }
+.channel-card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-top: 3px solid var(--ch); border-radius: 6px; padding: 20px;
+}
+.channel-icon { font-size: 1.4rem; margin-bottom: 10px; display: block; }
+.channel-card h4 { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 800; margin-bottom: 8px; }
+.channel-card p { font-size: .84rem; margin-bottom: 12px; }
+.channel-kpi { font-size: .78rem; font-weight: 600; color: var(--ch); letter-spacing: .04em; }
+
+/* MANYCHAT */
+.manychat-box { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.mc-header { padding: 18px 20px; background: var(--bg2); border-bottom: 1px solid var(--line); }
+.mc-header h4 { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 800; margin-top: 6px; }
+.mc-flows { padding: 16px 20px; display: flex; flex-direction: column; gap: 12px; }
+.mc-flow { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.mc-keyword { font-family: 'Barlow Condensed', sans-serif; font-size: .85rem; font-weight: 800; padding: 4px 12px; background: var(--green-dim); color: var(--green); border-radius: 3px; border: 1px solid rgba(0,230,118,.3); white-space: nowrap; }
+.mc-arrow { color: var(--fg3); font-size: .9rem; }
+.mc-action { font-size: .84rem; color: var(--fg2); }
+
+/* STREAMS */
+.streams-grid { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+.stream-item {
+  display: flex; gap: 16px; padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  align-items: flex-start; background: var(--surface);
+  transition: background .15s;
+}
+.stream-item:last-child { border-bottom: none; }
+.stream-item:hover { background: var(--bg2); }
+.stream-num {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .8rem; font-weight: 900; letter-spacing: .08em;
+  padding: 4px 8px; border-radius: 3px;
+  background: rgba(255,107,26,.1); color: var(--sc, var(--orange));
+  border: 1px solid rgba(255,107,26,.2);
+  flex-shrink: 0; align-self: flex-start; margin-top: 2px;
+}
+.stream-item h4 { font-family: 'Barlow Condensed', sans-serif; font-size: 1rem; font-weight: 800; margin-bottom: 4px; }
+.stream-rev { font-size: .8rem; color: var(--sc, var(--orange)); font-weight: 600; margin-bottom: 6px; }
+.stream-item p { font-size: .84rem; }
+.revenue-total {
+  background: var(--orange); border-radius: 6px; padding: 16px 24px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;
+}
+.rt-label { font-family: 'Barlow Condensed', sans-serif; font-size: .9rem; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: rgba(255,255,255,.8); }
+.rt-val { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 900; color: #fff; font-variant-numeric: tabular-nums; }
+
+/* BOTS */
+.bots-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+@media (max-width: 760px) { .bots-grid { grid-template-columns: 1fr; } }
+.bot-card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+.bot-header { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+.bot-icon { width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+.bot-card h4 { font-family: 'Barlow Condensed', sans-serif; font-size: .95rem; font-weight: 800; margin-bottom: 4px; }
+.bot-channel { font-size: .75rem; color: var(--fg3); }
+.bot-card p { font-size: .84rem; margin-bottom: 14px; }
+.bot-flow { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.bot-step { font-size: .75rem; font-weight: 600; padding: 4px 8px; background: var(--bg2); border: 1px solid var(--line); border-radius: 3px; color: var(--fg2); }
+.bot-arrow { color: var(--fg3); font-size: .8rem; }
+
+/* ROADMAP */
+.roadmap-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+@media (max-width: 760px) { .roadmap-phases { grid-template-columns: 1fr; } }
+.rm-phase { background: var(--surface); border: 1px solid var(--line); border-top: 3px solid var(--rmc); border-radius: 6px; overflow: hidden; }
+.rm-phase-header { padding: 16px 18px; background: var(--bg2); border-bottom: 1px solid var(--line); }
+.rm-phase-num { font-family: 'Barlow Condensed', sans-serif; font-size: .75rem; font-weight: 900; text-transform: uppercase; letter-spacing: .1em; color: var(--rmc); margin-bottom: 2px; }
+.rm-phase-label { font-family: 'Barlow Condensed', sans-serif; font-size: .95rem; font-weight: 800; }
+.rm-tasks { list-style: none; padding: 16px 18px; display: flex; flex-direction: column; gap: 8px; }
+.rm-tasks li { font-size: .84rem; color: var(--fg2); padding-left: 14px; position: relative; }
+.rm-tasks li::before { content: '—'; position: absolute; left: 0; color: var(--rmc); font-weight: 700; }
+
+.rm-milestones { background: var(--bg2); border: 1px solid var(--line); border-radius: 8px; padding: 20px; }
+.rm-ms-title { font-family: 'Barlow Condensed', sans-serif; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--fg3); margin-bottom: 16px; }
+.rm-ms-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+@media (max-width: 640px) { .rm-ms-grid { grid-template-columns: repeat(2, 1fr); } }
+.rm-ms-item { text-align: center; }
+.rm-ms-val { font-family: 'Barlow Condensed', sans-serif; font-size: 1.5rem; font-weight: 900; display: block; font-variant-numeric: tabular-nums; }
+.rm-ms-label { font-size: .75rem; color: var(--fg3); }
+
+/* PLAN COMPLETE */
+.plan-complete { text-align: center; padding: 48px 24px; border-top: 1px solid var(--line); margin-top: 28px; }
+.complete-icon { font-size: 3rem; margin-bottom: 16px; }
+.plan-complete h3 { margin-bottom: 10px; color: var(--green); }
+.plan-complete p { max-width: 44ch; margin-inline: auto; }
+
+/* PLAN NAV */
+.plan-nav {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-top: 24px; flex-wrap: wrap; gap: 12px;
+}
+.plan-nav-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: .9rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  padding: 12px 24px; border-radius: 4px;
+  background: var(--surface); border: 1px solid var(--line);
+  color: var(--fg2); cursor: pointer; transition: all .2s;
+}
+.plan-nav-btn:hover:not(:disabled) { border-color: var(--orange); color: var(--orange); }
+.plan-nav-btn:disabled { opacity: .35; cursor: not-allowed; }
+.plan-nav-pos { font-family: 'Barlow Condensed', sans-serif; font-size: .9rem; font-weight: 700; color: var(--fg3); }
+</style>
+
+<!-- ─── TRUST BADGES / SELLOS ─── -->
+<section class="section trust-section" id="garantia">
+  <div class="wrap">
+    <div class="section-head fade-init">
+      <span class="overline">Sellos de garantía técnica</span>
+      <h2>Nuestros compromisos tienen nombre</h2>
+      <div class="divider"></div>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-card fade-init">
+        <div class="trust-seal">✂️</div>
+        <div>
+          <h4>Sello Zero Cut Wire</h4>
+          <p>Certificamos que ningún cable OEM de fábrica fue cortado durante la instalación. Verificable con arneses originales al momento de revisión.</p>
+        </div>
+      </div>
+      <div class="trust-card fade-init">
+        <div class="trust-seal">📊</div>
+        <div>
+          <h4>Certificación de Calibración RTA</h4>
+          <p>Entregamos el gráfico de respuesta en frecuencia pre y post instalación medido con micrófono UMIK-1 y software REW. Tu oído tiene respaldo técnico.</p>
+        </div>
+      </div>
+      <div class="trust-card fade-init">
+        <div class="trust-seal">🎮</div>
+        <div>
+          <h4>Garantía CANBUS en Mandos al Timón</h4>
+          <p>Todas las funciones de fábrica operativas: mandos al timón, sensores de estacionamiento, cámara de reversa. Garantizamos compatibilidad con tu modelo exacto.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CTA + FORM ─── -->
+<section class="section cta-section" id="contacto">
+  <div class="wrap">
+    <div class="section-head fade-init" style="text-align:center;align-items:center;display:flex;flex-direction:column;">
+      <span class="overline">Cotización gratuita</span>
+      <h2>¿Listo para escuchar la diferencia?</h2>
+      <p>Dinos tu vehículo y lo que buscas. Te respondemos en menos de 2 horas en horario comercial con una propuesta técnica completa.</p>
+      <div class="divider" style="margin-inline:auto;"></div>
+    </div>
+    <div class="cta-form-wrapper fade-init">
+      <form id="ctaForm">
+        <div class="grid2" style="gap:14px;">
+          <div class="form-row">
+            <label for="f-nombre">Nombre</label>
+            <input type="text" id="f-nombre" placeholder="Tu nombre" required>
+          </div>
+          <div class="form-row">
+            <label for="f-tel">WhatsApp</label>
+            <input type="tel" id="f-tel" placeholder="+51 999 999 999" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <label for="f-auto">Vehículo (marca, modelo, año)</label>
+          <input type="text" id="f-auto" placeholder="Ej: Toyota RAV4 2022" required>
+        </div>
+        <div class="form-row">
+          <label for="f-servicio">¿Qué buscas?</label>
+          <select id="f-servicio">
+            <option value="">Selecciona un servicio</option>
+            <option>Car Audio completo (SPL)</option>
+            <option>Car Audio de calidad (SQ)</option>
+            <option>Upgrade multimedia / Android Auto</option>
+            <option>Soundproofing / Insonorización</option>
+            <option>Programa concesionario B2B</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <label for="f-presupuesto">Presupuesto aproximado</label>
+          <select id="f-presupuesto">
+            <option value="">Selecciona rango</option>
+            <option>Hasta S/ 800</option>
+            <option>S/ 800 – S/ 2,000</option>
+            <option>S/ 2,000 – S/ 5,000</option>
+            <option>Más de S/ 5,000</option>
+          </select>
+        </div>
+        <button type="submit" class="form-submit">Solicitar Cotización Gratuita</button>
+        <p class="form-note">⚡ Respuesta en &lt; 2 horas · Sin compromiso · Diagnóstico RTA incluido</p>
+      </form>
+      <div class="form-success" id="formSuccess">
+        <h4>✓ ¡Solicitud recibida!</h4>
+        <p>Te contactamos por WhatsApp en menos de 2 horas. Prepara el nombre de tu vehículo y modelo del año.</p>
+        <div style="margin-top:20px;">
+          <a href="https://wa.me/51999999999?text=Hola%20LIMAUDIO%2C%20acabo%20de%20llenar%20el%20formulario" target="_blank" class="btn-primary" style="font-size:.9rem;">Hablar ahora por WhatsApp →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="nav-logo">LIM<span>AUDIO</span></span>
+      <p>Car Audio · Soundproofing · Multimedia Plug &amp; Play<br>Lima, Perú · Taller técnico especializado</p>
+      <div class="footer-seals">
+        <span class="seal-chip">✂️ Zero Cut Wire</span>
+        <span class="seal-chip">📊 Certificación RTA</span>
+        <span class="seal-chip">🎮 Garantía CANBUS</span>
+        <span class="seal-chip">🛡️ Garantía Vitalicia</span>
+      </div>
+    </div>
+    <div class="footer-links">
+      <h5>Servicios</h5>
+      <ul>
+        <li><a href="#conductores">Car Audio SPL</a></li>
+        <li><a href="#conductores">Car Audio SQ</a></li>
+        <li><a href="#conductores">Multimedia OEM</a></li>
+        <li><a href="#conductores">Soundproofing</a></li>
+        <li><a href="#propuesta">Programa B2B</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h5>Proceso</h5>
+      <ul>
+        <li><a href="#proceso">Diagnóstico RTA</a></li>
+        <li><a href="#proceso">Instalación OEM</a></li>
+        <li><a href="#proceso">Calibración DSP</a></li>
+        <li><a href="#garantia">Garantía vitalicia</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h5>Contacto</h5>
+      <ul>
+        <li><a href="https://wa.me/51999999999" target="_blank">WhatsApp: +51 999 999 999</a></li>
+        <li><a href="#contacto">Cotización gratuita</a></li>
+        <li><a href="https://instagram.com/limaudio" target="_blank">Instagram</a></li>
+        <li><a href="https://tiktok.com/@limaudio" target="_blank">TikTok</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 LIMAUDIO. Lima, Perú. Todos los derechos reservados.</p>
+    <p style="color:var(--orange);font-weight:600;">Ingeniería de sonido sin cortar cables.</p>
+  </div>
+</footer>
+
+<script>
+/* ─── HERO CANVAS: partículas rojas + speaker rings + waveform ─── */
+(function initHero() {
+  const canvas = document.getElementById('heroCanvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], rings = [], frame = 0;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+
+  function mkParticle() {
+    return {
+      x: Math.random() * W, y: Math.random() * H,
+      vx: (Math.random() - .5) * .35,
+      vy: (Math.random() - .5) * .35,
+      r: Math.random() * 1.4 + .4,
+      a: Math.random() * .5 + .1
+    };
+  }
+
+  function init() {
+    resize();
+    particles = Array.from({length: 80}, mkParticle);
+    rings = [0, 0.33, 0.66].map(phase => ({ phase }));
+  }
+
+  function drawFrame() {
+    ctx.clearRect(0, 0, W, H);
+
+    // Dark gradient overlay
+    const grad = ctx.createRadialGradient(W * .65, H * .4, 0, W * .65, H * .4, H * .7);
+    grad.addColorStop(0, 'rgba(255,107,26,.07)');
+    grad.addColorStop(1, 'rgba(13,14,16,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    // Speaker rings (right side)
+    const cx = W * .78, cy = H * .4;
+    rings.forEach((ring, i) => {
+      ring.phase += .008;
+      const r = 60 + i * 48 + Math.sin(ring.phase) * 12;
+      const alpha = .08 + Math.sin(ring.phase) * .05;
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(255,107,26,${alpha})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    });
+
+    // Particles
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,107,26,${p.a})`;
+      ctx.fill();
+
+      // Connect nearby
+      for (let j = i + 1; j < particles.length; j++) {
+        const q = particles[j];
+        const dx = p.x - q.x, dy = p.y - q.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 100) {
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y);
+          ctx.strokeStyle = `rgba(255,107,26,${.06 * (1 - dist/100)})`;
+          ctx.lineWidth = .6;
+          ctx.stroke();
+        }
+      }
+    }
+
+    // Audio waveform bar at bottom
+    const waveY = H - 60, waveW = W * .5, waveX = W * .1;
+    const bars = 40;
+    for (let i = 0; i < bars; i++) {
+      const h = 6 + Math.abs(Math.sin(frame * .04 + i * .4)) * 28 +
+                    Math.abs(Math.sin(frame * .07 + i * .25)) * 14;
+      const x = waveX + (i / bars) * waveW;
+      const alpha = .25 + .25 * Math.abs(Math.sin(frame * .03 + i * .3));
+      ctx.fillStyle = `rgba(255,107,26,${alpha})`;
+      ctx.fillRect(x, waveY - h/2, waveW / bars - 2, h);
+    }
+
+    frame++;
+    requestAnimationFrame(drawFrame);
+  }
+
+  init();
+  drawFrame();
+  window.addEventListener('resize', () => { resize(); });
+})();
+
+/* ─── TABS B2C / B2B ─── */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ─── SCROLL FADE ─── */
+function setupFade() {
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); } });
+  }, { threshold: .12 });
+  document.querySelectorAll('.fade-init').forEach(el => obs.observe(el));
+}
+setupFade();
+
+/* ─── FORM ─── */
+document.getElementById('ctaForm').addEventListener('submit', e => {
+  e.preventDefault();
+  e.target.hidden = true;
+  document.getElementById('formSuccess').style.display = 'block';
+});
+
+/* ─── PLAN DE MARKETING: navegación paso a paso ─── */
+(function initPlan() {
+  const TOTAL = 7;
+  const done = new Array(TOTAL).fill(false);
+  let current = 0;
+
+  // Elements
+  const mods     = Array.from(document.querySelectorAll('.plan-mod'));
+  const pills     = Array.from(document.querySelectorAll('.plan-pill'));
+  const checkBtns = Array.from(document.querySelectorAll('.mod-check-btn'));
+  const prevBtn   = document.getElementById('planPrev');
+  const nextBtn   = document.getElementById('planNext');
+  const posEl     = document.getElementById('planPos');
+  const progFill  = document.getElementById('progFill');
+  const progCount = document.getElementById('progCount');
+  const planComplete = document.querySelector('.plan-complete');
+
+  // ── Load saved notes & done state from localStorage ──
+  try {
+    for (let i = 0; i < TOTAL; i++) {
+      const savedNote = localStorage.getItem('limaudio_note_' + i);
+      const savedDone = localStorage.getItem('limaudio_done_' + i);
+      if (savedNote) {
+        const ta = document.getElementById('notes-' + i);
+        if (ta) ta.value = savedNote;
+      }
+      if (savedDone === '1') {
+        done[i] = true;
+      }
+    }
+  } catch(e) {}
+
+  // ── Persist notes on input ──
+  for (let i = 0; i < TOTAL; i++) {
+    const ta = document.getElementById('notes-' + i);
+    if (!ta) continue;
+    ta.addEventListener('input', () => {
+      try { localStorage.setItem('limaudio_note_' + i, ta.value); } catch(e) {}
+    });
+  }
+
+  // ── Render current state ──
+  function render() {
+    // Modules visibility
+    mods.forEach((mod, i) => {
+      mod.style.display = i === current ? 'block' : 'none';
+    });
+
+    // Pills active / done
+    pills.forEach((pill, i) => {
+      pill.classList.toggle('active', i === current);
+      pill.classList.toggle('done', done[i]);
+    });
+
+    // Check buttons
+    checkBtns.forEach((btn, i) => {
+      btn.classList.toggle('done', done[i]);
+      btn.textContent = done[i] ? '✓ Revisado' : 'Marcar como revisado';
+    });
+
+    // Nav buttons
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === TOTAL - 1;
+    posEl.textContent = 'Módulo ' + (current + 1) + ' de ' + TOTAL;
+
+    // Progress bar
+    const doneCount = done.filter(Boolean).length;
+    const pct = Math.round((doneCount / TOTAL) * 100);
+    progFill.style.width = pct + '%';
+    progCount.textContent = doneCount + ' / ' + TOTAL + ' módulos revisados';
+
+    // Completion state
+    if (planComplete) {
+      planComplete.style.display = doneCount === TOTAL ? 'block' : 'none';
+    }
+  }
+
+  // ── Navigate to module ──
+  function goTo(idx) {
+    if (idx < 0 || idx >= TOTAL) return;
+    current = idx;
+    render();
+    // Scroll to plan section smoothly
+    const planSection = document.getElementById('plan');
+    if (planSection) {
+      const top = planSection.getBoundingClientRect().top + window.scrollY - 72;
+      window.scrollTo({ top, behavior: 'smooth' });
+    }
+  }
+
+  // ── Pill clicks ──
+  pills.forEach((pill, i) => {
+    pill.addEventListener('click', () => goTo(i));
+  });
+
+  // ── Check button clicks ──
+  checkBtns.forEach((btn, i) => {
+    btn.addEventListener('click', () => {
+      done[i] = !done[i];
+      try { localStorage.setItem('limaudio_done_' + i, done[i] ? '1' : '0'); } catch(e) {}
+      render();
+      // Auto-advance to next undone module if marking as done
+      if (done[i] && current < TOTAL - 1) {
+        setTimeout(() => goTo(current + 1), 420);
+      }
+    });
+  });
+
+  // ── Prev / Next ──
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  // ── Initial render ──
+  render();
+})();
+</script>
+
+</body></html>
