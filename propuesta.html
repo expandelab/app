@@ -145,155 +145,42 @@
   .sold-out-overlay{ position:absolute; inset:0; background:rgba(251,249,245,0.72); display:flex; align-items:center; justify-content:center; }
 
   /* =========================================================
-     MAPA INTERACTIVO DE ORÍGENES — tamaño optimizado
-     Antes: la etapa del mapa crecía con width:100%/height:auto
-     sin techo, así que en pantallas anchas el SVG (proporción
-     520x650, más alto que ancho) terminaba ocupando una
-     columna entera y forzaba mucho scroll; en mobile competía
-     en altura con el resto de la sección "por encima del pliegue".
-     Ahora: contenedor con aspect-ratio fijo + max-height por
-     breakpoint, y el propio mapa limitado a un ancho legible
-     (no estira a lo ancho de la columna en pantallas grandes).
+     MAPA DE ORÍGENES (Leaflet) — estilos acotados a #amazonika-map
      ========================================================= */
-  #amazonika-map{
-    --san:#9A6237;
-    --bon:#6E8D4F;
-    --poz:#3F725F;
-    --vrc:#C79A3E;
-    color:var(--graphite);
-    width:100%;
+  #amazonika-map{ color:#2f2925; width:100%; }
+  #amazonika-map .om-eyebrow{ font-size:11px; letter-spacing:.22em; text-transform:uppercase; font-weight:800; color:#98745e; }
+  #amazonika-map .om-title{ font:400 52px/1 'Playfair Display',Georgia,serif; margin:8px 0 10px; }
+  #amazonika-map .om-lead{ max-width:760px; color:#7d746e; line-height:1.6; }
+  #amazonika-map .om-layout{ display:grid; grid-template-columns:1.25fr .75fr; gap:22px; margin-top:26px; }
+  #amazonika-map .om-mapwrap, #amazonika-map .om-panel{ border-radius:26px; overflow:hidden; border:1px solid #e9e1da; background:#fff; }
+  #amazonika-map .om-mapwrap{ position:relative; min-height:760px; }
+  #amazonika-map #amazonika-leaflet{ height:760px; background:#eee9e3; font-family:inherit; }
+  #amazonika-map .om-panel{ padding:28px; min-height:760px; }
+  #amazonika-map .om-panel h3{ font:400 40px 'Playfair Display',Georgia,serif; margin:8px 0 3px; }
+  #amazonika-map .om-sub{ font:400 21px 'Playfair Display',Georgia,serif; color:#765f51; }
+  #amazonika-map .om-pillrow{ display:flex; flex-wrap:wrap; gap:8px; margin:18px 0; }
+  #amazonika-map .om-pill{ padding:7px 10px; border-radius:999px; background:#f2ede8; font-size:11px; font-weight:800; }
+  #amazonika-map .om-coffee{ padding:17px 0; border-top:1px solid #ece5df; }
+  #amazonika-map .om-coffee h4{ font:400 24px 'Playfair Display',Georgia,serif; margin:0 0 7px; }
+  #amazonika-map .om-coffee p{ font-size:13px; line-height:1.55; color:#685d56; margin:0; }
+  #amazonika-map .om-dot{ display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:7px; }
+  #amazonika-map .om-hint{ margin-top:18px; color:#938981; font-size:12px; }
+  #amazonika-map .om-legend{
+    position:absolute; z-index:500; left:15px; bottom:15px; background:#fff; padding:12px 14px;
+    border-radius:15px; border:1px solid #e5ddd6; font-size:11px; line-height:1.8;
   }
-  .amazonika-grid{
-    display:grid;
-    grid-template-columns: minmax(0,1fr) minmax(300px,380px);
-    gap:20px;
-    align-items:start;
+  #amazonika-map .om-legend b{ display:block; margin-bottom:2px; }
+  #amazonika-map .om-loading{
+    position:absolute; z-index:700; inset:0; display:grid; place-items:center; text-align:center;
+    background:#eee9e3; font-weight:700; color:#796b62; padding:20px;
   }
-  .amazonika-map-card{
-    overflow:hidden; border:1px solid var(--line); background:var(--ivory);
-  }
-  .map-card-header{
-    display:flex; justify-content:space-between; align-items:center; gap:20px;
-    padding:18px 20px 6px;
-  }
-  .map-status{
-    white-space:nowrap; padding:6px 11px; border-radius:999px;
-    border:1px solid var(--line); font-size:10px; color:var(--taupe);
-    letter-spacing:.16em; text-transform:uppercase;
-  }
-  .map-stage{
-    position:relative; overflow:hidden;
-    background:#EEE9E3;
-    height:520px;
-  }
-  #amazonika-leaflet{ position:absolute; inset:0; background:#EEE9E3; font-family:inherit; }
-  .map-loading{
-    position:absolute; inset:0; z-index:700; display:grid; place-items:center; text-align:center;
-    background:#EEE9E3; font-size:13px; font-weight:500; color:var(--taupe); padding:20px;
-  }
-  .map-loading small{ display:block; margin-top:6px; font-weight:400; }
-  .leaflet-tooltip.deptname{
-    border:0; border-radius:9px; box-shadow:none; background:rgba(255,255,255,.93);
-    color:var(--graphite); font-weight:700; font-size:11px; padding:5px 8px;
-  }
-  .leaflet-container, .leaflet-interactive{ outline:none; }
-  .map-legend{
-    position:absolute; z-index:500; left:12px; bottom:12px; background:rgba(255,255,255,.94);
-    border:1px solid var(--line); padding:10px 12px; font-size:10.5px; line-height:1.8; letter-spacing:.04em;
-  }
-  .map-legend b{ display:block; font-size:9.5px; letter-spacing:.16em; text-transform:uppercase; margin-bottom:2px; }
-  .map-legend i{ display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; }
-  .origin-buttons{ display:flex; flex-wrap:wrap; gap:7px; padding:0 18px 18px; }
-  .origin-button{
-    display:inline-flex; align-items:center; gap:7px;
-    min-height:44px; padding:7px 14px; border-radius:999px;
-    border:1px solid var(--line); background:var(--ivory); color:var(--graphite);
-    font-size:10.5px; font-weight:500; letter-spacing:.13em; text-transform:uppercase;
-    cursor:pointer; transition: transform .18s ease, border-color .18s ease, background .18s ease;
-  }
-  .origin-button:hover{ transform:translateY(-2px); border-color:var(--taupe); }
-  .origin-button.active{ background:var(--graphite); border-color:var(--graphite); color:var(--ivory); }
-  .origin-dot{ width:8px; height:8px; border-radius:50%; display:inline-block; }
-  .origin-dot.san{ background:var(--san); }
-  .origin-dot.bon{ background:var(--bon); }
-  .origin-dot.poz{ background:var(--poz); }
-  .origin-dot.vrc{ background:var(--vrc); }
-
-  .amazonika-detail{ min-width:0; border:1px solid var(--line); background:var(--ivory); padding:18px; }
-  .origin-header{ position:relative; overflow:hidden; color:#fff; padding:18px; margin-bottom:6px; }
-  .origin-header::after{
-    content:""; position:absolute; width:120px; height:120px; right:-38px; top:-50px;
-    border:1px solid rgba(255,255,255,.2); border-radius:50%;
-  }
-  .origin-san{ background:linear-gradient(135deg,#865331,#B47748); }
-  .origin-bon{ background:linear-gradient(135deg,#587644,#83A765); }
-  .origin-poz{ background:linear-gradient(135deg,#315E51,#5A8975); }
-  .origin-vrc{ background:linear-gradient(135deg,#9C7530,#D9AE5C); }
-  .origin-header-eyebrow{
-    position:relative; z-index:2; font-size:9px; font-weight:600;
-    letter-spacing:.2em; opacity:.85; text-transform:uppercase;
-  }
-  .origin-header h3{
-    position:relative; z-index:2; margin:6px 0 0;
-    font-family:'Playfair Display',serif; font-size:26px; font-weight:500; line-height:1.1;
-  }
-  .origin-header-region{ position:relative; z-index:2; margin-top:5px; font-size:12px; opacity:.9; }
-  .origin-tagline{
-    position:relative; z-index:2; margin-top:12px; font-size:11px;
-    letter-spacing:.1em; text-transform:uppercase; opacity:.9;
-  }
-  .coffee-card{ padding:16px 0; border-top:1px solid var(--line); animation: coffeeCardIn .35s ease both; }
-  .coffee-title-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
-  .coffee-card h4{ margin:0; font-family:'Playfair Display',serif; font-size:19px; font-weight:500; }
-  .coffee-producer{ margin-top:4px; font-size:11px; color:var(--taupe); }
-  .coffee-pills{ display:flex; flex-wrap:wrap; justify-content:flex-end; gap:5px; }
-  .coffee-pill{
-    display:inline-flex; align-items:center; border:1px solid var(--line); border-radius:999px;
-    padding:5px 9px; background:var(--ivory-2); font-size:10px; font-weight:600;
-    letter-spacing:.08em; text-transform:uppercase;
-  }
-  .coffee-pill.sold{ background:#EEE1DF; color:#80534D; }
-  .coffee-notes{ margin-top:10px; padding:12px; background:var(--ivory-2); font-size:12px; line-height:1.55; }
-  .coffee-notes strong{ font-weight:600; }
-  .coffee-facts{ display:grid; grid-template-columns:1fr 1fr; gap:13px 16px; margin:14px 0 0; }
-  .coffee-facts div{ min-width:0; }
-  .coffee-facts dt{
-    font-size:9px; font-weight:600; letter-spacing:.14em;
-    text-transform:uppercase; color:var(--taupe);
-  }
-  .coffee-facts dd{ margin:4px 0 0; font-size:11px; line-height:1.45; }
-  .coffee-cta{
-    margin-top:14px; width:100%; min-height:44px; padding:12px;
-    background:var(--graphite); color:var(--ivory); border:none; cursor:pointer;
-    font-size:10px; font-weight:500; letter-spacing:.16em; text-transform:uppercase;
-    transition: background .3s ease;
-  }
-  .coffee-cta:hover{ background:var(--rust); }
-  .coffee-cta[disabled]{ background:transparent; color:var(--taupe); border:1px solid var(--line); cursor:default; }
-
-  @keyframes coffeeCardIn{ from{ opacity:0; transform:translateY(7px);} to{ opacity:1; transform:translateY(0);} }
-  @keyframes detailIn{ from{ opacity:.5; transform:translateY(6px);} to{ opacity:1; transform:translateY(0);} }
-  .amazonika-detail.animate{ animation: detailIn .32s ease; }
-
-  /* Breakpoint de apilado: antes 850px dejaba la franja 850–1000px
-     apretada (columna del mapa muy angosta). Ahora se apila antes. */
-  @media (max-width:980px){
-    .amazonika-grid{ grid-template-columns:1fr; }
-    .map-stage{ height:480px; }
-  }
-  @media (max-width:640px){
-    .map-stage{ height:420px; }
-    .origin-buttons{ padding:0 14px 14px; gap:6px; }
-    .origin-button{ min-height:44px; padding:6px 12px; font-size:10px; }
-  }
-  @media (max-width:520px){
-    .map-card-header{ align-items:flex-start; flex-direction:column; gap:4px; }
-    .map-status{ display:none; }
-    .map-stage{ height:360px; }
-    .amazonika-detail{ padding:16px; }
-    .coffee-facts{ grid-template-columns:1fr; }
-    .coffee-title-row{ flex-direction:column; }
-    .coffee-pills{ justify-content:flex-start; }
+  #amazonika-map .leaflet-container{ font-family:inherit; outline:none; }
+  .leaflet-tooltip.deptname{ border:0; border-radius:9px; box-shadow:none; background:rgba(255,255,255,.94); color:#3a312c; font-weight:800; padding:5px 7px; }
+  @media (max-width:850px){
+    #amazonika-map .om-title{ font-size:40px; }
+    #amazonika-map .om-layout{ grid-template-columns:1fr; }
+    #amazonika-map .om-mapwrap, #amazonika-map #amazonika-leaflet{ height:620px; min-height:620px; }
+    #amazonika-map .om-panel{ min-height:0; }
   }
   @media (prefers-reduced-motion: reduce){
     #amazonika-map *{ animation:none !important; transition:none !important; }
@@ -457,46 +344,18 @@
 
 <!-- ================= MAPA INTERACTIVO DE ORÍGENES ================= -->
 <section id="amazonika-map" class="max-w-[1400px] mx-auto px-5 md:px-8 py-16 md:py-24">
-
-  <div class="mb-8 fade-up">
-    <span class="label">Amazónika Café · Orígenes del Perú</span>
-    <h2 class="font-serif text-[30px] md:text-[42px] mt-3 leading-tight" style="font-weight:500;">Café peruano, desde su origen</h2>
-    <p class="mt-3 text-[var(--graphite-70)] max-w-xl leading-relaxed">
-      Recorre el mapa y descubre las historias, perfiles y procesos detrás de nuestros cafés.
-    </p>
+  <div class="fade-up">
+    <div class="om-eyebrow">Amazónika Café · Perú</div>
+    <h2 class="om-title">Nuestros orígenes</h2>
+    <p class="om-lead">Descubre nuestros orígenes. Pasa el cursor sobre una región destacada o tócala para descubrir sus cafés. El resto del Perú permanece neutro para que los orígenes sean protagonistas.</p>
   </div>
-
-  <div class="amazonika-grid fade-up">
-
-    <div class="amazonika-map-card">
-      <div class="map-card-header">
-        <div>
-          <span class="label-sm text-[var(--taupe)]">Mapa de origen</span>
-          <p class="mt-1.5 text-[13px]">Pasa el cursor o toca un punto</p>
-        </div>
-        <span id="amazonika-status" class="map-status">Cargando mapa…</span>
-      </div>
-
-      <div class="map-stage">
-        <div id="amazonika-loading" class="map-loading">Cargando mapa del Perú…</div>
-        <div id="amazonika-leaflet" role="region" aria-label="Mapa del Perú con los orígenes de café Amazónika"></div>
-        <div class="map-legend">
-          <b>Regiones de origen</b>
-          <i style="background:#C9A66B"></i>Cajamarca &nbsp; <i style="background:#5F806D"></i>Amazonas<br>
-          <i style="background:#58748C"></i>Pasco &nbsp; <i style="background:#B76E62"></i>Pozuzo
-        </div>
-      </div>
-
-      <div class="origin-buttons">
-        <button type="button" class="origin-button" data-origin="san"><span class="origin-dot san"></span>San Ignacio</button>
-        <button type="button" class="origin-button" data-origin="bon"><span class="origin-dot bon"></span>Bongará</button>
-        <button type="button" class="origin-button" data-origin="poz"><span class="origin-dot poz"></span>Pozuzo</button>
-        <button type="button" class="origin-button" data-origin="vrc"><span class="origin-dot vrc"></span>Villa Rica</button>
-      </div>
+  <div class="om-layout fade-up">
+    <div class="om-mapwrap">
+      <div id="amazonika-loading" class="om-loading">Cargando mapa del Perú…</div>
+      <div id="amazonika-leaflet" role="region" aria-label="Mapa del Perú con los orígenes de café Amazónika"></div>
+      <div class="om-legend"><b>Regiones de origen</b><span style="color:#C9A66B">●</span> Cajamarca &nbsp; <span style="color:#5F806D">●</span> Amazonas<br><span style="color:#58748C">●</span> San Martín &nbsp; <span style="color:#B76E62">●</span> Oxapampa / Pozuzo</div>
     </div>
-
-    <aside id="amazonika-detail" class="amazonika-detail" aria-live="polite"></aside>
-
+    <aside id="amazonika-panel" class="om-panel" aria-live="polite"></aside>
   </div>
 </section>
 
@@ -861,158 +720,68 @@ const PRODUCTS = Object.values(ORIGINS).flatMap(origin =>
 );
 
 /* =========================================================================
-   DOM
+   MAPA DE ORÍGENES (Leaflet) — regiones destacadas + Pozuzo
+   Datos propios del mapa, tomados de mapa-amazonika-peru-regiones-moderno.html
    ========================================================================= */
-const amazonikaLoading = document.getElementById("amazonika-loading");
-const amazonikaDetail = document.getElementById("amazonika-detail");
-const amazonikaStatus = document.getElementById("amazonika-status");
+(function(){
+  const COLORS = { cajamarca:"#C9A66B", amazonas:"#5F806D", sanmartin:"#58748C", pozuzo:"#B76E62" };
+  const DATA = {
+    cajamarca:{ title:"Cajamarca", sub:"San Ignacio", color:COLORS.cajamarca, alt:"1200–1600 m s. n. m.", cafes:[
+      ["Imperial","83 pts","Lavado","La Prosperidad de Chirinos","Paches, Catimor, Gran Colombia, Caturra","Dulce, panela, miel, vainilla, chocolate, nuez y cremoso."],
+      ["Premium Blend","84 pts","Lavado","La Prosperidad de Chirinos","Paches, Caturra, Bourbon","Caramelo, cítrico a lima, miel, vainilla, chocolate y cremoso."]]},
+    amazonas:{ title:"Amazonas", sub:"Bongará", color:COLORS.amazonas, alt:"Café de altura", cafes:[
+      ["Deluxe · AGOTADO","85 pts","Lavado","Bongará, Amazonas","Típica, Bourbon, Caturra, CR95","Frutos rojos, manzana, miel y perfil jugoso."]]},
+    sanmartin:{ title:"San Martín", sub:"Valle de Alto Mayo", color:COLORS.sanmartin, alt:"850–1200 m s. n. m.", cafes:[
+      ["Supremo","80 pts","Lavado","Makisapa","Obata, Castilla, Catimor y Pache","Chocolate, frutos secos, amaderado, cuerpo intenso y acidez baja."]]},
+    pozuzo:{ title:"Oxapampa · Pasco", sub:"Pozuzo", color:COLORS.pozuzo, alt:"1800–1850 m s. n. m.", cafes:[
+      ["Heritage","86.5 pts","Lavado · doble fermentación anaeróbica 72 h","Gregorio Espinoza","Obata Rojo","Caramelo, avellanas, manzana roja, cítricos, chocolate y azúcar de caña; cuerpo cremoso."],
+      ["Luxe Black","86.25 pts","Lavado · fermentación anaeróbica doble 90 h","Gregorio Espinoza","Catuai Rojo","Panela, frutos rojos, mandarina, frutos secos, chocolate y cuerpo cremoso."]]}
+  };
+  const panel = document.getElementById("amazonika-panel");
+  const loading = document.getElementById("amazonika-loading");
 
-/* =========================================================================
-   PANEL DE DETALLE DEL MAPA
-   ========================================================================= */
-function renderAmazonikaDetail(originId){
-  const origin = ORIGINS[originId];
-  if(!origin) return;
+  function renderPanel(d){
+    panel.innerHTML = `<div class="om-eyebrow"><span class="om-dot" style="background:${d.color}"></span>Región de origen</div><h3>${d.title}</h3><div class="om-sub">${d.sub}</div>
+      <div class="om-pillrow"><span class="om-pill">${d.alt}</span><span class="om-pill">100% café peruano</span></div>
+      ${d.cafes.map(c => `<div class="om-coffee"><h4>${c[0]}</h4><p><b>${c[1]}</b> · ${c[2]}<br><b>Productor:</b> ${c[3]}<br><b>Variedad:</b> ${c[4]}<br><b>Notas:</b> ${c[5]}</p></div>`).join("")}
+      <div class="om-hint">Selecciona otra región coloreada para cambiar la información.</div>`;
+  }
+  renderPanel(DATA.cajamarca);
 
-  amazonikaDetail.classList.remove("animate");
-  void amazonikaDetail.offsetWidth;
-  amazonikaDetail.classList.add("animate");
+  function setupRegion(layer, data, color){
+    layer.setStyle({ fillColor:color, fillOpacity:.82, color:"#fff", weight:1.5 });
+    layer.on("mouseover", () => { layer.setStyle({ fillOpacity:.96, weight:2.4 }); renderPanel(data); });
+    layer.on("mouseout", () => layer.setStyle({ fillOpacity:.82, weight:1.5 }));
+    layer.on("click", () => renderPanel(data));
+  }
 
-  const coffeeHTML = origin.coffees.map(coffee => `
-    <article class="coffee-card">
-      <div class="coffee-title-row">
-        <div>
-          <h4>${coffee.name}</h4>
-          <div class="coffee-producer">Productor: ${coffee.producer}</div>
-        </div>
-        <div class="coffee-pills">
-          <span class="coffee-pill">${coffee.scoreLabel}</span>
-          <span class="coffee-pill${coffee.soldOut ? " sold" : ""}">${coffee.soldOut ? "Agotado" : "Disponible"}</span>
-        </div>
-      </div>
-      <div class="coffee-notes"><strong>Perfil:</strong> ${coffee.notes}</div>
-      <dl class="coffee-facts">
-        <div><dt>Altitud</dt><dd>${coffee.altitude}</dd></div>
-        <div><dt>Variedad</dt><dd>${coffee.variety}</dd></div>
-        <div><dt>Proceso</dt><dd>${coffee.process}</dd></div>
-        <div><dt>Desde</dt><dd>S/ ${coffee.weights[0].price.toFixed(2)} · ${coffee.weights[0].label}</dd></div>
-      </dl>
-      ${coffee.soldOut
-        ? `<button class="coffee-cta" disabled>Agotado por ahora</button>`
-        : `<button class="coffee-cta" data-goto-product="${coffee.id}">Ver en el marketplace</button>`}
-    </article>
-  `).join("");
-
-  amazonikaDetail.innerHTML = `
-    <div class="origin-header ${origin.cssClass}">
-      <div class="origin-header-eyebrow">Origen Amazónika</div>
-      <h3>${origin.name}</h3>
-      <div class="origin-header-region">${origin.region} · Perú</div>
-      <div class="origin-tagline">${origin.tagline}</div>
-    </div>
-    ${coffeeHTML}
-  `;
-
-  document.querySelectorAll(".origin-button").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.origin === originId);
-  });
-  setActiveMapRegion(originId);
-}
-
-amazonikaDetail.addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-goto-product]");
-  if(!btn) return;
-  const productId = btn.dataset.gotoProduct;
-  const product = PRODUCTS.find(p => p.id === productId);
-  if(!product) return;
-  catalogState.region = "todos";
-  renderCatalog();
-  document.getElementById("catalogo").scrollIntoView({ behavior:"smooth", block:"start" });
-  setTimeout(() => {
-    const card = document.querySelector(`[data-product-id="${productId}"]`);
-    if(card){
-      card.style.outline = `2px solid ${product.accent}`;
-      card.style.outlineOffset = "6px";
-      setTimeout(() => { card.style.outline = "none"; }, 2200);
-    }
-  }, 620);
-});
-
-document.querySelectorAll(".origin-button").forEach(btn => {
-  btn.addEventListener("click", () => renderAmazonikaDetail(btn.dataset.origin));
-});
-
-/* =========================================================================
-   MAPA INTERACTIVO (Leaflet) — regiones destacadas + Pozuzo
-   ========================================================================= */
-const MAP_REGIONS = {
-  san: { dept:"CAJAMARCA", color:"#C9A66B" },
-  bon: { dept:"AMAZONAS",  color:"#5F806D" },
-  vrc: { dept:"PASCO",     color:"#58748C" }
-};
-const POZUZO_COLOR = "#B76E62";
-const amazonikaLayers = {};
-
-function regionStyle(id, active){
-  const color = id === "poz" ? POZUZO_COLOR : MAP_REGIONS[id].color;
-  return { fillColor:color, fillOpacity: active ? .96 : .82, color:"#fff", weight: active ? 2.6 : 1.5 };
-}
-function setActiveMapRegion(originId){
-  Object.entries(amazonikaLayers).forEach(([id, layer]) => layer.setStyle(regionStyle(id, id === originId)));
-}
-
-async function loadAmazonikaMap(){
-  try{
-    if(typeof L === "undefined") throw new Error("Leaflet no disponible");
-    const geoUrl = "https://cdn.jsdelivr.net/gh/juaneladio/peru-geojson@master/peru_departamental_simple.geojson";
-    const resp = await fetch(geoUrl);
-    if(!resp.ok) throw new Error("No se pudo descargar la capa geográfica");
-    const geo = await resp.json();
-
-    const map = L.map("amazonika-leaflet", { attributionControl:false, scrollWheelZoom:false, minZoom:4, maxZoom:8 })
-      .setView([-9.2, -75.2], 5);
-
-    const hoverable = window.matchMedia("(hover:hover)").matches;
-    const bind = (id, layer) => {
-      amazonikaLayers[id] = layer;
-      layer.setStyle(regionStyle(id, false));
-      if(hoverable) layer.on("mouseover", () => renderAmazonikaDetail(id));
-      layer.on("click", () => renderAmazonikaDetail(id));
-    };
-
-    const all = L.geoJSON(geo, {
+  if(typeof L === "undefined"){
+    loading.innerHTML = "No se pudo cargar la cartografía.<br><small>Revisa tu conexión a internet.</small>";
+    return;
+  }
+  const map = L.map("amazonika-leaflet", { attributionControl:false, scrollWheelZoom:false, minZoom:4, maxZoom:8 }).setView([-9.2, -75.2], 5);
+  const geoUrl = "https://cdn.jsdelivr.net/gh/juaneladio/peru-geojson@master/peru_departamental_simple.geojson";
+  fetch(geoUrl).then(r => r.json()).then(g => {
+    const all = L.geoJSON(g, {
       style:{ color:"#cfc6be", weight:1, fillColor:"#ddd7d1", fillOpacity:.52 },
-      onEachFeature:(f, layer) => {
-        const name = (f.properties.NOMBDEP || "").toUpperCase();
-        const id = Object.keys(MAP_REGIONS).find(k => name.includes(MAP_REGIONS[k].dept));
-        if(id){
-          layer.bindTooltip(`${ORIGINS[id].region.split(" · ")[0]} · ${ORIGINS[id].name}`, { sticky:true, className:"deptname" });
-          bind(id, layer);
-        }else{
-          layer.bindTooltip(f.properties.NOMBDEP || "", { sticky:true, className:"deptname" });
-        }
+      onEachFeature:(f, l) => {
+        const n = (f.properties.NOMBDEP || "").toUpperCase();
+        l.bindTooltip(f.properties.NOMBDEP || "", { sticky:true, className:"deptname" });
+        if(n.includes("CAJAMARCA")) setupRegion(l, DATA.cajamarca, COLORS.cajamarca);
+        if(n.includes("AMAZONAS")) setupRegion(l, DATA.amazonas, COLORS.amazonas);
+        if(n.normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes("SAN MARTIN")) setupRegion(l, DATA.sanmartin, COLORS.sanmartin);
       }
     }).addTo(map);
     map.fitBounds(all.getBounds(), { padding:[15,15] });
-
     // Pozuzo es una localidad dentro de Pasco: círculo de acento, interactivo por separado
-    const [lng, lat] = ORIGINS.poz.coordinates;
-    const pozuzo = L.circle([lat, lng], { radius:65000 }).addTo(map);
-    pozuzo.bindTooltip("Pozuzo · Oxapampa", { direction:"top", className:"deptname" });
-    bind("poz", pozuzo);
-
-    amazonikaLoading.style.display = "none";
-    amazonikaStatus.textContent = `Mapa interactivo · ${Object.keys(ORIGINS).length} orígenes`;
-    renderAmazonikaDetail("san");
+    const poz = L.circle([-10.071, -75.551], { radius:65000, color:"#fff", weight:2, fillColor:COLORS.pozuzo, fillOpacity:.92 }).addTo(map);
+    poz.bindTooltip("Pozuzo · Oxapampa", { permanent:false, direction:"top", className:"deptname" });
+    poz.on("mouseover", () => renderPanel(DATA.pozuzo));
+    poz.on("click", () => renderPanel(DATA.pozuzo));
+    loading.style.display = "none";
     setTimeout(() => map.invalidateSize(), 250);
-
-  }catch(error){
-    console.error("Amazonika map error:", error);
-    amazonikaStatus.textContent = "Capa geográfica no disponible";
-    amazonikaLoading.innerHTML = 'No se pudo cargar el mapa<small>Explora los orígenes con los botones de abajo.</small>';
-    renderAmazonikaDetail("san");
-  }
-}
+  }).catch(() => { loading.innerHTML = "No se pudo cargar la cartografía.<br><small>Revisa tu conexión a internet.</small>"; });
+})();
 
 /* =========================================================================
    CATÁLOGO — estado, filtros y render
@@ -1446,7 +1215,6 @@ renderDerivedSections();
 renderCatalog();
 renderHeroPackShot();
 loadCart();
-loadAmazonikaMap();
 
 const header = document.getElementById("siteHeader");
 window.addEventListener("scroll", () => {
