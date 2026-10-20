@@ -459,8 +459,8 @@
     <label class="flex items-center gap-2 text-[11px] label-sm text-[var(--taupe)]">
       Ordenar por
       <select id="sortSelect" class="border border-[var(--line)] bg-transparent px-3 py-2 text-[var(--graphite)] focus:outline-none" style="min-height:44px;">
-        <option value="precio-asc" selected>Precio: menor a mayor</option>
         <option value="recomendados">Recomendados</option>
+        <option value="precio-asc">Precio: menor a mayor</option>
         <option value="precio-desc">Precio: mayor a menor</option>
         <option value="puntaje">Puntaje de catación</option>
       </select>
@@ -508,7 +508,7 @@
       <div>
         <span class="label-sm text-[var(--ivory)]/45">Contacto</span>
         <ul class="mt-4 space-y-3 text-sm text-[var(--ivory)]/70">
-          <li>hola@amazonika.pe</li>
+          <li>contacto@cafeamazonika.com</li>
           <li class="flex gap-3 pt-1">
             <a href="https://www.instagram.com/amazonikacafe/" target="_blank" rel="noopener" class="hover:text-[var(--champagne)]">Instagram</a>
             <a href="#" class="hover:text-[var(--champagne)]">TikTok</a>
@@ -932,31 +932,22 @@ async function loadAmazonikaMap(){
 /* =========================================================================
    CATÁLOGO — estado, filtros y render
    ========================================================================= */
-const catalogState = { region: "todos", sort: "precio-asc" };
+const catalogState = { region: "todos", sort: "recomendados" };
 
 function getFilteredProducts(){
   let list = PRODUCTS.filter(p => catalogState.region === "todos" || p.originId === catalogState.region);
   switch(catalogState.sort){
-    case "precio-asc":  list = [...list].sort((a,b) => a.weights[0].price - b.weights[0].price || b.score - a.score); break;
+    case "precio-asc":  list = [...list].sort((a,b) => a.weights[0].price - b.weights[0].price); break;
     case "precio-desc": list = [...list].sort((a,b) => b.weights[0].price - a.weights[0].price); break;
     case "puntaje":     list = [...list].sort((a,b) => b.score - a.score); break;
   }
   return list;
 }
 
-/* Presentaciones agotadas temporalmente. Para reactivar 500g, deja el arreglo vacío: [] */
-const UNAVAILABLE_WEIGHTS = ["500g"];
-const isWeightUnavailable = (label) => UNAVAILABLE_WEIGHTS.includes(label);
-
 function renderProductCard(p){
-  const defIdx = Math.max(0, p.weights.findIndex(w => !isWeightUnavailable(w.label)));
-  const weightPills = p.weights.map((w,i) => {
-    const off = isWeightUnavailable(w.label);
-    return `
-    <button class="pill weight-pill ${i===defIdx?'active':''}${off?' is-unavailable':''}" data-price="${w.price}" ${off?'disabled aria-disabled="true" title="Agotado por ahora"':''} style="font-size:11px;padding:8px 12px;border:1px solid var(--line);min-height:44px;${off?'opacity:.45;cursor:not-allowed;':''}">
-      <span${off?' style="text-decoration:line-through;"':''}>${w.label}</span>${off?'<span class="block label-sm" style="font-size:9px;color:var(--rust);margin-top:2px;">Agotado</span>':''}
-    </button>`;
-  }).join("");
+  const weightPills = p.weights.map((w,i) => `
+    <button class="pill weight-pill ${i===0?'active':''}" data-price="${w.price}" style="font-size:11px;padding:8px 12px;border:1px solid var(--line);min-height:44px;">${w.label}</button>
+  `).join("");
   const grindPills = p.grinds.map((g,i) => `
     <button class="pill grind-pill ${i===0?'active':''}" style="font-size:11px;padding:8px 12px;border:1px solid var(--line);text-align:left;min-height:44px;">${g}</button>
   `).join("");
@@ -967,7 +958,7 @@ function renderProductCard(p){
 
   return `
   <div class="catalog-card fade-up in-view relative" data-product-id="${p.id}" data-title="${p.name}" data-image="${IMAGES[p.imageKey]}">
-    <button type="button" class="details-toggle product-photo aspect-square w-full text-left p-0 border-0 bg-transparent block" aria-expanded="false" aria-label="Ver notas de cata y variedades de ${p.name}">
+    <button type="button" class="details-toggle product-photo aspect-square w-full text-left p-0 border-0 bg-transparent block" aria-expanded="false" aria-label="Ver notas de cata y presentación de ${p.name}">
       <img src="${IMAGES[p.imageKey]}" alt="Bolsa de café ${p.name} — Amazónika, ${p.place}" class="w-full h-full object-contain p-3" loading="lazy">
       <span class="absolute top-3 left-3 label-sm px-2.5 py-1" style="background:${p.accent};color:var(--ivory);">${p.originName}</span>
       ${p.isNew ? `<div class="sticker sticker-spin absolute top-3 right-3 w-14 h-14 text-[9px] label-sm flex-col leading-tight" style="background:var(--ivory);color:${p.accent};">LOTE<br>NUEVO</div>` : ""}
@@ -976,7 +967,7 @@ function renderProductCard(p){
 
     <div class="pt-5">
       <p class="label-sm text-[var(--taupe)]">${p.place} · ${p.altitude}</p>
-      <button type="button" class="details-toggle w-full text-left p-0 border-0 bg-transparent block" aria-expanded="false" aria-label="Ver notas de cata y variedades de ${p.name}">
+      <button type="button" class="details-toggle w-full text-left p-0 border-0 bg-transparent block" aria-expanded="false" aria-label="Ver notas de cata y presentación de ${p.name}">
         <div class="flex items-start justify-between gap-3 mt-1">
           <h3 class="font-serif text-2xl" style="font-weight:500;">${p.name}</h3>
           <span class="label-sm px-2.5 py-1 border border-[var(--line)] whitespace-nowrap flex-shrink-0" style="color:${p.accent};">${p.scoreLabel}</span>
@@ -986,14 +977,14 @@ function renderProductCard(p){
       <p class="label-sm text-[var(--taupe)] mt-1.5">${p.roast}</p>
 
       <button type="button" class="details-toggle mt-4 pb-3 border-b border-[var(--line)] w-full flex items-center justify-between gap-2 text-[11px] label-sm text-left" style="color:var(--graphite);" aria-expanded="false">
-        <span>Notas de cata y variedades</span>
+        <span>Notas de cata y presentación</span>
         <svg class="details-chevron w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5.5L7 9.5L11 5.5"/></svg>
       </button>
 
       <div class="details-panel hidden mt-4">
         <p class="label-sm text-[var(--taupe)] mb-2">Notas de cata</p>
         <div class="flex flex-wrap gap-1.5">${noteChips}</div>
-        <p class="label-sm text-[var(--taupe)] mt-4 mb-2">Variedades</p>
+        <p class="label-sm text-[var(--taupe)] mt-4 mb-2">Presentación</p>
         <div class="flex flex-wrap gap-1.5">${varietyChips}</div>
 
         <div class="mt-5">
@@ -1010,7 +1001,7 @@ function renderProductCard(p){
       </div>
 
       <div class="mt-6 flex items-center justify-between gap-3">
-        <span class="current-price font-serif text-xl" style="font-weight:500;">S/ ${p.weights[defIdx].price.toFixed(2)}</span>
+        <span class="current-price font-serif text-xl" style="font-weight:500;">S/ ${p.weights[0].price.toFixed(2)}</span>
         ${p.soldOut
           ? `<button class="px-6 py-3 text-[11px] label-sm font-medium ghost-btn" style="min-height:44px;" data-notify="${p.id}">Avísame</button>`
           : `<button class="add-to-cart-btn px-6 py-3 text-[11px] label-sm font-medium" style="background:var(--graphite);color:var(--ivory);min-height:44px;">Añadir</button>`}
@@ -1072,7 +1063,7 @@ document.getElementById("catalogGrid").addEventListener("click", (e) => {
 
   /* La descripción completa (notas de cata, peso y molienda) va colapsada
      por defecto y solo se revela al hacer clic sobre el producto elegido
-     (foto, título o el enlace "Notas de cata y variedades"). */
+     (foto, título o el enlace "Notas de cata y presentación"). */
   if(toggleBtn){
     const panel = card.querySelector(".details-panel");
     const willOpen = panel.classList.contains("hidden");
@@ -1086,7 +1077,7 @@ document.getElementById("catalogGrid").addEventListener("click", (e) => {
     return;
   }
 
-  if(weightBtn && !weightBtn.disabled){
+  if(weightBtn){
     card.querySelectorAll(".weight-pill").forEach(b => b.classList.remove("active"));
     weightBtn.classList.add("active");
     card.querySelector(".current-price").textContent = "S/ " + parseFloat(weightBtn.dataset.price).toFixed(2);
@@ -1098,7 +1089,7 @@ document.getElementById("catalogGrid").addEventListener("click", (e) => {
   if(addBtn){
     const weightActive = card.querySelector(".weight-pill.active");
     const grindActive = card.querySelector(".grind-pill.active");
-    const weight = weightActive.firstElementChild.textContent.trim();
+    const weight = weightActive.textContent.trim();
     const grind = grindActive.textContent.trim();
     const price = parseFloat(weightActive.dataset.price);
     const variantId = card.dataset.productId + "-" + weight + "-" + grind.replace(/\s+/g,"-").toLowerCase();
