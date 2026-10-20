@@ -61,20 +61,6 @@
   .sticker-spin{ animation: sticker-spin 14s linear infinite; }
   @keyframes sticker-spin{ from{ transform:rotate(-8deg);} 50%{ transform:rotate(6deg);} to{ transform:rotate(-8deg);} }
 
-  .ig-tile{ position:relative; overflow:hidden; aspect-ratio:1/1; display:block; }
-  /* El caption va siempre visible (scrim degradado), no solo en :hover:
-     en touch no existe estado hover, así que un overlay hover-only dejaba
-     las tiles sin ninguna leyenda legible en mobile. */
-  .ig-tile .ig-overlay{
-    position:absolute; inset:0;
-    background:linear-gradient(to top, rgba(26,26,26,.78) 0%, rgba(26,26,26,0) 58%);
-    transition: background .3s ease;
-    display:flex; align-items:flex-end; gap:6px; color:var(--ivory);
-    padding:10px;
-  }
-  .ig-tile:hover .ig-overlay, .ig-tile:focus-visible .ig-overlay{ background:rgba(26,26,26,.6); }
-  .ig-tile .ig-overlay svg{ flex-shrink:0; margin-bottom:1px; }
-
   #toast{
     position:fixed; left:50%; bottom:28px; transform:translate(-50%,16px); z-index:70;
     background:var(--graphite); color:var(--ivory); padding:12px 20px; border-radius:2px;
@@ -579,15 +565,17 @@
 </section>
 
 <!-- ================= GALERÍA / COMUNIDAD ================= -->
-<section id="comunidad" class="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28">
+<section id="comunidad" class="max-w-[1400px] mx-auto px-5 md:px-8 py-20 md:py-28" aria-labelledby="igTitle">
   <div class="flex items-end justify-between mb-8 fade-up">
     <div>
       <span class="label">Comunidad</span>
-      <h2 class="font-serif text-[28px] md:text-[36px] mt-2" style="font-weight:500;">@amazonikacafe</h2>
+      <h2 id="igTitle" class="font-serif text-[28px] md:text-[36px] mt-2" style="font-weight:500;">@amazonikacafe</h2>
     </div>
     <a href="https://www.instagram.com/amazonikacafe/" target="_blank" rel="noopener" class="hidden sm:inline label-sm border-b border-[var(--graphite)] pb-0.5 hover:text-[var(--rust)] hover:border-[var(--rust)]">Seguir en Instagram →</a>
   </div>
-  <div id="galleryGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 md:gap-3 fade-up"></div>
+
+  <!-- Perfil + métricas -->
+  <div id="igHeader" class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 fade-up"></div>
 </section>
 
 <!-- ================= FOOTER ================= -->
@@ -605,7 +593,7 @@
       <div>
         <span class="label-sm text-[var(--ivory)]/45">Contacto</span>
         <ul class="mt-4 space-y-3 text-sm text-[var(--ivory)]/70">
-          <li>contacto@cafeamazonika.com</li>
+          <li>hola@amazonika.pe</li>
           <li class="flex gap-3 pt-1">
             <a href="https://www.instagram.com/amazonikacafe/" target="_blank" rel="noopener" class="hover:text-[var(--champagne)]">Instagram</a>
             <a href="#" class="hover:text-[var(--champagne)]">TikTok</a>
@@ -1211,29 +1199,46 @@ document.getElementById("sortSelect").addEventListener("change", (e) => {
 });
 
 /* =========================================================================
-   GALERÍA DE COMUNIDAD
+   COMUNIDAD — encabezado de perfil de @amazonikacafe
    ========================================================================= */
-/* Nota: Instagram bloquea el scraping (robots.txt), así que no es posible
-   traer automáticamente las fotos/captions reales de @amazonikacafe. En vez
-   de simular publicaciones inventadas, cada tile es un enlace real al
-   perfil — el texto solo describe el tipo de contenido, alineado a los 4
-   orígenes y productos reales del catálogo (antes faltaba Villa Rica). */
-const GALLERY = [
-  { caption: "Cosecha en San Ignacio, Cajamarca", color: "#9A6237" },
-  { caption: "Secado en camas africanas — Pozuzo", color: "#3F725F" },
-  { caption: "Empacando el lote Imperial", color: "#8C6847" },
-  { caption: "Selección de cerezas en Bongará", color: "#6E8D4F" },
-  { caption: "V60 en el taller de Lima", color: "#C5A880" },
-  { caption: "Bolsas Supremo — Villa Rica", color: "#C79A3E" }
-];
-document.getElementById("galleryGrid").innerHTML = GALLERY.map(g => `
-  <a href="https://www.instagram.com/amazonikacafe/" target="_blank" rel="noopener" class="ig-tile" style="background:linear-gradient(160deg,${g.color}33,${g.color}77);" aria-label="Ver @amazonikacafe en Instagram">
-    <div class="ig-overlay">
-      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="16" height="16" rx="4"/><circle cx="10" cy="10" r="3.6"/><circle cx="14.3" cy="5.7" r="0.7" fill="currentColor"/></svg>
-      <span class="text-[10px] leading-tight label-sm">${g.caption}</span>
+/* Instagram no permite extraer datos desde el navegador (login obligatorio),
+   así que las métricas se editan aquí. `followers` se muestra solo si lo
+   completas; mientras sea null, la segunda tarjeta enlaza al perfil. */
+const IG_PROFILE = {
+  user: "amazonikacafe",
+  name: "Amazónika Café",
+  bio: "Café peruano de especialidad · directo del caficultor a tu taza ☕",
+  url: "https://www.instagram.com/amazonikacafe/",
+  posts: "+60",
+  followers: null
+};
+
+function renderIgHeader(){
+  const tile = (value, label) => `
+    <div class="border border-[var(--line)] bg-[var(--ivory-2)] p-5 md:p-6 flex flex-col justify-between min-h-[112px]">
+      <span class="font-serif text-[26px] md:text-[32px] leading-none" style="font-weight:500;">${value}</span>
+      <span class="label-sm text-[var(--taupe)] mt-4">${label}</span>
+    </div>`;
+  const profileTile = `
+    <a href="${IG_PROFILE.url}" target="_blank" rel="noopener" class="border border-[var(--line)] bg-[var(--ivory-2)] p-5 md:p-6 flex flex-col justify-between min-h-[112px] hover:border-[var(--graphite)] transition-colors">
+      <span class="font-serif text-[26px] md:text-[32px] leading-none" style="font-weight:500;">↗</span>
+      <span class="label-sm text-[var(--taupe)] mt-4">Ver perfil</span>
+    </a>`;
+  document.getElementById("igHeader").innerHTML = `
+    <div class="col-span-2 border border-[var(--line)] bg-[var(--ivory)] p-5 md:p-6 flex items-center gap-4 md:gap-5">
+      <div class="w-16 h-16 md:w-20 md:h-20 rounded-full flex-shrink-0 flex items-center justify-center font-serif italic text-2xl text-[var(--ivory)]" style="background:linear-gradient(135deg,var(--rust),var(--champagne));" aria-hidden="true">A</div>
+      <div class="min-w-0">
+        <p class="font-serif text-xl md:text-2xl leading-tight" style="font-weight:500;">${IG_PROFILE.name}</p>
+        <p class="text-[12px] text-[var(--taupe)] mt-0.5">@${IG_PROFILE.user}</p>
+        <p class="text-[13px] text-[var(--graphite-70)] mt-2 leading-snug">${IG_PROFILE.bio}</p>
+        <a href="${IG_PROFILE.url}" target="_blank" rel="noopener" class="inline-flex items-center mt-3 px-5 text-[11px] label-sm font-medium tracking-widest ghost-btn" style="min-height:44px;">Seguir</a>
+      </div>
     </div>
-  </a>
-`).join("");
+    ${tile(IG_PROFILE.posts, "Publicaciones")}
+    ${IG_PROFILE.followers != null ? tile(IG_PROFILE.followers.toLocaleString("es-PE"), "Seguidores") : profileTile}
+  `;
+}
+renderIgHeader();
 
 /* =========================================================================
    MARQUEE
