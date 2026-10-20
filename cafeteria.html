@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0b0f17" />
+    <meta name="description" content="Amazónika Café — Café de especialidad de origen amazónico peruano. Sostenibilidad, trazabilidad y comercio directo con caficultores." />
+    
+    <title>Amazónika Café — Especialidad & Origen Amazónico</title>
+
+    <!-- Preconexión a servidores de fuentes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Tipografías: Bricolage Grotesque (Titulares) & Instrument Sans (Cuerpo) -->
+    <link 
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" 
+      rel="stylesheet" 
+    />
+
+    <style>
+      :root {
+        --bg-dark: #0b0f17;
+        --bg-card: #131924;
+        --accent-green: #00e676;
+        --accent-green-hover: #00c853;
+        --text-primary: #ffffff;
+        --text-secondary: #94a3b8;
+        --border-color: #1e293b;
+        --font-heading: 'Bricolage Grotesque', sans-serif;
+        --font-body: 'Instrument Sans', sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      h1, h2, h3, .font-heading {
+        font-family: var(--font-heading);
+        letter-spacing: -0.02em;
+      }
+
+      /* Contenedor global */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+      }
+
+      /* Navbar */
+      header {
+        border-bottom: 1px solid var(--border-color);
+        padding: 1.25rem 0;
+        position: sticky;
+        top: 0;
+        background-color: rgba(11, 15, 23, 0.9);
+        backdrop-filter: blur(10px);
+        z-index: 100;
+      }
+
+      .nav-wrapper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-family: var(--font-heading);
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        text-decoration: none;
+      }
+
+      .logo span {
+        color: var(--accent-green);
+      }
+
+      nav a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        margin-left: 2rem;
+        font-size: 0.95rem;
+        transition: color 0.2s ease;
+      }
+
+      nav a:hover {
+        color: var(--accent-green);
+      }
+
+      /* Botón de Acción */
+      .btn-primary {
+        background-color: var(--accent-green);
+        color: #000000;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        text-decoration: none;
+        display: inline-block;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        border: none;
+        cursor: pointer;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--accent-green-hover);
+        transform: translateY(-1px);
+      }
+
+      /* Sección Hero */
+      .hero {
+        padding: 6rem 0 4rem;
+        text-align: center;
+      }
+
+      .badge {
+        display: inline-block;
+        background-color: rgba(0, 230, 118, 0.1);
+        color: var(--accent-green);
+        border: 1px solid rgba(0, 230, 118, 0.2);
+        padding: 0.35rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+      }
+
+      .hero h1 {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        max-width: 800px;
+        margin: 0 auto 1.5rem;
+      }
+
+      .hero p {
+        color: var(--text-secondary);
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto 2.5rem;
+      }
+
+      /* Grilla de Productos / Métricas */
+      .features {
+        padding: 4rem 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        padding: 2rem;
+        border-radius: 1rem;
+        transition: border-color 0.2s ease;
+      }
+
+      .card:hover {
+        border-color: rgba(0, 230, 118, 0.4);
+      }
+
+      .card h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.75rem;
+        color: var(--text-primary);
+      }
+
+      .card p {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+      }
+
+      /* Footer */
+      footer {
+        border-top: 1px solid var(--border-color);
+        padding: 3rem 0;
+        margin-top: 4rem;
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+      }
+
+      /* Responsivo */
+      @media (max-width: 768px) {
+        .hero h1 {
+          font-size: 2.25rem;
+        }
+        nav {
+          display: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Encabezado / Navegación -->
+    <header>
+      <div class="container nav-wrapper">
+        <a href="#" class="logo">AMAZÓNIKA<span>.</span></a>
+        <nav>
+          <a href="#origen">Origen</a>
+          <a href="#productos">Cafés de Especialidad</a>
+          <a href="#trazabilidad">Trazabilidad</a>
+          <a href="#contacto">Contacto</a>
+        </nav>
+        <a href="#tienda" class="btn-primary">Ver Tienda</a>
+      </div>
+    </header>
+
+    <main class="container">
+      <!-- Sección Principal (Hero) -->
+      <section class="hero">
+        <span class="badge">100% Arábica de Gran Altura</span>
+        <h1>Café de especialidad con alma amazónica</h1>
+        <p>Conectamos directo a pequeños productores de la selva alta peruana con los amantes del café de especialidad.</p>
+        <a href="#productos" class="btn-primary">Explorar Colección</a>
+      </section>
+
+      <!-- Grilla de Características / Propuesta de Valor -->
+      <section id="origen" class="features">
+        <article class="card">
+          <h3>Origen Directo</h3>
+          <p>Cosechado a mano a más de 1,600 msnm en la Amazonía peruana por familias caficultoras socias.</p>
+        </article>
+
+        <article class="card">
+          <h3>Puntaje SCA +84</h3>
+          <p>Micro-lotes seleccionados y sometidos a catas estrictas que garantizan perfiles limpios y memorables.</p>
+        </article>
+
+        <article class="card">
+          <h3>Trazabilidad Transparente</h3>
+          <p>Cada bolsa cuenta la historia exacta del origen, proceso de beneficio (Lavado, Honey, Natural) y productor.</p>
+        </article>
+      </section>
+    </main>
+
+    <!-- Pie de Página -->
+    <footer>
+      <div class="container">
+        <p>&copy; 2026 Amazónika Café. Todos los derechos reservados. Cultivado y tostado en Perú.</p>
+      </div>
+    </footer>
+
+  </body>
+</html>
