@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Studio Soul Sisters · Reserva tu cita</title>
 <meta name="description" content="Maquillaje, peinado, uñas, rostro y podología. Reserva tu cita en Studio Soul Sisters.">
-<meta name="theme-color" content="#F7F4EF">
+<meta name="theme-color" content="#fdf6f3">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,400;0,500;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#F7F4EF;--surface:#fff;--ink:#2a1a20;--muted:#6f5f64;--line:rgba(42,26,32,.12);
-  --rose:#b3395b;--rose-d:#8f2a47;--gold:#a9823a;--blush:#f3e4e2;--night:#1d0f15;
+  --bg:#fdf6f3;--surface:#fff;--ink:#3a1d31;--muted:#6f5f64;--line:rgba(42,26,32,.12);
+  --rose:#ab5d67;--rose-d:#8f4953;--gold:#c98f7d;--blush:#f8dbd6;--night:#3b1e33;--plum:#4e2941;--navbg:#faf1ed;
   --display:'Bodoni Moda',Georgia,serif;--body:'Jost',system-ui,sans-serif;
   --ease:cubic-bezier(.22,.8,.24,1);--gx:50%;--gy:50%;
 }
@@ -31,7 +31,7 @@ h2{font-family:var(--display);font-weight:400;font-size:clamp(32px,5vw,54px);lin
 .btn{position:relative;display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 28px;border-radius:999px;border:1px solid var(--ink);background:transparent;color:var(--ink);font:400 15px var(--body);letter-spacing:.04em;text-decoration:none;cursor:pointer;transition:transform .35s var(--ease),background .3s,color .3s,box-shadow .35s}
 .btn:hover{transform:translateY(-2px)}
 .btn.p{background:var(--rose);border-color:var(--rose);color:#fff}
-.btn.p:hover{background:var(--rose-d);box-shadow:0 10px 36px -6px rgba(179,57,91,.65),0 0 0 6px rgba(179,57,91,.14)}
+.btn.p:hover{background:var(--rose-d);box-shadow:0 10px 36px -6px rgba(171,93,103,.65),0 0 0 6px rgba(171,93,103,.14)}
 .btn.g{border-color:rgba(255,255,255,.7);color:#fff}.btn.g:hover{background:rgba(255,255,255,.14)}
 .btn:focus-visible,a:focus-visible,button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
 /* nav */
@@ -91,8 +91,8 @@ h2{font-family:var(--display);font-weight:400;font-size:clamp(32px,5vw,54px);lin
 .tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:22px}
 .card{position:relative;background:var(--surface);border:1px solid var(--line);border-radius:22px;overflow:hidden;transform-style:preserve-3d;transition:transform .25s ease-out,box-shadow .4s,border-color .4s;display:flex;flex-direction:column}
-.card::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .35s;background:radial-gradient(320px circle at var(--gx) var(--gy),rgba(179,57,91,.16),transparent 60%)}
-.card:hover{box-shadow:0 24px 50px -24px rgba(42,26,32,.45);border-color:rgba(179,57,91,.4)}
+.card::before{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;transition:opacity .35s;background:radial-gradient(320px circle at var(--gx) var(--gy),rgba(171,93,103,.16),transparent 60%)}
+.card:hover{box-shadow:0 24px 50px -24px rgba(42,26,32,.45);border-color:rgba(171,93,103,.4)}
 .card:hover::before{opacity:1}
 .ph{aspect-ratio:4/5;background:linear-gradient(135deg,var(--blush),#e9cfd2);overflow:hidden;display:grid;place-items:center;font:italic 44px var(--display);color:var(--rose)}
 .ph img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease)}
@@ -121,8 +121,8 @@ h2{font-family:var(--display);font-weight:400;font-size:clamp(32px,5vw,54px);lin
 .why h3{font:500 18px var(--body);margin:6px 0}.why p{color:var(--muted);font-size:15px}
 @media(max-width:860px){.why{grid-template-columns:1fr 1fr}}@media(max-width:520px){.why{grid-template-columns:1fr}}
 /* cita */
-.cta{background:var(--night);color:#fff;border-radius:32px;padding:clamp(36px,7vw,84px);position:relative;overflow:hidden;isolation:isolate}
-.cta::before{content:"";position:absolute;width:520px;height:520px;right:-120px;top:-160px;background:radial-gradient(circle,rgba(179,57,91,.55),transparent 65%);z-index:-1;animation:pulse 6s ease-in-out infinite}
+.cta{background:var(--plum);color:#fff;border-radius:32px;padding:clamp(36px,7vw,84px);position:relative;overflow:hidden;isolation:isolate}
+.cta::before{content:"";position:absolute;width:520px;height:520px;right:-120px;top:-160px;background:radial-gradient(circle,rgba(171,93,103,.55),transparent 65%);z-index:-1;animation:pulse 6s ease-in-out infinite}
 @keyframes pulse{50%{transform:scale(1.25);opacity:.7}}
 .cta .sub{color:rgba(255,255,255,.8)}.cta .kk{color:#f1d9a8}
 .cta form{display:flex;gap:10px;margin-top:28px;flex-wrap:wrap}
@@ -137,7 +137,7 @@ footer{padding-block:60px 90px;border-top:1px solid var(--line);margin-top:clamp
 @media(max-width:760px){.fg{grid-template-columns:1fr 1fr}.fg>div:first-child{grid-column:1/-1}}
 .copy{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
 .mbar{display:none}
-@media(max-width:700px){.mbar{display:flex;position:fixed;z-index:40;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));justify-content:center;transform:translateY(140%);transition:transform .45s var(--ease)}.mbar.on{transform:none}.mbar .btn{width:100%;justify-content:center;box-shadow:0 12px 30px -8px rgba(179,57,91,.7)}}
+@media(max-width:700px){.mbar{display:flex;position:fixed;z-index:40;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));justify-content:center;transform:translateY(140%);transition:transform .45s var(--ease)}.mbar.on{transform:none}.mbar .btn{width:100%;justify-content:center;box-shadow:0 12px 30px -8px rgba(171,93,103,.7)}}
 /* reveal */
 .rv{opacity:0;transform:translateY(32px);transition:opacity .9s var(--ease),transform .9s var(--ease);transition-delay:calc(var(--i,0)*90ms)}
 .rv.in{opacity:1;transform:none}
@@ -189,6 +189,13 @@ footer{padding-block:60px 90px;border-top:1px solid var(--line);margin-top:clamp
 body.lock{overflow:hidden}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:99px;opacity:0;transition:.3s;z-index:300;font-size:14px;pointer-events:none}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+.logo{display:flex;align-items:center;gap:10px}.logo svg{width:28px;height:34px;flex:none}.logo span{line-height:1.05}
+.btn.plum{background:var(--plum);border-color:var(--plum);color:#fff}.btn.plum:hover{box-shadow:0 10px 30px -8px rgba(78,41,65,.7)}
+.links .btn.plum{min-height:42px;padding:0 20px}
+.cartb{position:relative;width:44px;height:44px;border:0;background:none;color:inherit;cursor:pointer;display:grid;place-items:center}.cartb svg{width:24px;height:24px}
+.cartb i{position:absolute;top:2px;right:0;min-width:18px;height:18px;border-radius:99px;background:var(--rose);color:#fff;font:500 11px/18px var(--body);font-style:normal;text-align:center;padding:0 4px}
+.nav.s{background:color-mix(in srgb,var(--navbg) 82%,transparent)}
+.ub{background:var(--rose);color:#fff;border-radius:99px;font-size:11px;padding:1px 8px;margin-left:6px}
 .tl{background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0;text-align:left}
 section[id]{scroll-margin-top:70px}
 .sec{content-visibility:auto;contain-intrinsic-size:auto 700px}
@@ -196,11 +203,11 @@ section[id]{scroll-margin-top:70px}
 </head>
 <body>
 <header class="nav" id="nav"><div class="c">
-  <a class="logo" href="#top" aria-label="Studio Soul Sisters"><small>Studio</small>Soul Sisters</a>
+  <a class="logo" href="#top" aria-label="Studio Soul Sisters"><svg viewBox="0 0 48 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M24 54V30"/><path d="M24 30C24 18 20 8 14 4c-1 10 2 20 10 26z"/><path d="M24 30c0-12 4-22 10-26 1 10-2 20-10 26z"/><path d="M24 40c-7-1-13-6-16-13 8 0 14 4 16 13z"/><path d="M24 40c7-1 13-6 16-13-8 0-14 4-16 13z"/></svg><span><small>Studio</small>Soul Sisters</span></a>
   <nav class="links" id="links" aria-label="Principal">
-    <a href="#servicios">Servicios</a><a href="#nosotros">Nosotras</a><a href="#porque">Por qué elegirnos</a><a href="#contacto">Contacto</a>
-    <button class="tl" data-go="mine" style="font-size:14px;letter-spacing:.06em">Mis citas</button>
-    <button class="btn" data-go="book">Reservar cita</button>
+    <a href="#top">Inicio</a><a href="#servicios">Servicios</a><a href="#reservar" data-go="book">Reservar cita</a><a href="#contacto">Contacto</a>
+    <button class="cartb" data-go="cart" aria-label="Carrito de reservas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg><i id="cn" hidden>0</i></button>
+    <button class="btn plum" data-go="mine"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Mis citas</button>
   </nav>
   <button class="burger" id="burger" aria-label="Menú" aria-expanded="false"><i></i><i></i></button>
 </div></header>
@@ -241,7 +248,7 @@ section[id]{scroll-margin-top:70px}
   <div class="fg">
     <div><a class="logo" href="#top" style="color:inherit;margin:0;font-size:26px"><small>Studio</small>Soul Sisters</a><p style="margin-top:12px">Maquillaje y estética en Lima.</p></div>
     <div><b>Servicios</b><a href="#servicios">Maquillaje</a><a href="#servicios">Uñas</a><a href="#servicios">Rostro y cejas</a><a href="#servicios">Podología</a></div>
-    <div><b>Salón</b><a href="#nosotros">Nosotras</a><a href="#porque">Por qué elegirnos</a><button class="tl" data-go="admin" style="color:var(--muted);font-size:15px;margin:6px 0">Acceso del salón</button></div>
+    <div><b>Salón</b><a href="#nosotros">Nosotras</a><a href="#porque">Por qué elegirnos</a><button class="tl" data-go="admin" style="color:var(--muted);font-size:15px;margin:6px 0">Acceso del salón<span class="ub" id="ub" hidden></span></button></div>
     <div><b>Redes</b><a href="https://www.instagram.com/studio.soulsisters/" target="_blank" rel="noopener">Instagram</a><a id="tk" hidden target="_blank" rel="noopener">TikTok</a><a id="fb" hidden target="_blank" rel="noopener">Facebook</a></div>
   </div>
   <div class="copy">© <span id="yr"></span> Studio Soul Sisters. Todos los derechos reservados.</div>
@@ -262,19 +269,19 @@ section[id]{scroll-margin-top:70px}
    equipo, horarios, tarjeta lateral fija) y un flujo de reserva en pantalla completa con resumen y barra inferior.
    Marca provisional rosa / ciruela / dorado: ajusta los tokens de :root con la identidad final. */
 :root{
-  --bg:#fbf4f2; --surface:#ffffff; --ink:#2a1620; --muted:#7d6670; --line:#eedcd9; --soft:#f6e8e6;
-  --rose:#b3395b; --rose-ink:#ffffff; --blush:#f4dcdf; --gold:#a9823a;
+  --bg:#fdf6f3; --surface:#ffffff; --ink:#3a1d31; --muted:#7a6270; --line:#f0dcd7; --soft:#faebe7;
+  --rose:#ab5d67; --rose-ink:#ffffff; --blush:#f8dbd6; --gold:#c98f7d; --plum:#4e2941; --nav:#faf1ed;
   --ok:#2f7a55; --warn:#a56a12; --bad:#b0342a;
   --sh:0 1px 2px rgba(60,20,35,.06),0 8px 24px rgba(60,20,35,.07);
   --display:'Bodoni Moda','Didot',Georgia,serif; --body:'Jost','Helvetica Neue',Arial,sans-serif; --r:16px; color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#1a1016; --surface:#25171e; --ink:#f7e9e6; --muted:#b79da6; --line:#3b2832; --soft:#2f1e27;
-  --rose:#e07a98; --rose-ink:#2a1620; --blush:#3a222c; --gold:#d3ae67; --ok:#6fcf9b; --warn:#e5b25d; --bad:#f08a80;
+  --rose:#d98a95; --rose-ink:#2a1620; --blush:#3a222c; --gold:#d3a08f; --plum:#7a4a6b; --nav:#25171e; --ok:#6fcf9b; --warn:#e5b25d; --bad:#f08a80;
   --sh:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark;}}
 :root[data-theme="dark"]{
   --bg:#1a1016; --surface:#25171e; --ink:#f7e9e6; --muted:#b79da6; --line:#3b2832; --soft:#2f1e27;
-  --rose:#e07a98; --rose-ink:#2a1620; --blush:#3a222c; --gold:#d3ae67; --ok:#6fcf9b; --warn:#e5b25d; --bad:#f08a80;
+  --rose:#d98a95; --rose-ink:#2a1620; --blush:#3a222c; --gold:#d3a08f; --plum:#7a4a6b; --nav:#25171e; --ok:#6fcf9b; --warn:#e5b25d; --bad:#f08a80;
   --sh:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35); color-scheme:dark;}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;padding-block:0 40px}
@@ -284,13 +291,15 @@ h1,h2,h3{margin:0;font-weight:500;text-wrap:balance}
 :focus-visible{outline:2px solid var(--rose);outline-offset:2px}
 .emb #hero{display:none}.emb .anchors,.emb .mbar{display:none}
 .top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:14px;flex-wrap:wrap}
-.brand{display:flex;flex-direction:column;line-height:1}
+.brand{display:flex;align-items:center;gap:10px;line-height:1;color:var(--rose)}.brand .bt{display:flex;flex-direction:column;color:var(--ink)}.brand svg{width:34px;height:40px;flex:none}
 .brand small{font-size:10.5px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold);font-weight:500}
 .brand b{font-family:var(--display);font-style:italic;font-weight:500;font-size:25px}
 .topr{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .pill-nav{display:flex;gap:4px;background:var(--soft);padding:4px;border-radius:99px}
 .pill-nav button{border:0;background:none;padding:7px 16px;border-radius:99px;cursor:pointer;color:var(--muted);font-weight:500;font-size:14px}
-.pill-nav button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--sh)}
+.pill-nav button[aria-selected="true"]{background:var(--plum);color:#fff;box-shadow:var(--sh)}
+.top{background:var(--nav)}
+.btn.plum{background:var(--plum);border-color:var(--plum);color:#fff}.btn.plum:hover{filter:brightness(1.15)}
 .who{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);min-width:0}
 .who img{width:30px;height:30px;border-radius:50%}
 .who span.n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:130px}
@@ -507,7 +516,7 @@ html{scroll-behavior:smooth}
 .hs{position:absolute;inset:0;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s linear .9s}
 .hs.on{opacity:1;visibility:visible;transition:opacity .9s ease}
 .hs>img,.hs>.bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 38%}
-.hs>.bg{background:linear-gradient(135deg,#b3395b,#a9823a)}
+.hs>.bg{background:linear-gradient(135deg,#ab5d67,#c98f7d)}
 .hs::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(20,8,14,.84) 0%,rgba(20,8,14,.46) 42%,rgba(20,8,14,.12) 100%)}
 .hs .tx{position:absolute;z-index:2;left:0;right:0;bottom:clamp(76px,13vh,130px)}
 .tx-in{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -566,6 +575,47 @@ html{scroll-behavior:smooth}
 .ph0{display:grid;place-items:center;color:var(--muted);font-size:12px}
 .hsf{flex:1;min-width:240px;display:grid;gap:10px}
 .done{max-width:560px;margin:30px auto;text-align:left}
+/* inicio de sesión (referencia de marca) */
+.lg-main{padding:0!important;display:grid}
+.lg{display:grid;grid-template-columns:1fr 1fr;min-height:100%}
+.lg-l{background:#fefdfd;display:grid;align-content:center;justify-items:center;padding:36px 24px}
+.lg-f{width:100%;max-width:420px;display:grid;gap:14px;text-align:center}
+.lg-orn{display:flex;align-items:center;gap:14px;color:var(--rose)}.lg-orn i{flex:1;height:1px;background:var(--rose);opacity:.45}.lg-orn svg{width:38px;height:46px}
+.lg-f h2{font-family:var(--display);font-size:clamp(32px,4vw,44px);color:var(--plum);line-height:1.1}
+.lg-f .lsub{font-size:18px;color:var(--ink)}.lg-f .lsub b{color:var(--rose);font-weight:400}
+.lgi{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:0 14px;min-height:54px;color:var(--muted);text-align:left}
+.lgi:focus-within{border-color:var(--rose);box-shadow:0 0 0 3px rgba(171,93,103,.15)}
+.lgi svg{width:22px;height:22px;flex:none;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.lgi input{flex:1;min-width:0;border:0;outline:0;background:none;font-size:16px;color:var(--ink);padding:14px 0}
+.lgi button{border:0;background:none;cursor:pointer;color:var(--muted);padding:6px;display:grid}
+.lg-link{background:none;border:0;color:var(--ink);text-decoration:underline;cursor:pointer;font-size:14.5px;padding:4px}
+.lg-go{min-height:54px;border-radius:14px;border:0;background:var(--rose);color:#fff;font-size:17px;font-weight:500;cursor:pointer}.lg-go:hover{filter:brightness(.94)}
+.lg-div{display:flex;align-items:center;gap:12px;color:var(--muted);font-size:14px}.lg-div i{flex:1;height:1px;background:var(--line)}
+.lg-note{font-size:12.5px;color:var(--muted)}
+.lg-r{background:linear-gradient(135deg,#f8dbd6,#f3c9c4 70%,#ecbeb9);display:grid;align-content:center;padding:36px clamp(24px,5vw,64px);gap:18px}
+.lg-r h3{font-family:var(--display);font-size:clamp(28px,3.4vw,40px);line-height:1.1;color:var(--ink)}
+.lg-r>p{font-size:18px;max-width:28ch}
+.lg-b{display:grid;gap:14px;margin:6px 0}
+.lg-b div{display:flex;align-items:center;gap:14px;font-size:16px}
+.lg-b span{width:50px;height:50px;border-radius:50%;background:#ecbeb9;color:var(--plum);display:grid;place-items:center;flex:none}
+.lg-b svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.lg-r .btn{justify-self:start;min-height:52px;padding:0 34px;font-size:16px;border-radius:14px}
+@media(max-width:820px){.lg{grid-template-columns:1fr}.lg-l{padding:24px 18px}.lg-r{padding:28px 20px}.lg-b span{width:42px;height:42px}}
+/* carrito y avisos */
+.cartrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;padding:14px 0;border-top:1px solid var(--line)}
+.cartrow:first-of-type{border-top:0}
+.cartrow .pr{font-family:var(--display);font-size:20px;white-space:nowrap}
+.sumbox{background:var(--blush);border-radius:16px;padding:16px 18px;display:grid;gap:6px;margin-top:14px}
+.sumbox div{display:flex;justify-content:space-between;gap:10px}.sumbox b{font-family:var(--display);font-size:22px;font-weight:500}
+.alert{border:1px solid var(--line);border-left:4px solid var(--rose);border-radius:14px;padding:14px 16px;background:var(--surface);display:grid;gap:8px;margin-top:12px}
+.alert.old{border-left-color:var(--line);opacity:.9}
+.alert .hd{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.alert .acts{display:flex;gap:8px;flex-wrap:wrap}.alert .acts .btn{text-decoration:none}
+.alert textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--bg);min-height:56px}
+.newb{background:var(--rose);color:#fff;border-radius:99px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px}
+.banner{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:var(--blush);border:1px solid var(--rose);border-radius:14px;padding:12px 16px;margin-bottom:14px}
+.top{padding-inline:max(16px,env(safe-area-inset-left,0px))}
+
 .done h2{color:var(--rose);font-size:34px}
 .okc{width:56px;height:56px;border-radius:50%;background:var(--rose);color:var(--rose-ink);display:grid;place-items:center;font-size:26px;margin-bottom:14px}
 </style>
@@ -573,7 +623,7 @@ html{scroll-behavior:smooth}
 </head><body>
 <div class="wrap">
   <header class="top">
-    <div class="brand"><small>Studio</small><b>Soul Sisters</b></div>
+    <div class="brand"><svg viewBox="0 0 48 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M24 54V30"/><path d="M24 30C24 18 20 8 14 4c-1 10 2 20 10 26z"/><path d="M24 30c0-12 4-22 10-26 1 10-2 20-10 26z"/><path d="M24 40c-7-1-13-6-16-13 8 0 14 4 16 13z"/><path d="M24 40c7-1 13-6 16-13-8 0-14 4-16 13z"/></svg><div class="bt"><small>Studio</small><b>Soul Sisters</b></div></div>
     <div class="topr"><nav class="pill-nav" id="tabs" role="tablist"></nav><div class="who" id="who"></div></div>
   </header>
 </div>
@@ -604,7 +654,7 @@ const fm=t=>pad(Math.floor(t/60))+':'+pad(t%60);
 const fDay=(s,o)=>new Intl.DateTimeFormat('es-PE',o||{weekday:'long',day:'numeric',month:'long'}).format(pd(s));
 const money=n=>n?'S/ '+Number(n).toLocaleString('es-PE'):'Consultar';
 const tot=t=>t.price?money(t.price)+(t.q?' + consultar':''):(t.n?'Consultar':'S/ 0');
-const EMB=window.parent!==window;if(EMB)document.documentElement.classList.add('emb');
+const EMB=true;document.documentElement.classList.add('emb');
 const post=(t,x)=>{try{parent.postMessage({ss:t,...(x||{})},'*')}catch(e){}};
 let ASSETS={};const blob=id=>ASSETS[id]||'/_blob/'+id;
 const dur=m=>m<60?m+' min':Math.floor(m/60)+' h'+(m%60?' '+(m%60)+' min':'');
@@ -614,7 +664,7 @@ const DEFAULT_ABOUT='Maquillaje profesional, peinado y cuidado de cejas para tus
 const DEFAULT_WHY=[{t:'Reserva en línea',d:'Elige profesional, día y hora libres, sin esperar respuestas.'},{t:'Profesionales por especialidad',d:'Maquillaje, peinado, cejas, uñas, rostro y podología en un solo lugar.'},{t:'Confirmación por WhatsApp',d:'El salón confirma tu cita y coordina el adelanto contigo.'}];
 const DEFAULT_SLIDES=[{kicker:'Maquillaje y estética',title:'Tu look, a tu hora',sub:'Reserva en línea y elige un horario libre.',cta:'Reservar cita'}];
 const okUrl=v=>{v=(v||'').trim();return /^https?:\/\//i.test(v)?v:''};
-const TONES=['#b3395b','#a9823a','#7a4a6b','#c0705a','#5d7f74'];
+const TONES=['#ab5d67','#c98f7d','#7a4a6b','#c0705a','#5d7f74'];
 const SHADES=['#f6e0cf','#efcfb4','#e2b894','#cf9a74','#b87a58','#946044','#6e4531','#4a2e22'];
 
 const S={db:null,user:null,me:null,uid:null,isAdmin:false,tab:'book',atab:'agenda',loaded:{},err:null,late:false,
@@ -667,7 +717,7 @@ function pickStaff(){
 }
 function gate(){
   if(!S.db)return 'Esta página guarda las citas en Claude. Ábrela desde el enlace compartido con tu cuenta.';
-  if(!S.uid)return S.local?'Ingresa con tu nombre y WhatsApp para reservar y ver tus citas.':'Inicia sesión en Claude para reservar y ver tus citas.';
+  if(!S.uid)return S.local?'Inicia sesión o crea tu cuenta para reservar y ver tus citas.':'Inicia sesión en Claude para reservar y ver tus citas.';
   if(S.err)return 'No se pudo leer la agenda ('+S.err+'). Recarga la página.';
   if(S.late&&!S.loaded.services)return 'La agenda tarda en responder. Revisa tu conexión.';
   return null;
@@ -678,9 +728,10 @@ function renderHead(){
   const w=$('#who');w.replaceChildren();
   if(S.me&&S.uid)w.append(h('img',{src:S.me.avatarUrl,alt:''}),h('span',{class:'n'},S.me.name||'Invitada'),...(S.isAdmin?[h('span',{class:'badge'},'Salón')]:[]));
   if(S.local)w.append(S.uid?h('button',{class:'btn sm',onclick:logout},'Salir'):h('button',{class:'btn sm primary',onclick:()=>{S.loginOpen=true;render()}},'Ingresar'));
-  const tabs=[['book',EMB?'Reservar':'Salón'],['mine','Mis citas']];if(S.isAdmin)tabs.push(['admin','Panel']);
-  $('#tabs').replaceChildren(...tabs.map(([k,l])=>h('button',{role:'tab','aria-selected':String(S.tab===k),onclick:()=>{S.tab=k;if(EMB&&k==='book'){S.embOpen=true;openFlow();return}render()}},l)));
-  if(EMB)w.append(h('button',{class:'btn sm',id:'emb-x',onclick:()=>{S.embOpen=false;post('close')}},'✕ Volver al sitio'));
+  const nC=cartItems().length,nU=unreadCount();
+  const tabs=[['book','Reservar'],['mine','Mis citas'],['cart','Carrito'+(nC?' ('+nC+')':'')]];if(S.isAdmin)tabs.push(['admin','Panel'+(nU?' ('+nU+')':'')]);
+  $('#tabs').replaceChildren(...tabs.map(([k,l])=>h('button',{role:'tab','aria-selected':String(S.tab===k),onclick:()=>{S.tab=k;if(k==='book'){S.embOpen=true;openFlow();return}render()}},l)));
+  w.append(h('button',{class:'btn sm',id:'emb-x',onclick:()=>{S.embOpen=false;post('close')}},'✕ Volver al sitio'));
 }
 
 /* ---------- ficha del salón ---------- */
@@ -923,14 +974,20 @@ async function confirmBooking(){
       S.busyWrite=false;toast('Alguien acaba de tomar ese horario. Elige otro.');s.start=null;S.flow.step=3;render();return}
     await S.db.doc('busy/'+id).set({date:s.date,start:s.start,end,staffId});
     const item={id,date:s.date,start:s.start,end,mins:t.mins,serviceIds:c.map(v=>v.id),serviceName:c.map(v=>v.name).join(' + '),price:t.price,
-      staffId,staffName:staffName(staffId),occ:s.occ,note:s.note.trim(),status:'pendiente',createdAt:Date.now()};
+      staffId,staffName:staffName(staffId),occ:s.occ,note:s.note.trim(),status:'pendiente',createdAt:Date.now(),seen:false,contacted:false};
     const items=[...((S.mine&&S.mine.items)||[]),item];
-    try{await S.db.doc('bookings/'+S.uid).set({clientId:S.uid,name:s.name.trim(),phone:s.phone.trim(),items})}
+    try{await S.db.doc('bookings/'+S.uid).set({clientId:S.uid,name:s.name.trim(),phone:s.phone.trim(),email:((S.me&&S.me.email)||'').trim(),items})}
     catch(e){await S.db.doc('busy/'+id).delete().catch(()=>{});throw e}
     S.done=item;S.sel.ids=[];S.sel.date=null;S.sel.start=null;S.sel.note='';
   }catch(e){toast(e&&e.code==='invalid_argument'?'Tu cuenta no tiene permiso para reservar. Pide acceso de colaboradora al salón.':'No se pudo reservar. Intenta de nuevo.')}
   S.busyWrite=false;render();
 }
+const cartItems=()=>((S.mine&&S.mine.items)||[]).filter(i=>i.status==='pendiente'&&i.date>=today);
+const flatAll=()=>{try{return flat()}catch(e){return[]}};
+const unreadCount=()=>S.isAdmin?flatAll().filter(i=>i.seen===false&&i.status!=='cancelada').length:0;
+const wp=p=>{const d=String(p||'').replace(/\D/g,'');return d.length===9?'51'+d:d};
+async function patchItem(clientId,itemId,patch,items){await S.db.doc('bookings/'+clientId).update({items:items.map(i=>i.id===itemId?{...i,...patch}:i)})}
+const ago=t=>{if(!t)return '';const m=Math.round((Date.now()-t)/60000);return m<1?'justo ahora':m<60?'hace '+m+' min':m<1440?'hace '+Math.round(m/60)+' h':'hace '+Math.round(m/1440)+' d'};
 function waLink(item,name){
   const n=(S.config.whatsapp||'').replace(/\D/g,'');if(!n)return null;
   return 'https://wa.me/'+n+'?text='+encodeURIComponent(`Hola Studio Soul Sisters, soy ${name||''}. Reservé ${item.serviceName} el ${fDay(item.date)} a las ${item.start} con ${item.staffName}. ¿Me comparten los datos para el adelanto?`);
@@ -938,11 +995,12 @@ function waLink(item,name){
 function doneView(){
   const it=S.done,wa=waLink(it,(S.mine||{}).name);
   return h('div',{class:'done'},h('div',{class:'okc'},'✓'),h('h2',{},'Tu horario está reservado'),
-    h('p',{class:'sub'},'El salón confirmará tu cita cuando reciba el adelanto.'),
+    h('p',{class:'sub'},'El salón confirmará tu cita cuando reciba el adelanto.'),h('div',{class:'msg'},'✓ Servicio agregado a tu carrito. El salón recibió un aviso y se pondrá en contacto contigo.'),
     h('div',{class:'panel',style:'padding:8px 18px'},h('div',{class:'item'},h('div',{class:'when'},it.start,h('small',{},fDay(it.date,{weekday:'short',day:'numeric',month:'short'}))),
       h('div',{class:'what'},h('b',{},it.serviceName),h('div',{},'con '+it.staffName+' · '+dur(it.mins)+' · '+money(it.price))),h('span',{class:'chip pendiente'},'pendiente'))),
     h('div',{style:'display:grid;gap:10px'},
       wa?h('a',{class:'btn primary lg',href:wa,target:'_blank',rel:'noopener',style:'text-decoration:none;text-align:center'},'Enviar adelanto por WhatsApp'):null,
+      h('button',{class:'btn lg primary',onclick:()=>{S.flow.open=false;S.done=null;S.tab='cart';render()}},'Ver mi carrito ('+cartItems().length+')'),
       h('button',{class:'btn lg',onclick:()=>{S.flow.open=false;S.done=null;S.tab='mine';render()}},'Ver mis citas'),
       h('button',{class:'btn',onclick:()=>{S.done=null;S.flow.step=1;render()}},'Reservar otra cita')));
 }
@@ -957,6 +1015,26 @@ function itemRow(i,acts,extra){
     h('div',{class:'when'},i.start,h('small',{},fDay(i.date,{weekday:'short',day:'numeric',month:'short'}))),
     h('div',{class:'what'},h('b',{},i.serviceName),h('div',{},[extra,i.staffName+' · '+dur(i.mins)+(i.price?' · '+money(i.price):'')+(i.occ?' · '+i.occ:'')].filter(Boolean).join(' · ')),i.note?h('div',{},'“'+i.note+'”'):null),
     h('div',{class:'acts'},h('span',{class:'chip '+i.status},i.status),acts));
+}
+function renderCart(){
+  const root=h('div'),g=gate();if(g){root.append(gateBox(g));return root}
+  const items=cartItems().slice().sort((a,b)=>(a.date+a.start).localeCompare(b.date+b.start));
+  const dep=Number(S.config.deposit||50),sum=items.reduce((a,i)=>a+(i.price||0),0),unp=items.some(i=>!i.price);
+  const wa=(S.config.whatsapp||'').replace(/\D/g,'');
+  const msg='Hola Studio Soul Sisters, soy '+((S.mine||{}).name||'')+'. Reservé: '+items.map(i=>i.serviceName+' ('+fDay(i.date,{weekday:'short',day:'numeric',month:'short'})+' '+i.start+')').join('; ')+'. Quiero coordinar el adelanto.';
+  const p=h('div',{class:'panel'},h('h2',{},'Tu carrito'),h('p',{class:'sub'},'Servicios reservados que esperan la confirmación del salón y el adelanto.'));
+  if(!items.length){p.append(h('div',{class:'empty'},'Tu carrito está vacío. ',h('button',{class:'btn sm primary',onclick:()=>{S.tab='book';if(EMB){S.embOpen=true}openFlow()}},'Reservar un servicio')));root.append(p);return root}
+  items.forEach(i=>p.append(h('div',{class:'cartrow'},
+    h('div',{},h('b',{},i.serviceName),h('div',{style:'color:var(--muted);font-size:14px'},fDay(i.date,{weekday:'long',day:'numeric',month:'long'})+' · '+i.start+' · con '+i.staffName+' · '+dur(i.mins))),
+    h('div',{class:'pr'},money(i.price)),
+    h('div',{class:'acts',style:'grid-column:1/-1;display:flex;gap:8px'},h('span',{class:'chip pendiente'},'pendiente'),
+      S.confirmCancel===i.id?[h('button',{class:'btn sm danger',onclick:async()=>{S.confirmCancel=null;try{await setStatus(S.uid,i.id,'cancelada',S.mine.items);toast('Servicio quitado y horario liberado')}catch(e){toast('No se pudo quitar')}}},'Sí, quitar'),h('button',{class:'btn sm',onclick:()=>{S.confirmCancel=null;render()}},'No')]
+        :h('button',{class:'btn sm',onclick:()=>{S.confirmCancel=i.id;render()}},'Quitar')))));
+  p.append(h('div',{class:'sumbox'},h('div',{},h('span',{},'Total'),h('b',{},(sum?money(sum):'Consultar')+(sum&&unp?' + consultar':''))),
+    sum?h('div',{},h('span',{},'Adelanto del '+dep+'%'),h('b',{},money(Math.round(sum*dep/100)))):null),
+    h('div',{style:'display:grid;gap:10px;margin-top:14px'},wa?h('a',{class:'btn primary lg',href:'https://wa.me/'+wa+'?text='+encodeURIComponent(msg),target:'_blank',rel:'noopener',style:'text-decoration:none;text-align:center'},'Coordinar adelanto por WhatsApp'):h('p',{class:'note'},'El salón aún no configuró su WhatsApp; te contactará por el número que registraste.'),
+      h('button',{class:'btn',onclick:()=>{S.tab='book';if(EMB){S.embOpen=true}openFlow()}},'Agregar otro servicio')));
+  root.append(p);return root;
 }
 function renderMine(){
   const root=h('div'),g=gate();
@@ -975,20 +1053,40 @@ function renderMine(){
 }
 
 /* ---------- panel del salón ---------- */
-function flat(){return S.all.flatMap(c=>(c.items||[]).map(i=>({...i,clientId:c.clientId||c.id,clientName:c.name,phone:c.phone,_items:c.items})))}
+function flat(){return S.all.flatMap(c=>(c.items||[]).map(i=>({...i,clientId:c.clientId||c.id,clientName:c.name,phone:c.phone,_email:c.email||'',_items:c.items})))}
 function renderAdmin(){
   const root=h('div');
-  root.append(h('div',{class:'subtabs'},[['agenda','Agenda'],['horarios','Horarios'],['equipo','Servicios y equipo'],['contenido','Contenido'],['ajustes','Ajustes']].map(([k,l])=>h('button',{'aria-selected':String(S.atab===k),onclick:()=>{S.atab=k;render()}},l))));
-  root.append(S.atab==='agenda'?aAgenda():S.atab==='horarios'?aHorarios():S.atab==='equipo'?aEquipo():S.atab==='contenido'?aContenido():aAjustes());
+  root.append(h('div',{class:'subtabs'},[['avisos','Avisos'+(unreadCount()?' ('+unreadCount()+')':'')],['agenda','Agenda'],['horarios','Horarios'],['equipo','Servicios y equipo'],['contenido','Contenido'],['ajustes','Ajustes']].map(([k,l])=>h('button',{'aria-selected':String(S.atab===k),onclick:()=>{S.atab=k;render()}},l))));
+  root.append(S.atab==='avisos'?aAvisos():S.atab==='agenda'?aAgenda():S.atab==='horarios'?aHorarios():S.atab==='equipo'?aEquipo():S.atab==='contenido'?aContenido():aAjustes());
   if(S.local&&S.atab==='ajustes')root.append(localPanel());
   return root;
 }
+function aAvisos(){
+  const all=flatAll().filter(i=>i.status!=='cancelada'),pend=all.filter(i=>i.contacted===false).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)),done=all.filter(i=>i.contacted===true).sort((a,b)=>(b.contactedAt||0)-(a.contactedAt||0)).slice(0,8);
+  const card=(i,old)=>{
+    const num=wp(i.phone),txt='Hola '+(i.clientName||'')+', te escribimos de Studio Soul Sisters por tu reserva de '+i.serviceName+' el '+fDay(i.date,{weekday:'long',day:'numeric',month:'long'})+' a las '+i.start+'. ¿Coordinamos el adelanto para confirmarla?';
+    const note=h('textarea',{id:'av-n-'+i.id,placeholder:'Notas de la reserva (ej. pidió cambio de hora)',onchange:e=>patchItem(i.clientId,i.id,{adminNote:e.target.value},i._items).then(()=>toast('Nota guardada')).catch(()=>toast('No se pudo guardar'))});note.value=i.adminNote||'';
+    return h('div',{class:'alert'+(old?' old':'')},
+      h('div',{class:'hd'},h('b',{},i.clientName||'Clienta'),h('span',{},i.seen===false?h('span',{class:'newb'},'Nuevo'):null,' ',h('small',{style:'color:var(--muted)'},ago(i.createdAt)))),
+      h('div',{},h('b',{},i.serviceName),h('div',{style:'color:var(--muted)'},fDay(i.date,{weekday:'long',day:'numeric',month:'long'})+' · '+i.start+' · '+i.staffName+' · '+dur(i.mins)+(i.price?' · '+money(i.price):'')+(i.occ?' · '+i.occ:''))),
+      i.note?h('div',{style:'font-size:14px'},'Nota de la clienta: '+i.note):null,
+      h('div',{style:'font-size:14px'},'WhatsApp: '+(i.phone||'—')+(i._email?' · '+i._email:'')),
+      note,
+      h('div',{class:'acts'},
+        num?h('a',{class:'btn sm primary',href:'https://wa.me/'+num+'?text='+encodeURIComponent(txt),target:'_blank',rel:'noopener',onclick:()=>{if(i.seen===false)patchItem(i.clientId,i.id,{seen:true},i._items).catch(()=>{})}},'Escribir por WhatsApp'):null,
+        num?h('a',{class:'btn sm',href:'tel:+'+num},'Llamar'):null,
+        i.seen===false?h('button',{class:'btn sm',onclick:()=>patchItem(i.clientId,i.id,{seen:true},i._items).catch(()=>toast('No se pudo actualizar'))},'Marcar como visto'):null,
+        !old?h('button',{class:'btn sm plum',onclick:()=>patchItem(i.clientId,i.id,{contacted:true,seen:true,contactedAt:Date.now()},i._items).then(()=>toast('Marcada como contactada')).catch(()=>toast('No se pudo actualizar'))},'Ya la contacté'):null))};
+  return h('div',{class:'panel'},h('h2',{},'Avisos de reservas'),h('p',{class:'sub'},'Cada reserva nueva aparece aquí para que tomes nota y te contactes con la clienta.'),
+    pend.length?pend.map(i=>card(i,false)):h('div',{class:'empty'},'No hay reservas por contactar.'),
+    done.length?[h('h3',{style:'margin-top:22px'},'Contactadas recientemente'),done.map(i=>card(i,true))]:null);
+}
 function aAgenda(){
-  const a=S.adm,all=flat();
+  const a=S.adm,all=flat();const nu=unreadCount();
   const day=all.filter(i=>i.date===a.date&&(a.staff==='all'||i.staffId===a.staff)).sort((x,y)=>x.start.localeCompare(y.start));
   const live=day.filter(i=>i.status!=='cancelada'),pend=all.filter(i=>i.status==='pendiente'&&i.date>=today).length;
   const shift=n=>{a.date=ymd(new Date(pd(a.date).getTime()+n*864e5));render()};
-  return h('div',{class:'panel'},
+  return h('div',{class:'panel'},nu?h('div',{class:'banner'},h('span',{},'🔔 '+nu+(nu===1?' reserva nueva por contactar':' reservas nuevas por contactar')),h('button',{class:'btn sm primary',onclick:()=>{S.atab='avisos';render()}},'Ver avisos')):null,
     h('div',{class:'daynav'},h('button',{class:'btn sm','aria-label':'Día anterior',onclick:()=>shift(-1)},'‹'),
       h('label',{class:'f'},'Día',h('input',{id:'a-date',type:'date',value:a.date,onchange:e=>{a.date=e.target.value||today;render()}})),
       h('button',{class:'btn sm','aria-label':'Día siguiente',onclick:()=>shift(1)},'›'),
@@ -1235,11 +1333,15 @@ function aContenido(){
 function render(){
   renderHead();renderHeroSlot();
   const y=window.scrollY;
-  const v=S.tab==='admin'&&S.isAdmin?renderAdmin():S.tab==='mine'?renderMine():renderBook();
+  const v=S.tab==='admin'&&S.isAdmin?renderAdmin():S.tab==='mine'?renderMine():S.tab==='cart'?renderCart():renderBook();
   $('#app').replaceChildren(v);
   if(S.tab==='book'&&!EMB)window.scrollTo(0,y);
   renderFlow();
+  const nu=unreadCount();
+  if(S.isAdmin&&S.loaded.all){if(S.lastU!==undefined&&nu>S.lastU){const l=flatAll().filter(i=>i.seen===false).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))[0];toast('🔔 Nueva reserva'+(l?' de '+l.clientName:'')+'. Revisa Avisos para contactarla.')}S.lastU=nu}
+  try{document.title=(nu?'('+nu+') ':'')+'Studio Soul Sisters · Citas'}catch(e){}
   if(EMB&&S.embOpen&&S.tab==='book'&&!S.flow.open&&!S.loginOpen&&!S.afterLogin){S.embOpen=false;post('close')}
+  if(EMB)post('cart',{n:cartItems().length,unread:nu});
 }
 function sub(path,key,sorter){
   S.db.collection(path).onSnapshot(sn=>{S[key]=sn.docs.map(d=>({id:d.id,...d.data()}));if(sorter)S[key].sort(sorter);S.loaded[key]=true;sched()},e=>{S.err=e.code;sched()});
@@ -1307,27 +1409,66 @@ function localAssets(){return{
 function gateBox(msg){
   return h('div',{class:S.local?'msg':'msg bad',style:S.local?'display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap':null},
     h('span',{},msg),S.local&&!S.uid?h('button',{class:'btn sm primary',onclick:()=>{S.loginOpen=true;render()}},'Ingresar'):null)}
+const ACCK='ss_accounts_v1';
+const normPhone=v=>{const d=String(v||'').replace(/\D/g,'');return d.length===11&&d.indexOf('51')===0?d.slice(2):d};
+async function hashPw(pw,salt){try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+pw));return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')}catch(e){let k=5381;const t=salt+':'+pw;for(let n=0;n<t.length;n++)k=((k<<5)+k+t.charCodeAt(n))>>>0;return 'f'+k.toString(16)}}
+function findAcc(v){const a=lget(ACCK)||{};v=String(v||'').trim();if(v.indexOf('@')>0)return Object.values(a).find(x=>x.email&&x.email.toLowerCase()===v.toLowerCase())||null;return a['u_'+normPhone(v)]||null}
+const SVGI={mail:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',lock:'<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',
+  phone:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/>',eye:'<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  cal:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',heart:'<path d="M12 20s-8-5-8-11a4.5 4.5 0 0 1 8-2.5A4.5 4.5 0 0 1 20 9c0 6-8 11-8 11z"/>'};
+function ico(k){const e=document.createElement('span');e.style.display='grid';e.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true">'+SVGI[k]+'</svg>';return e}
 function loginView(){
-  const nm=h('input',{id:'lg-name',type:'text',autocomplete:'name'}),ph=h('input',{id:'lg-phone',type:'tel',autocomplete:'tel',placeholder:'999 999 999'}),pin=h('input',{id:'lg-pin',type:'password',autocomplete:'off'});
-  const phBox=h('label',{class:'f'},'WhatsApp',ph),pinBox=h('label',{class:'f'},'PIN del salón',pin);pinBox.hidden=true;
-  const tg=h('button',{class:'btn sm',id:'lg-toggle',type:'button'},'Soy parte del salón');
-  tg.addEventListener('click',()=>{pinBox.hidden=!pinBox.hidden;phBox.hidden=!pinBox.hidden;tg.textContent=pinBox.hidden?'Soy parte del salón':'Soy clienta'});
-  const go=()=>{
-    const name=nm.value.trim(),phone=ph.value.replace(/\D/g,'');
-    if(!pinBox.hidden){if(pin.value!==ADMIN_PIN){toast('PIN incorrecto.');return}startSession({uid:'u_salon',name:name||'Salón',admin:true,phone:''});return}
-    if(name.length<2||phone.length<7){toast('Escribe tu nombre y un WhatsApp válido.');return}
-    startSession({uid:'u_'+phone,name,admin:false,phone:ph.value.trim()});
-  };
-  [nm,ph,pin].forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')go()}));
-  return[h('div',{class:'fl-head'},h('button',{class:'x','aria-label':'Cerrar',onclick:()=>{S.loginOpen=false;S.afterLogin=null;render()}},'×'),
-      h('div',{class:'t'},h('b',{},'Ingresar'),h('span',{},'Studio Soul Sisters'))),
-    h('div',{class:'fl-main'},h('div',{class:'done'},h('h2',{},'Tus citas a tu nombre'),
-      h('p',{class:'sub'},'Tu nombre y WhatsApp identifican tus citas. Los datos se guardan solo en este navegador.'),
-      h('div',{class:'row'},h('label',{class:'f'},'Nombre completo',nm),phBox),pinBox,
-      h('div',{class:'actions',style:'display:flex;gap:10px;flex-wrap:wrap;margin-top:18px'},h('button',{class:'btn primary lg',id:'lg-go',onclick:go},'Entrar'),tg)))];
+  const m=S.lm||'in',mk=(id,ph,type,ic,ac)=>{const inp=h('input',{id,type,placeholder:ph,autocomplete:ac||'off','aria-label':ph});const box=h('label',{class:'lgi'},ico(ic),inp);
+    if(type==='password'){const b=h('button',{type:'button','aria-label':'Mostrar contraseña',onclick:()=>{inp.type=inp.type==='password'?'text':'password'}});b.append(ico('eye'));box.append(b)}return{box,inp}};
+  const set=x=>{S.lm=x;render()},leaf=document.createElement('span');
+  leaf.innerHTML='<svg viewBox="0 0 48 56" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M24 54V30"/><path d="M24 30C24 18 20 8 14 4c-1 10 2 20 10 26z"/><path d="M24 30c0-12 4-22 10-26 1 10-2 20-10 26z"/><path d="M24 40c-7-1-13-6-16-13 8 0 14 4 16 13z"/><path d="M24 40c7-1 13-6 16-13-8 0-14 4-16 13z"/></svg>';
+  const orn=h('div',{class:'lg-orn'},h('i'),leaf,h('i'));
+  let title,sub,fields=[],btn,go,extra=[];
+  const fin=(...a)=>a.forEach(x=>x.inp.addEventListener('keydown',e=>{if(e.key==='Enter')go()}));
+  if(m==='in'){
+    const a=mk('lg-id','Correo electrónico o WhatsApp','text','mail','username'),b=mk('lg-pass','Contraseña','password','lock','current-password');fields=[a.box,b.box];fin(a,b);
+    title='Iniciar sesión';sub=h('div',{class:'lsub'},'Qué alegría tenerte de vuelta ',h('b',{},'♡'));btn='Ingresar';
+    extra=[h('button',{class:'lg-link',type:'button',onclick:()=>set('forgot')},'¿Olvidaste tu contraseña?')];
+    go=async()=>{const acc=findAcc(a.inp.value);if(!acc){toast('No encontramos esa cuenta. Crea una nueva.');return}
+      if(await hashPw(b.inp.value,acc.salt)!==acc.hash){toast('Contraseña incorrecta.');return}
+      startSession({uid:acc.uid,name:acc.name,admin:false,phone:acc.phone,email:acc.email||''})};
+  }else if(m==='up'){
+    const n=mk('lg-name','Nombre completo','text','user','name'),p=mk('lg-phone','WhatsApp (ej. 999 999 999)','tel','phone','tel'),e=mk('lg-email','Correo electrónico (opcional)','email','mail','email'),w=mk('lg-pass','Contraseña (mínimo 6 caracteres)','password','lock','new-password');
+    fields=[n.box,p.box,e.box,w.box];fin(n,p,e,w);title='Crear cuenta';sub=h('div',{class:'lsub'},'Tus citas, siempre a la mano ',h('b',{},'♡'));btn='Crear cuenta';
+    extra=[h('button',{class:'lg-link',type:'button',onclick:()=>set('in')},'¿Ya tienes cuenta? Inicia sesión')];
+    go=async()=>{const name=n.inp.value.trim(),ph=normPhone(p.inp.value),em=e.inp.value.trim();
+      if(name.length<2||ph.length<7){toast('Escribe tu nombre y un WhatsApp válido.');return}
+      if(em&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)){toast('Revisa el correo electrónico.');return}
+      if(w.inp.value.length<6){toast('La contraseña debe tener al menos 6 caracteres.');return}
+      const all=lget(ACCK)||{};
+      if(all['u_'+ph]||(em&&findAcc(em))){toast('Ya existe una cuenta con esos datos. Inicia sesión.');return}
+      const salt=Math.random().toString(36).slice(2,10),acc={uid:'u_'+ph,name,phone:ph,email:em,salt,hash:await hashPw(w.inp.value,salt)};
+      all[acc.uid]=acc;if(!lset(ACCK,all)){toast('No se pudo guardar la cuenta en este navegador.');return}
+      startSession({uid:acc.uid,name,admin:false,phone:ph,email:em})};
+  }else if(m==='forgot'){
+    const p=mk('lg-phone','WhatsApp de tu cuenta','tel','phone','tel'),w=mk('lg-pass','Nueva contraseña','password','lock','new-password');fields=[p.box,w.box];fin(p,w);
+    title='Restablecer contraseña';sub=h('div',{class:'lsub'},'Confirma tu WhatsApp y elige una nueva clave');btn='Cambiar contraseña';
+    extra=[h('p',{class:'lg-note'},'Modo demostración: en un sitio real enviaríamos un código por correo o WhatsApp.'),h('button',{class:'lg-link',type:'button',onclick:()=>set('in')},'Volver a iniciar sesión')];
+    go=async()=>{const all=lget(ACCK)||{},acc=all['u_'+normPhone(p.inp.value)];
+      if(!acc){toast('No encontramos una cuenta con ese WhatsApp.');return}if(w.inp.value.length<6){toast('La contraseña debe tener al menos 6 caracteres.');return}
+      acc.salt=Math.random().toString(36).slice(2,10);acc.hash=await hashPw(w.inp.value,acc.salt);all[acc.uid]=acc;lset(ACCK,all);toast('Contraseña actualizada. Ya puedes ingresar.');set('in')};
+  }else{
+    const pin=mk('lg-pin','PIN del salón','password','lock','off');fields=[pin.box];fin(pin);title='Acceso del salón';sub=h('div',{class:'lsub'},'Solo para el equipo de Studio Soul Sisters');btn='Entrar';
+    extra=[h('button',{class:'lg-link',type:'button',onclick:()=>set('in')},'Volver')];
+    go=()=>{if(pin.inp.value!==ADMIN_PIN){toast('PIN incorrecto.');return}startSession({uid:'u_salon',name:'Salón',admin:true,phone:'',email:''})};
+  }
+  const left=h('div',{class:'lg-l'},h('div',{class:'lg-f'},orn,h('h2',{},title),sub,...fields,...(m==='in'?extra:[]),h('button',{class:'lg-go',id:'lg-go',type:'button',onclick:go},btn),
+    ...(m==='in'?[h('div',{class:'lg-div'},h('i'),h('span',{},'Accede para consultar y gestionar tus citas.'),h('i')),h('button',{class:'lg-link',type:'button',onclick:()=>set('pin')},'Soy parte del salón')]:extra)));
+  const first=m!=='up',B=(ic,t)=>h('div',{},h('span',{},ico(ic)),t);
+  const right=h('div',{class:'lg-r'},h('h3',{},first?'¿Es tu primera vez en Studio Soul Sisters?':'¿Ya tienes cuenta?'),h('p',{},first?'Crea tu cuenta y disfruta de una experiencia más cómoda.':'Ingresa para ver y gestionar tus citas.'),
+    h('div',{class:'lg-b'},B('cal','Reserva tus servicios fácilmente'),B('heart','Consulta y gestiona tus citas'),B('user','Guarda tus datos para futuras visitas')),
+    h('button',{class:'btn plum',type:'button',onclick:()=>set(first?'up':'in')},first?'Crear cuenta':'Iniciar sesión'));
+  return[h('div',{class:'fl-head'},h('button',{class:'x','aria-label':'Cerrar',onclick:()=>{S.loginOpen=false;S.afterLogin=null;S.lm='in';render()}},'×'),
+      h('div',{class:'t'},h('b',{},'Studio Soul Sisters'),h('span',{},'Tu cuenta'))),
+    h('div',{class:'fl-main lg-main'},h('div',{class:'lg'},left,right))];
 }
 function startSession(ss){
-  lset(SKEY,ss);S.uid=ss.uid;S.isAdmin=!!ss.admin;S.me={id:ss.uid,name:ss.name,avatarUrl:avatar(ss.name)};
+  lset(SKEY,ss);S.uid=ss.uid;S.isAdmin=!!ss.admin;S.me={id:ss.uid,name:ss.name,email:ss.email||'',avatarUrl:avatar(ss.name)};S.lm='in';if(ss.admin)S.atab='avisos';
   if(!ss.admin){S.sel.name=ss.name;S.sel.phone=ss.phone||''}
   S.loginOpen=false;startUser();render();
   if(S.afterLogin){const f=S.afterLogin;S.afterLogin=null;f()}
@@ -1371,11 +1512,11 @@ function startUser(){
       Object.assign(ASSETS,SEED_IMGS,lget(AKEY)||{});
       S.local=true;S.db=makeLocalDb();S.assets=localAssets();
       const ss=lget(SKEY);
-      if(ss&&ss.uid){S.uid=ss.uid;S.isAdmin=!!ss.admin;S.me={id:ss.uid,name:ss.name,avatarUrl:avatar(ss.name)};if(!ss.admin){S.sel.name=ss.name;S.sel.phone=ss.phone||''}}
+      if(ss&&ss.uid){S.uid=ss.uid;S.isAdmin=!!ss.admin;S.me={id:ss.uid,name:ss.name,email:ss.email||'',avatarUrl:avatar(ss.name)};if(!ss.admin){S.sel.name=ss.name;S.sel.phone=ss.phone||''}}
       render();startPublic();startUser();
       if(EMB){const go=m=>{S.embOpen=true;const t=m.tab||'book';
           const run=()=>{S.tab=t;if(t==='book')openFlow({add:m.add,staff:m.staff});else render()};
-          if((t==='mine'||t==='admin')&&!S.uid){S.afterLogin=()=>{S.tab=(t==='admin'&&S.isAdmin)?'admin':'mine';render()};S.loginOpen=true;render()}else run()};
+          if((t==='mine'||t==='admin'||t==='cart')&&!S.uid){S.afterLogin=()=>{S.tab=(t==='admin'&&S.isAdmin)?'admin':t==='cart'?'cart':'mine';render()};S.loginOpen=true;render()}else run()};
         addEventListener('message',e=>{if(e.source===parent&&e.data&&e.data.ss==='go')go(e.data)});post('ready')}
       return;
     }
@@ -1432,6 +1573,7 @@ addEventListener('message',e=>{
   if(!frame||e.source!==frame.contentWindow||!e.data)return;const d=e.data;
   if(d.ss==='ready'){ready=true;bk.classList.add('rd');if(queue&&bk.classList.contains('on')){frame.contentWindow.postMessage({ss:'go',...queue},'*');queue=null}}
   else if(d.ss==='close')closeBook();
+  else if(d.ss==='cart'){const c=$('#cn');c.textContent=d.n;c.hidden=!d.n;const u=$('#ub');u.textContent=d.unread;u.hidden=!d.unread}
   else if(d.ss==='data'){const x=d.data||{};Object.assign(AS,d.assets||{});
     const s=arr(x.services);if(s.length||x.services){D.services=s.map(v=>({...v,n:v.name}))}
     D.staff=arr(x.staff);D.gallery=arr(x.gallery);D.reviews=arr(x.reviews);D.vouchers=arr(x.vouchers);D.cfg=(x.config||{}).salon||{};
