@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Gold Bird — Fidelización premium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0C10;
+    --bg-alt:#0D1015;
+    --surface:#14171F;
+    --surface-2:#1A1E28;
+    --stub:#101319;
+    --border:rgba(201,162,39,0.3);
+    --border-soft:rgba(242,239,230,0.08);
+    --gold:#C9A227;
+    --gold-light:#E8C874;
+    --gold-pale:#F4E7C4;
+    --text:#F2EFE6;
+    --text-dim:#9C9A90;
+    --text-faint:#6B6A63;
+    --bronze:#B08D57;
+    --silver:#C7CAD1;
+    --oro:#E8C874;
+    --danger:#D96C5F;
+    --radius-lg:20px;
+    --radius-md:12px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg); color:var(--text); font-family:'Inter',sans-serif; -webkit-font-smoothing:antialiased;}
+  a{color:inherit; text-decoration:none;}
+  .container{max-width:1040px; margin:0 auto; padding:0 1.5rem;}
+  section{padding:5rem 0;}
+
+  /* ---------- NAV ---------- */
+  nav{position:sticky; top:0; z-index:50; background:rgba(10,12,16,0.85); backdrop-filter:blur(10px); border-bottom:1px solid var(--border-soft);}
+  .navrow{display:flex; align-items:center; justify-content:space-between; padding:1rem 1.5rem; max-width:1040px; margin:0 auto;}
+  .logo{display:flex; align-items:center; gap:9px;}
+  .logo span{font-family:'Fraunces',serif; font-weight:500; font-size:18px; color:var(--gold-light); letter-spacing:0.3px;}
+  .navlinks{display:flex; gap:1.75rem; font-size:13.5px; color:var(--text-dim);}
+  .navlinks a:hover{color:var(--gold-light);}
+  .navcta{display:flex; gap:10px;}
+  @media(max-width:720px){ .navlinks{display:none;} }
+
+  /* ---------- HERO ---------- */
+  .hero{padding-top:4.5rem; padding-bottom:3rem;}
+  .badge{
+    display:inline-flex; align-items:center; gap:7px; font-size:12px; color:var(--gold-light);
+    background:rgba(201,162,39,0.1); border:1px solid var(--border); padding:5px 14px; border-radius:999px; margin-bottom:1.5rem;
+  }
+  .badge .dot{width:6px; height:6px; border-radius:50%; background:var(--gold-light); animation:pulse 2s infinite;}
+  @keyframes pulse{ 0%{opacity:.4;} 50%{opacity:1;} 100%{opacity:.4;} }
+
+  h1.hero-h{font-family:'Fraunces',serif; font-weight:500; font-size:44px; line-height:1.14; letter-spacing:-0.5px; max-width:660px;}
+  h1.hero-h em{font-style:italic; color:var(--gold-light);}
+  .hero-sub{font-size:16px; color:var(--text-dim); margin-top:1.15rem; max-width:500px; line-height:1.6;}
+  .hero-ctas{display:flex; gap:12px; margin-top:1.9rem; flex-wrap:wrap;}
+
+  .btn{border:none; border-radius:var(--radius-md); padding:12px 22px; font-size:13.5px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; letter-spacing:0.2px; transition:all .2s;}
+  .btn:active{transform:scale(0.98);}
+  .btn-gold{background:var(--gold); color:#1A1400; box-shadow:0 4px 14px rgba(201,162,39,0.28);}
+  .btn-gold:hover{background:var(--gold-light); transform:translateY(-1px);}
+  .btn-outline{background:transparent; border:1px solid var(--border); color:var(--gold-light);}
+  .btn-outline:hover{background:rgba(201,162,39,0.08); transform:translateY(-1px);}
+  .btn:disabled{opacity:0.35; cursor:not-allowed;}
+  .btn-full{width:100%;}
+
+  .hero-visual{margin-top:3.5rem; position:relative; display:flex; justify-content:center; gap:0;}
+  .mock{width:222px; background:var(--stub); border:1px solid var(--border); border-radius:22px; padding:1.1rem; box-shadow:0 30px 60px -20px rgba(0,0,0,0.7);}
+  .mock.b{margin-left:-40px; margin-top:56px; transform:rotate(4deg);}
+  .mock.a{transform:rotate(-3deg); z-index:2;}
+  .mock-eyebrow{font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(--text-faint);}
+  .mock-name{font-family:'Fraunces',serif; font-size:15px; margin-top:3px;}
+  .mock-stamps{display:flex; gap:4px; margin-top:12px; flex-wrap:wrap;}
+  .mock-stamp{width:18px; height:18px; border-radius:50%; border:1px solid var(--border-soft);}
+  .mock-stamp.on{background:var(--gold); border-color:var(--gold);}
+  .mock-qr{width:100%; aspect-ratio:1; background:#000; border-radius:8px; margin-top:14px; padding:8px;}
+  .mock-qr svg{width:100%; height:100%;}
+  @media(max-width:600px){ h1.hero-h{font-size:32px;} .mock{width:170px;} }
+
+  .taglist{display:flex; flex-wrap:wrap; gap:8px 22px; justify-content:center; margin-top:3rem; font-size:12px; color:var(--text-dim);}
+  .taglist span::before{content:"·"; margin-right:22px; color:var(--gold); font-weight:bold;}
+  .taglist span:first-child::before{display:none;}
+
+  /* ---------- SECTION HEADERS ---------- */
+  .eyebrow-lbl{font-size:11.5px; letter-spacing:1.2px; text-transform:uppercase; color:var(--gold-light); font-weight:600;}
+  h2.sect-h{font-family:'Fraunces',serif; font-weight:500; font-size:28px; margin-top:6px; max-width:500px; line-height:1.2;}
+  .sect-sub{font-size:14px; color:var(--text-dim); margin-top:8px; max-width:500px; line-height:1.55;}
+
+  /* ---------- COMO FUNCIONA ---------- */
+  .steps{display:grid; grid-template-columns:repeat(3,1fr); gap:1.75rem; margin-top:2.5rem;}
+  .step-num{font-family:'Fraunces',serif; font-size:26px; color:var(--gold); font-style:italic;}
+  .step h3{font-size:15.5px; font-weight:600; margin-top:10px;}
+  .step p{font-size:13px; color:var(--text-dim); margin-top:5px; line-height:1.5;}
+  @media(max-width:720px){ .steps{grid-template-columns:1fr;} }
+
+  /* ---------- SPLIT ---------- */
+  .split{display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:2.5rem;}
+  .splitcard{background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius-lg); padding:1.75rem; display:flex; flex-direction:column;}
+  .splitcard h3{font-family:'Fraunces',serif; font-size:19px; font-weight:500;}
+  .splitcard ul{margin-top:1rem; display:flex; flex-direction:column; gap:9px; flex-grow:1;}
+  .splitcard li{font-size:13.5px; color:var(--text-dim); padding-left:18px; position:relative; line-height:1.45;}
+  .splitcard li::before{content:""; position:absolute; left:0; top:6px; width:6px; height:6px; border-radius:50%; background:var(--gold);}
+  .splitcard .btn{margin-top:1.4rem;}
+  @media(max-width:720px){ .split{grid-template-columns:1fr;} }
+
+  /* ---------- FEATURES ---------- */
+  .feats{display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border-soft); border:1px solid var(--border-soft); border-radius:var(--radius-lg); overflow:hidden; margin-top:2.5rem;}
+  .feat{background:var(--bg); padding:1.6rem 1.4rem;}
+  .feat .ic{width:30px; height:30px; margin-bottom:14px;}
+  .feat h3{font-size:14px; font-weight:600;}
+  .feat p{font-size:12.5px; color:var(--text-dim); margin-top:6px; line-height:1.5;}
+  @media(max-width:820px){ .feats{grid-template-columns:repeat(2,1fr);} }
+  @media(max-width:480px){ .feats{grid-template-columns:1fr;} }
+
+  /* ---------- TRUST STRIP ---------- */
+  .trust{border-top:1px solid var(--border-soft); border-bottom:1px solid var(--border-soft); background:var(--bg-alt);}
+  .trustrow{display:grid; grid-template-columns:repeat(3,1fr); gap:1.5rem; padding:2.5rem 0;}
+  .trustitem h4{font-size:13.5px; font-weight:600; color:var(--gold-pale);}
+  .trustitem p{font-size:12px; color:var(--text-faint); margin-top:4px;}
+  @media(max-width:720px){ .trustrow{grid-template-columns:1fr;} }
+
+  /* ---------- DEMO SECTION ---------- */
+  #demo{background:var(--bg-alt); border-top:1px solid var(--border-soft);}
+  .demohead{text-align:center; margin-bottom:2.5rem;}
+  .demohead h2{margin-left:auto; margin-right:auto;}
+  .demohead .sect-sub{margin-left:auto; margin-right:auto;}
+  .roletabs{display:flex; background:var(--surface); border:1px solid var(--border-soft); border-radius:999px; padding:4px; width:max-content; margin:1.5rem auto 0;}
+  .roletab{border:none; background:transparent; color:var(--text-dim); font-family:'Inter',sans-serif; font-size:13px; font-weight:600; padding:9px 20px; border-radius:999px; cursor:pointer; transition:all .2s;}
+  .roletab.active{background:var(--gold); color:#1A1400; box-shadow:0 2px 8px rgba(201,162,39,0.25);}
+
+  .pass{display:flex; background:var(--stub); border-radius:var(--radius-lg); overflow:hidden; border:1px solid var(--border); position:relative; box-shadow:0 10px 30px rgba(0,0,0,0.45);}
+  .pass-main{flex:1; padding:1.6rem 1.6rem 1.4rem; min-width:0;}
+  .pass-stub{width:176px; flex-shrink:0; padding:1.5rem 1rem; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; background:var(--surface);}
+  .perf{width:0; position:relative; flex-shrink:0; border-left:1.5px dashed rgba(242,239,230,0.18);}
+  .perf::before,.perf::after{content:''; position:absolute; left:-9px; width:18px; height:18px; border-radius:50%; background:var(--bg-alt);}
+  .perf::before{top:-9px;} .perf::after{bottom:-9px;}
+
+  .eyebrow{font-size:10.5px; letter-spacing:1.2px; text-transform:uppercase; color:var(--text-faint); font-weight:500;}
+  .clientname{font-family:'Fraunces',serif; font-size:22px; font-weight:500; margin-top:4px; color:var(--text);}
+  .tierrow{display:flex; align-items:center; gap:8px; margin-top:8px;}
+  .tierbadge{font-size:11px; font-weight:600; letter-spacing:0.4px; padding:3px 10px; border-radius:999px;}
+  .tier-Bronce{background:rgba(176,141,87,0.2); color:var(--bronze);}
+  .tier-Plata{background:rgba(199,202,209,0.2); color:var(--silver);}
+  .tier-Oro{background:rgba(232,200,116,0.2); color:var(--oro);}
+  .plumas{font-size:12px; color:var(--text-dim);}
+  .plumas b{color:var(--gold-light); font-weight:600;}
+  .stamprow{display:flex; gap:6px; margin-top:1.15rem; flex-wrap:wrap;}
+  .stamp{width:34px; height:34px; border-radius:50%; display:flex; align-items:center; justify-content:center; border:1.5px solid var(--border-soft); transition:transform .35s cubic-bezier(.34,1.56,.64,1), background .3s, border-color .3s;}
+  .stamp.filled{background:var(--gold); border-color:var(--gold); box-shadow:0 0 8px rgba(201,162,39,0.35);}
+  .stamp.pop{transform:scale(1.25);}
+  .stamp svg{width:16px; height:16px;}
+  .progresstext{margin-top:10px; font-size:12.5px; color:var(--text-dim);}
+  .rewardbanner{margin-top:1rem; background:rgba(232,200,116,0.1); border:1px solid var(--gold); border-radius:var(--radius-md); padding:0.85rem 1rem; font-size:13px; color:var(--gold-pale); display:flex; align-items:center; gap:8px;}
+  .qrbox{width:118px; height:118px; background:#000; border-radius:8px; padding:8px;}
+  .qrbox svg{width:100%; height:100%;}
+  .codetext{font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:1px; color:var(--gold-light); text-align:center;}
+  .codelabel{font-size:10px; color:var(--text-faint); text-align:center; letter-spacing:0.3px;}
+
+  .card{background:var(--surface); border:1px solid var(--border-soft); border-radius:var(--radius-lg); padding:1.75rem; box-shadow:0 10px 30px rgba(0,0,0,0.25);}
+  .card h2{font-family:'Fraunces',serif; font-weight:500; font-size:19px; margin-bottom:6px;}
+  .card .sub{font-size:13px; color:var(--text-dim); margin-bottom:1.25rem;}
+  label{display:block; font-size:12px; color:var(--text-dim); margin-bottom:5px; margin-top:14px;}
+  label:first-of-type{margin-top:0;}
+  input[type=text],input[type=email]{width:100%; background:var(--surface-2); border:1px solid var(--border-soft); color:var(--text); border-radius:var(--radius-md); padding:11px 13px; font-size:14px; font-family:'Inter',sans-serif; outline:none; transition:border-color .2s;}
+  input:focus{border-color:var(--gold);}
+
+  .activity{margin-top:1.5rem;}
+  .activity h3{font-size:12px; letter-spacing:0.6px; text-transform:uppercase; color:var(--text-faint); margin-bottom:10px; font-weight:600;}
+  .arow{display:flex; align-items:center; justify-content:space-between; padding:9px 0; border-bottom:1px solid var(--border-soft); font-size:13px;}
+  .arow:last-child{border-bottom:none;}
+  .arow .who{color:var(--text);}
+  .arow .when{color:var(--text-faint); font-size:11.5px;}
+  .arow .tag{font-size:11px; padding:2px 8px; border-radius:999px; font-weight:600;}
+  .tag-stamp{background:rgba(201,162,39,0.14); color:var(--gold-light);}
+  .tag-redeem{background:rgba(217,108,95,0.14); color:var(--danger);}
+  .empty{font-size:13px; color:var(--text-faint); padding:1rem 0; text-align:center;}
+
+  .scanrow{display:flex; gap:8px; margin-bottom:0.7rem;}
+  .scanrow input{flex:1;}
+  select{width:100%; background:var(--surface-2); border:1px solid var(--border-soft); color:var(--text); border-radius:var(--radius-md); padding:11px 13px; font-size:14px; font-family:'Inter',sans-serif; outline:none; cursor:pointer;}
+  .foundcard{margin-top:1.25rem; background:var(--surface-2); border:1px solid var(--border-soft); border-radius:var(--radius-md); padding:1.1rem 1.25rem;}
+  .foundtop{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
+  .foundname{font-family:'Fraunces',serif; font-size:17px; font-weight:500;}
+  .foundmeta{font-size:12px; color:var(--text-dim); margin-top:2px;}
+  .actionrow{display:flex; gap:10px; margin-top:14px;}
+  .actionrow .btn{flex:1;}
+  table{width:100%; border-collapse:collapse; margin-top:0.5rem;}
+  th{text-align:left; font-size:11px; color:var(--text-faint); text-transform:uppercase; letter-spacing:0.4px; padding:8px 6px; border-bottom:1px solid var(--border-soft); font-weight:500;}
+  td{padding:10px 6px; font-size:13px; border-bottom:1px solid var(--border-soft);}
+  td.num{font-family:'JetBrains Mono',monospace; font-size:12.5px; color:var(--gold-light);}
+  .sectiontitle{font-family:'Fraunces',serif; font-size:16px; font-weight:500; margin:2.25rem 0 0.9rem;}
+  .hint{font-size:12px; color:var(--text-faint); margin-top:8px; line-height:1.5;}
+  .toast{position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(12px); opacity:0; background:var(--gold); color:#1A1400; padding:10px 22px; border-radius:999px; font-size:13px; font-weight:600; transition:all .3s cubic-bezier(.34,1.56,.64,1); pointer-events:none; z-index:999; white-space:nowrap; box-shadow:0 4px 15px rgba(0,0,0,0.35);}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+  @media(max-width:480px){ .pass{flex-direction:column;} .pass-stub{width:100%; flex-direction:row; padding:1rem 1.5rem;} .perf{display:none;} .qrbox{width:88px; height:88px;} }
+
+  /* ---------- FOOTER ---------- */
+  footer{padding:3rem 0 2.5rem; text-align:center;}
+  footer .logo{justify-content:center; margin-bottom:8px;}
+  footer p{font-size:12px; color:var(--text-faint);}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="navrow">
+    <div class="logo">
+      <svg width="26" height="26" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="16.5" stroke="#C9A227" stroke-width="1"/><path d="M17 8c3 3 3 7 3 9-2 0-6 0-9-3 1-4 4-6 6-6z" fill="#E8C874"/><path d="M17 26c-3-3-3-7-3-9 2 0 6 0 9 3-1 4-4 6-6 6z" fill="#C9A227"/></svg>
+      <span>Gold Bird</span>
+    </div>
+    <div class="navlinks">
+      <a href="#funciona">Cómo funciona</a>
+      <a href="#segmentos">Cliente y comercio</a>
+      <a href="#features">Funciones</a>
+    </div>
+    <div class="navcta"><a href="#demo" class="btn btn-gold" onclick="setRole('merchant')">Probar demo gratis</a></div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container" style="text-align:center; display:flex; flex-direction:column; align-items:center;">
+    <span class="badge"><span class="dot"></span>Disponible en Lima · un producto ExpandeLab</span>
+    <h1 class="hero-h" style="text-align:center;">Que tus clientes <em>vuelvan por sus plumas,</em> no por casualidad.</h1>
+    <p class="hero-sub" style="text-align:center;">Tarjeta de sellos digital: tu cliente escanea un QR, tú ves cada visita y cada recompensa en tiempo real. Sin apps que instalar.</p>
+
+    <div class="hero-ctas">
+      <a href="#demo" class="btn btn-gold" onclick="setRole('merchant')">Probar como comercio</a>
+      <a href="#demo" class="btn btn-outline" onclick="setRole('client')">Ver como cliente</a>
+    </div>
+
+    <div class="hero-visual">
+      <div class="mock b">
+        <div class="mock-eyebrow">Sellos</div>
+        <div class="mock-name">Camila Ruiz</div>
+        <div class="mock-stamps">
+          <div class="mock-stamp on"></div><div class="mock-stamp on"></div><div class="mock-stamp on"></div>
+          <div class="mock-stamp on"></div><div class="mock-stamp on"></div><div class="mock-stamp on"></div>
+          <div class="mock-stamp"></div><div class="mock-stamp"></div><div class="mock-stamp"></div><div class="mock-stamp"></div>
+        </div>
+      </div>
+      <div class="mock a">
+        <div class="mock-eyebrow">Tarjeta digital</div>
+        <div class="mock-name">David M.</div>
+        <div class="mock-qr" id="hero-qr"></div>
+      </div>
+    </div>
+
+    <div class="taglist">
+      <span>QR anti-fraude</span><span>Sellos y niveles</span><span>Actividad en vivo</span><span>Recompensas automáticas</span><span>Cero instalación</span>
+    </div>
+  </div>
+</section>
+
+<section id="funciona">
+  <div class="container">
+    <div class="eyebrow-lbl">Cómo funciona</div>
+    <h2 class="sect-h">Activo en minutos, no en semanas.</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">01</div><h3>Configura tu tarjeta</h3><p>Define sellos, recompensa y niveles. Sin desarrollo.</p></div>
+      <div class="step"><div class="step-num">02</div><h3>El cliente muestra su QR</h3><p>El comercio escanea desde el navegador. Nada que instalar.</p></div>
+      <div class="step"><div class="step-num">03</div><h3>Ambos ven el avance</h3><p>El sello se refleja al instante en la tarjeta del cliente.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="segmentos">
+  <div class="container">
+    <div class="eyebrow-lbl">Dos vistas, una experiencia</div>
+    <h2 class="sect-h">Pensado para quien fideliza y para quien vuelve.</h2>
+    <div class="split">
+      <div class="splitcard">
+        <h3>Para clientes</h3>
+        <ul>
+          <li>Tarjeta digital tipo boarding pass</li>
+          <li>Sellos que suman visibles al instante</li>
+          <li>Niveles: Bronce, Plata, Oro</li>
+          <li>Recompensa lista para canjear en caja</li>
+        </ul>
+        <a href="#demo" class="btn btn-gold" onclick="setRole('client')">Ver tarjeta de cliente</a>
+      </div>
+      <div class="splitcard">
+        <h3>Para comercios</h3>
+        <ul>
+          <li>Escaneo desde cualquier celular o tablet</li>
+          <li>Suma sellos o canjea con un toque</li>
+          <li>Lista de clientes y actividad en vivo</li>
+          <li>Sin instalación, funciona en el navegador</li>
+        </ul>
+        <a href="#demo" class="btn btn-gold" onclick="setRole('merchant')">Ver panel de comercio</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="container">
+    <div class="eyebrow-lbl">Funciones</div>
+    <h2 class="sect-h">Lo esencial, sin ruido.</h2>
+    <div class="feats">
+      <div class="feat">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#C9A227" stroke-width="1.4"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM18 18h3v3h-3z"/></svg>
+        <h3>QR por cliente</h3><p>Código único, se muestra desde el celular sin app.</p>
+      </div>
+      <div class="feat">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#C9A227" stroke-width="1.4"><circle cx="6" cy="12" r="2.3"/><circle cx="12" cy="12" r="2.3"/><circle cx="18" cy="12" r="2.3"/></svg>
+        <h3>Sellos y niveles</h3><p>Cada visita suma. Los niveles motivan la siguiente.</p>
+      </div>
+      <div class="feat">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#C9A227" stroke-width="1.4"><path d="M4 19V9M12 19V4M20 19v-6"/></svg>
+        <h3>Actividad en vivo</h3><p>El comercio ve quién vuelve y cuánto acumula.</p>
+      </div>
+      <div class="feat">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#C9A227" stroke-width="1.4"><path d="M12 3l2.4 6.5L21 12l-6.6 2.5L12 21l-2.4-6.5L3 12l6.6-2.5z"/></svg>
+        <h3>Recompensa automática</h3><p>Se habilita sola al completar la tarjeta.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="trust">
+  <div class="container">
+    <div class="trustrow">
+      <div class="trustitem"><h4>Hecho en Lima</h4><p>Construido para comercios peruanos.</p></div>
+      <div class="trustitem"><h4>Sin apps que instalar</h4><p>Funciona como página web, se guarda en un toque.</p></div>
+      <div class="trustitem"><h4>Datos en tiempo real</h4><p>Cliente y comercio ven el mismo estado siempre.</p></div>
+    </div>
+  </div>
+</div>
+
+<section id="demo">
+  <div class="container">
+    <div class="demohead">
+      <div class="eyebrow-lbl" style="text-align:center;">Prueba el producto</div>
+      <h2 class="sect-h">Así se ve Gold Bird.</h2>
+      <p class="sect-sub">Cambia de vista y prueba el flujo completo, cliente y comercio comparten el mismo estado. Ya dejamos clientes de ejemplo cargados para que lo veas funcionando.</p>
+      <div class="roletabs">
+        <button class="roletab" id="tab-merchant" onclick="setRole('merchant')">Comercio</button>
+        <button class="roletab" id="tab-client" onclick="setRole('client')">Cliente</button>
+      </div>
+    </div>
+    <div id="app" style="max-width:680px; margin:0 auto;"></div>
+  </div>
+</section>
+
+<footer>
+  <div class="logo">
+    <svg width="22" height="22" viewBox="0 0 34 34" fill="none"><circle cx="17" cy="17" r="16.5" stroke="#C9A227" stroke-width="1"/><path d="M17 8c3 3 3 7 3 9-2 0-6 0-9-3 1-4 4-6 6-6z" fill="#E8C874"/><path d="M17 26c-3-3-3-7-3-9 2 0 6 0 9 3-1 4-4 6-6 6z" fill="#C9A227"/></svg>
+    <span style="font-family:'Fraunces',serif; color:var(--gold-light); font-size:15px;">Gold Bird</span>
+  </div>
+  <p>Un producto ExpandeLab · Lima, Perú</p>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const BUSINESS = { name: "Gold Bird", maxStamps: 10, pointsPerStamp: 10 };
+let state = { role: 'merchant', myClientId: null, clients: [], activity: [], merchantFoundId: null, prevStamps: {}, usingMockData: false };
+
+function uid(){ return 'gb' + Math.random().toString(36).slice(2,8).toUpperCase(); }
+function code6(id){
+  let h = 0; for (let i=0;i<id.length;i++){ h = (h*31 + id.charCodeAt(i)) >>> 0; }
+  return (h % 900000 + 100000).toString();
+}
+function tierFor(cycles){ return cycles >= 3 ? 'Oro' : cycles >= 1 ? 'Plata' : 'Bronce'; }
+function fmtTime(ts){ const d = new Date(ts); return d.toLocaleTimeString('es-PE', {hour:'2-digit', minute:'2-digit'}); }
+
+function injectMockData(){
+  if (state.clients.length === 0){
+    const m1 = { id:'GBAAAA', name:'Carlos Mendoza', email:'carlos@gmail.com', stamps:4, cyclesCompleted:0, plumas:40, createdAt:Date.now()-3600000 };
+    const m2 = { id:'GBBBBB', name:'Lucía Fernández', email:'lucia@hotmail.com', stamps:10, cyclesCompleted:1, plumas:110, createdAt:Date.now()-7200000 };
+    const m3 = { id:'GBCCCC', name:'Mauricio Ortiz', email:'mori@outlook.com', stamps:2, cyclesCompleted:3, plumas:320, createdAt:Date.now()-12000000 };
+    state.clients = [m1, m2, m3];
+    if (!state.myClientId) state.myClientId = m2.id;
+    state.activity = [
+      { type:'stamp', clientId:m1.id, name:m1.name, ts:Date.now()-1800000 },
+      { type:'redeem', clientId:m2.id, name:m2.name, ts:Date.now()-900000 },
+      { type:'stamp', clientId:m3.id, name:m3.name, ts:Date.now()-360000 }
+    ];
+    state.usingMockData = true;
+  } else {
+    state.usingMockData = false;
+  }
+}
+
+async function loadShared(){
+  try{ const c = await window.storage.get('goldbird:clients', true); state.clients = c ? JSON.parse(c.value) : []; }catch(e){ state.clients = []; }
+  try{ const a = await window.storage.get('goldbird:activity', true); state.activity = a ? JSON.parse(a.value) : []; }catch(e){ state.activity = []; }
+  injectMockData();
+}
+async function saveClients(){
+  if (state.usingMockData){ state.usingMockData = false; }
+  await window.storage.set('goldbird:clients', JSON.stringify(state.clients), true);
+}
+async function saveActivity(){ state.activity = state.activity.slice(-30); await window.storage.set('goldbird:activity', JSON.stringify(state.activity), true); }
+async function loadPersonal(){
+  try{ const r = await window.storage.get('goldbird:my_client_id', false); if (r && r.value) state.myClientId = r.value; }catch(e){}
+  try{ const r2 = await window.storage.get('goldbird:role', false); if (r2 && r2.value) state.role = r2.value; }catch(e){}
+}
+
+function showToast(msg){ const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(()=> t.classList.remove('show'), 2200); }
+
+function confettiBurst(big){
+  const canvas = document.createElement('canvas');
+  canvas.style.position = 'fixed'; canvas.style.top = 0; canvas.style.left = 0;
+  canvas.style.width = '100vw'; canvas.style.height = '100vh'; canvas.style.pointerEvents = 'none'; canvas.style.zIndex = 9999;
+  canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+  document.body.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  const colors = ['#C9A227','#E8C874','#F4E7C4','#F2EFE6'];
+  const n = big ? 140 : 45;
+  const parts = Array.from({length:n}, () => ({
+    x: canvas.width/2 + (Math.random()-0.5)*(big?canvas.width*0.6:120),
+    y: big ? canvas.height*0.3 : canvas.height*0.35,
+    vx: (Math.random()-0.5)*8, vy: -Math.random()*8 - 3, r: Math.random()*4+2,
+    color: colors[Math.floor(Math.random()*colors.length)], rot: Math.random()*360, vr: (Math.random()-0.5)*10
+  }));
+  let frame = 0; const maxFrames = big ? 90 : 55;
+  function tick(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p=>{
+      p.vy += 0.22; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color; ctx.fillRect(-p.r,-p.r*0.6,p.r*2,p.r*1.2); ctx.restore();
+    });
+    frame++;
+    if (frame < maxFrames) requestAnimationFrame(tick); else canvas.remove();
+  }
+  tick();
+}
+
+function qrSvg(id){
+  const size = 11;
+  let h = 0; for (let i=0;i<id.length;i++){ h = (h*131 + id.charCodeAt(i)) >>> 0; }
+  let bits = []; let seed = h;
+  for (let i=0;i<size*size;i++){ seed = (seed*1103515245 + 12345) >>> 0; bits.push((seed >> 16) % 2); }
+  const cell = 100/size; let rects = '';
+  for (let y=0;y<size;y++){
+    for (let x=0;x<size;x++){
+      const corner = (x<3&&y<3)||(x>size-4&&y<3)||(x<3&&y>size-4);
+      const on = corner ? true : bits[y*size+x];
+      if (on) rects += `<rect x="${x*cell}" y="${y*cell}" width="${cell}" height="${cell}" fill="#E8C874"/>`;
+    }
+  }
+  return `<svg viewBox="0 0 100 100">${rects}</svg>`;
+}
+
+async function setRole(r){ state.role = r; await window.storage.set('goldbird:role', r, false); render(); document.getElementById('demo').scrollIntoView({behavior:'smooth'}); }
+
+async function createClient(name, email){
+  if (!name.trim()) { showToast('Ingresa tu nombre'); return; }
+  const id = uid();
+  const client = { id, name: name.trim(), email: email.trim(), stamps: 0, cyclesCompleted: 0, plumas: 0, createdAt: Date.now() };
+  if (state.usingMockData){ state.clients = []; state.activity = []; state.usingMockData = false; }
+  state.clients.push(client); state.myClientId = id;
+  await saveClients(); await window.storage.set('goldbird:my_client_id', id, false);
+  render();
+}
+async function addStamp(id){
+  const c = state.clients.find(x=>x.id===id);
+  if (!c || c.stamps >= BUSINESS.maxStamps) return;
+  c.stamps += 1; c.plumas += BUSINESS.pointsPerStamp;
+  state.activity.push({ type:'stamp', clientId:id, name:c.name, ts: Date.now() });
+  await saveClients(); await saveActivity(); showToast(`Sello agregado a ${c.name}`); render();
+}
+async function redeem(id){
+  const c = state.clients.find(x=>x.id===id);
+  if (!c || c.stamps < BUSINESS.maxStamps) return;
+  c.stamps = 0; c.cyclesCompleted += 1;
+  state.activity.push({ type:'redeem', clientId:id, name:c.name, ts: Date.now() });
+  await saveClients(); await saveActivity(); showToast(`Recompensa canjeada — ${c.name}`); render();
+}
+function findClient(query){
+  const q = query.trim().toLowerCase(); if (!q) return null;
+  return state.clients.find(c => c.id.toLowerCase()===q || code6(c.id)===q || c.name.toLowerCase().includes(q));
+}
+
+function renderStampRow(c, animateIndex){
+  let html = '<div class="stamprow">';
+  for (let i=0;i<BUSINESS.maxStamps;i++){
+    const filled = i < c.stamps; const pop = animateIndex === i ? ' pop' : '';
+    html += `<div class="stamp ${filled?'filled':''}${pop}">${filled ? '<svg viewBox="0 0 24 24" fill="none"><path d="M12 4c3.5 3.5 3.5 8 3.5 10-2 0-6.5 0-10-3.5 1-4.5 4.5-6.5 6.5-6.5z" fill="#1A1400"/></svg>' : ''}</div>`;
+  }
+  html += '</div>'; return html;
+}
+
+function renderClientView(){
+  const container = document.createElement('div');
+  const c = state.clients.find(x=>x.id===state.myClientId);
+  if (!c){
+    container.innerHTML = `
+      <div class="card">
+        <h2>Únete a Gold Bird</h2>
+        <p class="sub">Crea tu tarjeta digital y empieza a acumular Plumas de Oro.</p>
+        <label>Nombre</label>
+        <input type="text" id="onb-name" placeholder="Tu nombre completo">
+        <label>Correo</label>
+        <input type="email" id="onb-email" placeholder="nombre@correo.com">
+        <button class="btn btn-gold btn-full" style="margin-top:1.4rem" onclick="createClient(document.getElementById('onb-name').value, document.getElementById('onb-email').value)">Crear mi tarjeta</button>
+      </div>`;
+    return container;
+  }
+  const tier = tierFor(c.cyclesCompleted);
+  const full = c.stamps >= BUSINESS.maxStamps;
+  const prevStamps = state.prevStamps[c.id];
+  let animateIndex = -1;
+  if (prevStamps !== undefined && c.stamps > prevStamps) animateIndex = c.stamps - 1;
+  const myActivity = state.activity.filter(a => a.clientId === c.id).slice(-5).reverse();
+  container.innerHTML = `
+    <div class="pass">
+      <div class="pass-main">
+        <div class="eyebrow">Tarjeta de fidelización</div>
+        <div class="clientname">${c.name}</div>
+        <div class="tierrow"><span class="tierbadge tier-${tier}">${tier}</span><span class="plumas"><b>${c.plumas}</b> plumas de oro</span></div>
+        ${renderStampRow(c, animateIndex)}
+        <div class="progresstext">${c.stamps} de ${BUSINESS.maxStamps} sellos ${full ? '— ¡completa!' : 'para tu próxima recompensa'}</div>
+        ${full ? `<div class="rewardbanner">Tienes una recompensa lista. Muéstrale tu código al comercio.</div>` : ''}
+      </div>
+      <div class="perf"></div>
+      <div class="pass-stub">
+        <div class="qrbox">${qrSvg(c.id)}</div>
+        <div class="codetext">${code6(c.id)}</div>
+        <div class="codelabel">Muestra este código en caja</div>
+      </div>
+    </div>
+    <div class="activity">
+      <h3>Actividad reciente</h3>
+      ${myActivity.length ? myActivity.map(a => `<div class="arow"><span class="tag ${a.type==='redeem'?'tag-redeem':'tag-stamp'}">${a.type==='redeem' ? 'Canje' : '+1 sello'}</span><span class="when">${fmtTime(a.ts)}</span></div>`).join('') : '<div class="empty">Aún no tienes movimientos.</div>'}
+    </div>`;
+  if (prevStamps !== undefined && c.stamps > prevStamps){
+    if (c.stamps >= BUSINESS.maxStamps) setTimeout(()=>confettiBurst(true), 80); else setTimeout(()=>confettiBurst(false), 80);
+  }
+  if (prevStamps !== undefined && prevStamps >= BUSINESS.maxStamps && c.stamps === 0){ setTimeout(()=>confettiBurst(true), 80); }
+  state.prevStamps[c.id] = c.stamps;
+  return container;
+}
+
+function renderMerchantView(){
+  const container = document.createElement('div');
+  const found = state.clients.find(x=>x.id===state.merchantFoundId);
+  const clientOptions = state.clients.map(c => `<option value="${c.id}" ${c.id===state.merchantFoundId?'selected':''}>${c.name} — ${code6(c.id)}</option>`).join('');
+  container.innerHTML = `
+    <div class="card">
+      <h2>Panel del comercio</h2>
+      <p class="sub">Escanea o ingresa el código que el cliente te muestra en su tarjeta.</p>
+      <div class="scanrow">
+        <input type="text" id="scan-input" placeholder="Código de 6 dígitos o nombre">
+        <button class="btn btn-gold" onclick="doScan()">Buscar</button>
+      </div>
+      <label>Simular cámara (elegir cliente demo)</label>
+      <select id="scan-select" onchange="doScanSelect(this.value)">
+        <option value="">Seleccionar cliente registrado…</option>
+        ${clientOptions}
+      </select>
+      ${found ? `
+        <div class="foundcard">
+          <div class="foundtop">
+            <div><div class="foundname">${found.name}</div><div class="foundmeta">${found.stamps}/${BUSINESS.maxStamps} sellos · ${found.plumas} plumas · nivel ${tierFor(found.cyclesCompleted)}</div></div>
+            <span class="tierbadge tier-${tierFor(found.cyclesCompleted)}">${tierFor(found.cyclesCompleted)}</span>
+          </div>
+          ${renderStampRow(found, -1)}
+          <div class="actionrow">
+            <button class="btn btn-gold" onclick="addStamp('${found.id}')" ${found.stamps>=BUSINESS.maxStamps ? 'disabled' : ''}>+1 Sello</button>
+            <button class="btn btn-outline" onclick="redeem('${found.id}')" ${found.stamps<BUSINESS.maxStamps ? 'disabled' : ''}>Canjear recompensa</button>
+          </div>
+        </div>` : `<div class="empty" style="border:1px dashed var(--border); margin-top:1rem; border-radius:8px; padding:1.25rem;">Elige un cliente arriba para asignar sellos o canjear una recompensa.</div>`}
+    </div>
+    <div class="sectiontitle">Clientes registrados</div>
+    ${state.clients.length ? `
+      <table><tr><th>Cliente</th><th>Sellos</th><th>Plumas</th><th>Nivel</th></tr>
+        ${state.clients.map(c => `<tr><td>${c.name}</td><td class="num">${c.stamps}/${BUSINESS.maxStamps}</td><td class="num">${c.plumas}</td><td>${tierFor(c.cyclesCompleted)}</td></tr>`).join('')}
+      </table>` : '<div class="empty">Aún no hay clientes. Crea uno desde la vista Cliente.</div>'}
+    <div class="sectiontitle">Actividad del negocio</div>
+    <div class="activity" style="margin-top:0">
+      ${state.activity.length ? state.activity.slice(-10).reverse().map(a => `<div class="arow"><span class="who">${a.name}</span><span class="tag ${a.type==='redeem'?'tag-redeem':'tag-stamp'}">${a.type==='redeem' ? 'Canje' : '+1 sello'}</span><span class="when">${fmtTime(a.ts)}</span></div>`).join('') : '<div class="empty">Sin movimientos todavía.</div>'}
+    </div>`;
+  return container;
+}
+
+function doScan(){ const val = document.getElementById('scan-input').value; const c = findClient(val); if (!c){ showToast('Cliente no encontrado'); return; } state.merchantFoundId = c.id; render(); }
+function doScanSelect(id){ if (!id) return; state.merchantFoundId = id; render(); }
+
+function render(){
+  document.getElementById('tab-client').classList.toggle('active', state.role==='client');
+  document.getElementById('tab-merchant').classList.toggle('active', state.role==='merchant');
+  const app = document.getElementById('app');
+  app.innerHTML = '';
+  app.appendChild(state.role === 'client' ? renderClientView() : renderMerchantView());
+}
+
+async function init(){
+  document.getElementById('hero-qr').innerHTML = qrSvg('preview');
+  await loadPersonal(); await loadShared(); render();
+  setInterval(async ()=>{ await loadShared(); render(); }, 2500);
+}
+init();
+</script>
+</body>
+</html>
