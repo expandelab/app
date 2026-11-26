@@ -1,856 +1,433 @@
 <!DOCTYPE html>
-<html lang="es" class="scroll-smooth">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ExpandeLab — AI Venture Builders</title>
-  <meta name="description" content="Automatizamos ventas, finanzas y operación con IA y software propio. Laboratorio SaaS en Lima para MYPEs y startups de LATAM.">
-  
-  <!-- Preconnect & Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Tailwind CSS Engine -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Plus Jakarta Sans', 'sans-serif'],
-            mono: ['JetBrains Mono', 'monospace']
-          },
-          colors: {
-            ink: '#05070B',
-            panel: '#0B0F16',
-            line: 'rgba(255,255,255,.08)',
-            lime: '#BEF264'
-          }
-        }
-      }
-    }
-  </script>
-
-  <style>
-    :root {
-      --lime: #BEF264;
-      --ink: #05070B;
-      --panel: #0B0F16;
-      --line: rgba(255, 255, 255, 0.08);
-      --muted: #94A3B8;
-    }
-
-    body {
-      background-color: var(--ink);
-      color: #E5E7EB;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      overflow-x: hidden;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    section[id] {
-      scroll-margin-top: 110px;
-    }
-
-    .wrap {
-      max-width: 1180px;
-      margin: 0 auto;
-      padding: 0 1.5rem;
-    }
-
-    .hero-glow {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: 
-        radial-gradient(700px circle at 78% 20%, rgba(190,242,100,.08), transparent 60%),
-        radial-gradient(600px circle at 0% 0%, rgba(34,197,94,.05), transparent 60%);
-    }
-
-    .hero-grid {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background-size: 56px 56px;
-      background-image: 
-        linear-gradient(to right, rgba(255,255,255,.025) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255,255,255,.025) 1px, transparent 1px);
-      -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 75%);
-      mask-image: radial-gradient(ellipse at 50% 0%, #000 20%, transparent 75%);
-    }
-
-    .eyebrow {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7188rem;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      color: var(--lime);
-    }
-
-    .sec-num {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.75rem;
-      color: var(--lime);
-      letter-spacing: .12em;
-    }
-
-    .h-grad {
-      background: linear-gradient(120deg, #fff 5%, #BEF264 70%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: .6rem;
-      background: var(--lime);
-      color: #05070B;
-      font-weight: 700;
-      border-radius: 12px;
-      padding: .8rem 1.5rem;
-      font-size: 0.9063rem;
-      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
-      box-shadow: 0 8px 28px -10px rgba(190,242,100,.55);
-    }
-
-    .btn-primary:hover, .btn-primary:focus-visible {
-      background: #d4f58a;
-      transform: translateY(-2px);
-      box-shadow: 0 14px 34px -10px rgba(190,242,100,.65);
-      outline: 2px solid var(--lime);
-      outline-offset: 2px;
-    }
-
-    .btn-ghost {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: .6rem;
-      border: 1px solid rgba(255,255,255,.14);
-      color: #E5E7EB;
-      font-weight: 600;
-      border-radius: 12px;
-      padding: .8rem 1.5rem;
-      font-size: 0.9063rem;
-      transition: all .2s ease;
-      background: rgba(255,255,255,.03);
-    }
-
-    .btn-ghost:hover, .btn-ghost:focus-visible {
-      border-color: rgba(190,242,100,.45);
-      color: #fff;
-      transform: translateY(-2px);
-      outline: 2px solid var(--lime);
-      outline-offset: 2px;
-    }
-
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      transition: border-color .3s ease, transform .3s ease, box-shadow .3s ease;
-    }
-
-    .card:hover {
-      border-color: rgba(190,242,100,.28);
-      transform: translateY(-3px);
-      box-shadow: 0 24px 50px -30px rgba(190,242,100,.25);
-    }
-
-    .ico {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: var(--lime);
-      background: rgba(190,242,100,.08);
-      border: 1px solid rgba(190,242,100,.2);
-    }
-
-    .arrow-link {
-      display: inline-flex;
-      align-items: center;
-      gap: .4rem;
-      font-size: 0.8438rem;
-      font-weight: 600;
-      color: var(--lime);
-    }
-
-    .arrow-link span {
-      transition: transform .2s ease;
-    }
-
-    .arrow-link:hover span {
-      transform: translateX(4px);
-    }
-
-    .nav-link {
-      position: relative;
-      font-size: 0.875rem;
-      color: #CBD5E1;
-      font-weight: 500;
-      transition: color .2s ease;
-    }
-
-    .nav-link:hover, .nav-link.nav-active {
-      color: #fff;
-    }
-
-    .nav-link::after {
-      content: '';
-      position: absolute;
-      left: 0;
-      bottom: -8px;
-      height: 2px;
-      width: 0;
-      background: var(--lime);
-      transition: width .25s ease;
-    }
-
-    .nav-link:hover::after, .nav-link.nav-active::after {
-      width: 100%;
-    }
-
-    header.is-scrolled {
-      background: rgba(5,7,11,.92);
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
-    }
-
-    #mobile-menu {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height .35s cubic-bezier(0, 1, 0, 1);
-    }
-
-    #mobile-menu.is-open {
-      max-height: 520px;
-      transition: max-height .35s ease-in-out;
-    }
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
-      will-change: opacity, transform;
-    }
-
-    .reveal.is-visible {
-      opacity: 1;
-      transform: none;
-    }
-
-    /* FAQ dinámico mejorado */
-    .faq-answer {
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      transition: max-height .35s ease, opacity .25s ease;
-    }
-
-    .faq-item.is-open .faq-answer {
-      opacity: 1;
-    }
-
-    .faq-icon {
-      transition: transform .25s ease;
-    }
-
-    .faq-item.is-open .faq-icon {
-      transform: rotate(45deg);
-    }
-
-    .dash {
-      background: linear-gradient(180deg, #0E131C, #090D14);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 22px;
-      box-shadow: 0 40px 90px -30px rgba(0,0,0,.8), 0 0 60px -20px rgba(190,242,100,.18);
-    }
-
-    .bubble-in {
-      background: rgba(255,255,255,.06);
-      border-radius: 14px 14px 14px 4px;
-    }
-
-    .bubble-out {
-      background: rgba(190,242,100,.14);
-      border: 1px solid rgba(190,242,100,.25);
-      border-radius: 14px 14px 4px 14px;
-    }
-
-    @keyframes floaty {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-8px); }
-    }
-
-    .floaty {
-      animation: floaty 7s ease-in-out infinite;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .reveal, .floaty, #mobile-menu, .faq-answer {
-        animation: none !important;
-        transition: none !important;
-      }
-      .reveal {
-        opacity: 1;
-        transform: none;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ExpandeLab — AI Venture Builders</title>
+<meta name="description" content="Automatizamos ventas, finanzas y operación con IA y software propio. Laboratorio SaaS en Lima para MYPEs y startups de LATAM.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07090C;--panel:#0D1117;--line:rgba(255,255,255,.12);--lime:#BEF264;--txt:#E6E8EB;--mut:#8B95A3;--mono:'JetBrains Mono',ui-monospace,monospace;--sans:'Plus Jakarta Sans',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{background:var(--bg);color:var(--txt);font-family:var(--sans);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+ul{list-style:none}
+:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+.mono{font-family:var(--mono)}
+h1,h2,h3{font-family:var(--mono);text-transform:uppercase;letter-spacing:-.02em;line-height:1.05;font-weight:800;color:#fff}
+h1{font-size:clamp(34px,6vw,68px)}
+h2{font-size:clamp(26px,4vw,44px)}
+h3{font-size:16px;letter-spacing:0}
+.lime{color:var(--lime)}
+.tag{font-family:var(--mono);font-size:12px;color:var(--lime);letter-spacing:.04em}
+.sub{color:var(--mut);max-width:560px;margin-top:14px}
+section{border-top:1px solid var(--line)}
+.sec{padding:96px 0}
+.btn{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-weight:700;font-size:13px;text-transform:uppercase;padding:14px 22px;border:1px solid var(--lime);transition:transform .15s,background .15s,color .15s}
+.btn.p{background:var(--lime);color:#07090C;box-shadow:4px 4px 0 rgba(190,242,100,.28)}
+.btn.p:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 rgba(190,242,100,.4)}
+.btn.g{color:var(--txt);border-color:var(--line)}
+.btn.g:hover{border-color:var(--lime);color:var(--lime)}
+/* top + header */
+.top{background:var(--lime);color:#07090C;font-family:var(--mono);font-size:12px;font-weight:700;text-align:center;padding:8px 16px}
+.top a{text-decoration:underline;margin-left:8px}
+header{position:sticky;top:0;z-index:50;background:rgba(7,9,12,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav{height:64px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+.logo{font-family:var(--mono);font-weight:800;font-size:17px;letter-spacing:-.03em;text-transform:uppercase}
+.logo i{display:inline-block;width:12px;height:12px;background:var(--lime);margin-right:9px;transform:rotate(45deg)}
+.links{display:flex;gap:28px}
+.links a{font-family:var(--mono);font-size:12px;text-transform:uppercase;color:var(--mut);padding:6px 0;border-bottom:2px solid transparent}
+.links a:hover,.links a.on{color:#fff;border-color:var(--lime)}
+.right{display:flex;gap:10px;align-items:center}
+.right .btn{padding:10px 16px;font-size:12px}
+#hb{display:none;background:none;border:1px solid var(--line);color:#fff;font-family:var(--mono);font-size:12px;padding:10px 14px;cursor:pointer}
+#mm{display:none;border-top:1px solid var(--line);padding:8px 24px 20px}
+#mm.open{display:block}
+#mm a{display:block;font-family:var(--mono);font-size:13px;text-transform:uppercase;padding:14px 0;border-bottom:1px solid var(--line)}
+/* hero */
+.hero{border:0;position:relative;padding:72px 0 80px;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;background-position:-1px -1px}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 30% 40%,transparent 0,var(--bg) 85%);pointer-events:none}
+.hero .wrap{position:relative;z-index:1}
+.badge{display:inline-block;font-family:var(--mono);font-size:12px;border:1px solid var(--lime);color:var(--lime);padding:6px 12px;margin-bottom:26px}
+.hero p.lead{font-size:18px;color:#C3CAD4;max-width:620px;margin:24px 0 32px}
+.cta{display:flex;gap:14px;flex-wrap:wrap}
+.fine{font-family:var(--mono);font-size:12px;color:var(--mut);margin-top:22px}
+/* inspector */
+.insp{margin-top:56px;border:1px solid var(--line);background:var(--panel);display:grid;grid-template-columns:200px 1fr 220px;min-height:340px;box-shadow:10px 10px 0 rgba(190,242,100,.08)}
+.insp>div{padding:16px}
+.layers{border-right:1px solid var(--line)}
+.layers .t,.props .t{font-family:var(--mono);font-size:11px;color:var(--mut);margin-bottom:12px;letter-spacing:.08em}
+.layers button{display:block;width:100%;text-align:left;background:none;border:0;border-left:2px solid transparent;color:var(--mut);font-family:var(--mono);font-size:12px;padding:10px 10px;cursor:pointer;text-transform:uppercase}
+.layers button:hover{color:#fff}
+.layers button[aria-selected=true]{color:#07090C;background:var(--lime);border-color:var(--lime);font-weight:700}
+.canvas{display:flex;flex-direction:column;justify-content:center;gap:10px;border-right:1px solid var(--line);position:relative}
+.pane{display:none;animation:in .25s ease}
+.pane.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg{font-size:13px;padding:10px 14px;max-width:82%;margin-bottom:8px;border:1px solid var(--line)}
+.msg.o{margin-left:auto;border-color:rgba(190,242,100,.5);background:rgba(190,242,100,.1)}
+.bars{display:flex;align-items:flex-end;gap:8px;height:150px;padding-top:6px}
+.bars span{flex:1;background:var(--lime);opacity:.85;transform-origin:bottom;animation:grow .6s ease both}
+.bars span:nth-child(odd){opacity:.45}
+@keyframes grow{from{transform:scaleY(0)}}
+.code{font-family:var(--mono);font-size:12px;color:#B8C2CF;line-height:1.8}
+.code b{color:var(--lime);font-weight:500}
+.props .row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;padding:9px 0;border-bottom:1px dashed var(--line)}
+.props .row span:first-child{color:var(--mut)}
+.props .row span:last-child{color:#fff}
+/* marquee */
+.mq{overflow:hidden;padding:20px 0;border-top:1px solid var(--line)}
+.mq div{display:flex;gap:56px;width:max-content;animation:mq 28s linear infinite;font-family:var(--mono);font-size:13px;color:var(--mut);text-transform:uppercase}
+@keyframes mq{to{transform:translateX(-50%)}}
+/* grids */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);margin-top:48px;border:1px solid var(--line)}
+.cell{padding:30px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 -1px -1px 0;transition:background .2s;position:relative}
+.cell:hover{background:var(--panel)}
+.cell:hover .tag{color:#fff}
+.cell p{color:var(--mut);font-size:14px;margin-top:10px}
+.cell .tag{display:block;margin-bottom:22px}
+.cell.big{grid-row:span 2;background:linear-gradient(160deg,rgba(190,242,100,.1),transparent 60%)}
+.cell.big h3{font-size:26px}
+.stats{display:flex;gap:32px;margin-top:40px;padding-top:22px;border-top:1px solid var(--line)}
+.stats b{display:block;font-family:var(--mono);font-size:26px;color:#fff}
+.stats small{color:var(--mut);font-size:12px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:48px;border:1px solid var(--line)}
+.steps>div{padding:34px;border-right:1px solid var(--line)}
+.steps>div:last-child{border:0}
+.steps .n{font-family:var(--mono);font-size:56px;font-weight:800;color:transparent;-webkit-text-stroke:1px var(--lime);line-height:1}
+.steps h3{margin:20px 0 10px}
+.steps p{color:var(--mut);font-size:14px}
+.nums{display:grid;grid-template-columns:repeat(4,1fr)}
+.nums>div{padding:44px 24px;border-right:1px solid var(--line)}
+.nums>div:last-child{border:0}
+.nums b{display:block;font-family:var(--mono);font-size:clamp(32px,5vw,56px);font-weight:800;color:#fff;line-height:1}
+.nums small{display:block;margin-top:10px;color:var(--mut);font-size:13px}
+.eco{display:grid;grid-template-columns:repeat(2,1fr);margin-top:48px;border:1px solid var(--line)}
+.eco a{padding:32px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);margin:0 -1px -1px 0;display:flex;flex-direction:column;gap:12px;transition:background .2s}
+.eco a:hover{background:var(--panel)}
+.eco a:hover .go{transform:translate(4px,-4px)}
+.eco p{color:var(--mut);font-size:14px;flex:1}
+.eco .meta{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px;color:var(--mut);padding-top:16px;border-top:1px solid var(--line);text-transform:uppercase}
+.go{color:var(--lime);font-size:18px;transition:transform .2s}
+.eco a.soc{background:var(--lime);color:#07090C}
+.eco a.soc h3,.eco a.soc p,.eco a.soc .meta,.eco a.soc .go{color:#07090C}
+.eco a.soc .meta{border-color:rgba(0,0,0,.25)}
+.eco a.soc:hover{background:#d4f58a}
+/* compare */
+.tbl{margin-top:48px;border:1px solid var(--line);overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:560px;font-size:14px}
+th,td{padding:16px 20px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-family:var(--mono);font-size:12px;text-transform:uppercase;color:var(--mut);font-weight:500}
+th.us,td.us{background:rgba(190,242,100,.07);color:#fff}
+th.us{color:var(--lime)}
+td.us{font-family:var(--mono);font-size:13px}
+tr:last-child td{border:0}
+/* before/after */
+.ba{display:grid;grid-template-columns:1fr 1fr;margin-top:48px;border:1px solid var(--line)}
+.ba>div{padding:34px}
+.ba>div:first-child{border-right:1px solid var(--line)}
+.ba>div:last-child{background:linear-gradient(160deg,rgba(190,242,100,.08),transparent 60%)}
+.ba li{padding:14px 0;border-bottom:1px dashed var(--line);font-size:14px;color:var(--mut)}
+.ba li:last-child{border:0}
+.ba li strong{display:block;color:#fff;margin-bottom:2px}
+/* faq */
+.faq{margin-top:40px;border-top:1px solid var(--line);max-width:820px}
+.faq button{width:100%;display:flex;justify-content:space-between;gap:20px;background:none;border:0;border-bottom:1px solid var(--line);color:#fff;font-family:var(--mono);font-size:14px;font-weight:700;text-align:left;text-transform:uppercase;padding:22px 0;cursor:pointer}
+.faq button i{font-style:normal;color:var(--lime);font-size:20px;line-height:1;transition:transform .25s}
+.faq button[aria-expanded=true] i{transform:rotate(45deg)}
+.faq .a{max-height:0;overflow:hidden;transition:max-height .3s ease;color:var(--mut);font-size:15px}
+.faq .a p{padding:18px 0 24px;border-bottom:1px solid var(--line);max-width:680px}
+/* final */
+.final{text-align:center;padding:110px 0;background:radial-gradient(ellipse at 50% 0,rgba(190,242,100,.12),transparent 65%)}
+.final h2{max-width:780px;margin:0 auto}
+.final .sub{margin:18px auto 34px}
+footer{border-top:1px solid var(--line);padding:56px 0 28px;font-size:14px}
+.fg{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:32px}
+.fg h4{font-family:var(--mono);font-size:12px;text-transform:uppercase;color:#fff;margin-bottom:14px}
+.fg li{margin-bottom:9px;color:var(--mut)}
+.fg a:hover{color:var(--lime)}
+.copy{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--mut)}
+#up{position:fixed;right:20px;bottom:20px;width:44px;height:44px;background:var(--lime);border:0;color:#07090C;font-size:18px;font-weight:800;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .25s;z-index:40}
+#up.show{opacity:1;pointer-events:auto}
+@media(max-width:900px){
+.links,.right .btn{display:none}#hb{display:block}
+.insp{grid-template-columns:1fr}.layers,.canvas{border-right:0;border-bottom:1px solid var(--line)}
+.layers{display:flex;flex-wrap:wrap;gap:6px}.layers .t{width:100%;margin-bottom:4px}.layers button{width:auto;border:1px solid var(--line)}
+.bento,.steps,.eco,.ba,.fg{grid-template-columns:1fr}
+.cell.big{grid-row:auto}
+.steps>div,.ba>div:first-child{border-right:0;border-bottom:1px solid var(--line)}
+.nums{grid-template-columns:1fr 1fr}.nums>div:nth-child(2){border-right:0}.nums>div:nth-child(-n+2){border-bottom:1px solid var(--line)}
+.sec{padding:72px 0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+</style>
 </head>
 <body>
 
-<!-- BARRA SUPERIOR -->
-<aside aria-label="Anuncio especial" class="bg-[#0A0F08] border-b border-white/5 text-center text-[12.5px] py-2.5 px-4 text-slate-300">
-  <span class="text-lime font-semibold">Ruta del Emprendedor · Batch 2026</span>
-  <span class="mx-2 text-slate-500" aria-hidden="true">|</span>
-  Workshop de 6 meses desde $145
-  <a href="#programa" class="ml-2 text-lime font-semibold hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-lime">Conocer el programa →</a>
-</aside>
+<div class="top">Comunidad ExpandeLab: emprendedores, talks y programas <a href="https://www.expandelab.app/social" target="_blank" rel="noopener">Entrar a Social ↗</a></div>
 
-<!-- HEADER -->
-<header id="site-header" class="sticky top-0 z-50 border-b border-white/5 bg-ink/80 backdrop-blur-2xl transition-all duration-300">
-  <div class="wrap h-[72px] flex items-center justify-between gap-6">
-    <a href="#" class="flex items-center gap-2.5 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime" aria-label="ExpandeLab inicio">
-      <span class="w-3.5 h-3.5 rounded-[3px] bg-lime rotate-45 inline-block" aria-hidden="true"></span>
-      <span class="text-[19px] font-extrabold tracking-tight text-white">Expande<span class="text-lime">Lab</span></span>
-    </a>
-    
-    <nav class="hidden md:flex items-center gap-8" aria-label="Navegación principal">
-      <a href="#metodo" data-section="metodo" class="nav-link">Método</a>
-      <a href="#servicios" data-section="servicios" class="nav-link">Servicios</a>
-      <a href="#ecosistema" data-section="ecosistema" class="nav-link">Ecosistema</a>
-      <a href="#programa" data-section="programa" class="nav-link">Programa</a>
-      <a href="#talks" data-section="talks" class="nav-link">Talks</a>
-      <a href="#faq" data-section="faq" class="nav-link">Preguntas</a>
+<header>
+  <div class="wrap nav">
+    <a href="#" class="logo" aria-label="ExpandeLab inicio"><i></i>Expande<span class="lime">Lab</span></a>
+    <nav class="links" aria-label="Principal">
+      <a href="#servicios" data-s="servicios">Servicios</a>
+      <a href="#metodo" data-s="metodo">Método</a>
+      <a href="#ecosistema" data-s="ecosistema">Ecosistema</a>
+      <a href="#comparar" data-s="comparar">Comparar</a>
+      <a href="#faq" data-s="faq">Preguntas</a>
+      <a href="https://www.expandelab.app/social" target="_blank" rel="noopener">Social ↗</a>
     </nav>
-
-    <div class="flex items-center gap-3">
-      <a href="https://www.expandelab.app/login" class="btn-primary hidden sm:inline-flex !py-2.5 !px-5 !text-[13.5px]">Hazme socio <span aria-hidden="true">→</span></a>
-      <button id="hamburger-btn" aria-label="Abrir menú" aria-expanded="false" aria-controls="mobile-menu" class="md:hidden h-10 px-4 rounded-lg border border-white/10 bg-white/5 text-sm font-semibold text-white hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime">Menú +</button>
+    <div class="right">
+      <a href="https://www.expandelab.app/login" class="btn p">Hazme socio</a>
+      <button id="hb" aria-expanded="false" aria-controls="mm">Menú +</button>
     </div>
   </div>
-
-  <div id="mobile-menu" class="md:hidden border-t border-white/5 bg-ink/95">
-    <nav class="wrap flex flex-col py-4 text-sm font-medium text-slate-300" aria-label="Navegación móvil">
-      <a href="#metodo" class="mobile-nav-link py-3 border-b border-white/5 hover:text-white">Método</a>
-      <a href="#servicios" class="mobile-nav-link py-3 border-b border-white/5 hover:text-white">Servicios</a>
-      <a href="#ecosistema" class="mobile-nav-link py-3 border-b border-white/5 hover:text-white">Ecosistema</a>
-      <a href="#programa" class="mobile-nav-link py-3 border-b border-white/5 hover:text-white">Programa</a>
-      <a href="#talks" class="mobile-nav-link py-3 border-b border-white/5 hover:text-white">Talks</a>
-      <a href="#faq" class="mobile-nav-link py-3 border-b border-white/5 hover:text-white">Preguntas</a>
-      <a href="https://www.expandelab.app/login" class="btn-primary mt-4 text-center">Hazme socio</a>
-    </nav>
+  <div id="mm">
+    <a href="#servicios">Servicios</a><a href="#metodo">Método</a><a href="#ecosistema">Ecosistema</a><a href="#comparar">Comparar</a><a href="#faq">Preguntas</a>
+    <a href="https://www.expandelab.app/social" target="_blank" rel="noopener">Social ↗</a>
+    <a href="https://www.expandelab.app/login" class="lime">Hazme socio →</a>
   </div>
 </header>
 
 <main>
-<!-- HERO -->
-<section class="relative overflow-hidden">
-  <div class="hero-glow"></div>
-  <div class="hero-grid"></div>
-  
-  <div class="wrap relative grid lg:grid-cols-[1.08fr_.92fr] gap-14 items-center pt-16 pb-20 lg:pt-24 lg:pb-28">
-    <div>
-      <div class="eyebrow inline-flex items-center gap-2.5 border border-lime/20 bg-lime/5 rounded-full px-4 py-2 mb-7">
-        <span class="w-2 h-2 rounded-full bg-lime animate-pulse" aria-hidden="true"></span>Ingeniería de IA · Lima, Perú
-      </div>
-      <h1 class="text-[40px] sm:text-5xl lg:text-[58px] font-extrabold tracking-tight leading-[1.08] text-white">
-        Automatizamos tu estrategia, finanzas y ventas <span class="h-grad">con IA.</span>
-      </h1>
-      <p class="mt-6 text-lg text-slate-300 leading-relaxed max-w-xl">
-        Somos tu laboratorio SaaS: agentes autónomos e inteligencia financiera de precisión sobre el core de tu operación. <strong class="text-white font-semibold">Resultados tangibles en semanas.</strong>
-      </p>
-      <div class="mt-9 flex flex-col sm:flex-row gap-3.5">
-        <a href="https://www.expandelab.app/login" class="btn-primary">Hazme socio <span aria-hidden="true">→</span></a>
-        <a href="#servicios" class="btn-ghost">Ver qué automatizamos <span aria-hidden="true">↓</span></a>
-      </div>
-      
-      <ul class="mt-9 flex flex-wrap gap-x-7 gap-y-3 text-[13.5px] text-slate-300" role="list">
-        <li class="flex items-center gap-2">
-          <svg class="w-4 h-4 text-lime shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0L3.3 9.7a1 1 0 011.4-1.4l3.8 3.8 6.8-6.8a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
-          <span>Pilotos en semanas</span>
-        </li>
-        <li class="flex items-center gap-2">
-          <svg class="w-4 h-4 text-lime shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0L3.3 9.7a1 1 0 011.4-1.4l3.8 3.8 6.8-6.8a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
-          <span>Software propio</span>
-        </li>
-        <li class="flex items-center gap-2">
-          <svg class="w-4 h-4 text-lime shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0L3.3 9.7a1 1 0 011.4-1.4l3.8 3.8 6.8-6.8a1 1 0 011.4 0z" clip-rule="evenodd"/></svg>
-          <span>Atención directa de ingeniería</span>
-        </li>
-      </ul>
+<section class="hero">
+  <div class="wrap">
+    <div class="badge">[NUEVO] // AGENTES IA EN PRODUCCIÓN · LIMA</div>
+    <h1>Automatiza ventas, finanzas y operación <span class="lime">con IA.</span></h1>
+    <p class="lead">Somos tu laboratorio SaaS: agentes autónomos e inteligencia financiera sobre el core de tu operación. Resultados tangibles en semanas.</p>
+    <div class="cta">
+      <a class="btn p" href="https://www.expandelab.app/login">Hazme socio →</a>
+      <a class="btn g" href="#servicios">Ver qué automatizamos ↓</a>
     </div>
+    <p class="fine">DIAGNÓSTICO EN UNA LLAMADA // SOFTWARE PROPIO // ATENCIÓN DIRECTA DE INGENIERÍA</p>
 
-    <!-- Dashboard Ilustrativo -->
-    <div class="relative hidden md:block" aria-hidden="true">
-      <div class="dash p-5 floaty">
-        <div class="flex items-center justify-between mb-4">
-          <div class="flex items-center gap-2">
-            <span class="w-2.5 h-2.5 rounded-full bg-lime"></span>
-            <span class="text-[13px] font-semibold text-white">Agente comercial</span>
-          </div>
-          <span class="eyebrow !text-[10px]">en vivo</span>
+    <!-- Inspector interactivo -->
+    <div class="insp" role="region" aria-label="Vista ilustrativa de la plataforma">
+      <div class="layers" role="tablist" aria-label="Capas">
+        <div class="t">CAPAS</div>
+        <button role="tab" aria-selected="true" data-t="ventas">Ventas</button>
+        <button role="tab" aria-selected="false" data-t="finanzas">Finanzas</button>
+        <button role="tab" aria-selected="false" data-t="software">Software</button>
+      </div>
+      <div class="canvas">
+        <div class="pane on" id="p-ventas">
+          <div class="msg">Hola, quiero cotizar un tablero financiero.</div>
+          <div class="msg o">¡Claro! Te agendo un diagnóstico. ¿Mañana a las 10:00?</div>
+          <div class="msg">Perfecto.</div>
+          <div class="tag">✓ CITA AGENDADA · SIN INTERVENCIÓN HUMANA</div>
         </div>
-        <div class="space-y-2.5 text-[12.5px]">
-          <div class="bubble-in px-3.5 py-2.5 max-w-[80%] text-slate-200">Hola, quiero cotizar un tablero financiero.</div>
-          <div class="bubble-out px-3.5 py-2.5 max-w-[84%] ml-auto text-white">¡Claro! Te agendo un diagnóstico. ¿Mañana a las 10:00?</div>
-          <div class="bubble-in px-3.5 py-2.5 max-w-[60%] text-slate-200">Perfecto.</div>
+        <div class="pane" id="p-finanzas">
+          <div class="tag" style="margin-bottom:8px">MARGEN EN VIVO</div>
+          <div class="bars"><span style="height:35%"></span><span style="height:48%"></span><span style="height:42%"></span><span style="height:62%"></span><span style="height:55%"></span><span style="height:78%"></span><span style="height:90%"></span></div>
         </div>
-        <div class="grid grid-cols-3 gap-2.5 mt-5">
-          <div class="rounded-xl bg-white/[.04] border border-white/5 p-3">
-            <div class="text-[10px] text-slate-400">Respuesta</div>
-            <div class="font-mono text-white text-lg font-semibold">&lt;60s</div>
-          </div>
-          <div class="rounded-xl bg-white/[.04] border border-white/5 p-3">
-            <div class="text-[10px] text-slate-400">Disponibilidad</div>
-            <div class="font-mono text-white text-lg font-semibold">24/7</div>
-          </div>
-          <div class="rounded-xl bg-lime/10 border border-lime/20 p-3">
-            <div class="text-[10px] text-lime/90">Cita</div>
-            <div class="font-mono text-lime text-lg font-semibold">✓</div>
-          </div>
+        <div class="pane" id="p-software">
+          <div class="code"><b>POST</b> /crm/leads<br><b>SYNC</b> erp.facturas → tablero<br><b>RUN</b> agente.calificar()<br><b>DOC</b> documentación técnica incluida<br><b>STATUS</b> operando solo</div>
         </div>
       </div>
-      <div class="absolute -bottom-6 -left-6 rounded-2xl border border-white/10 bg-[#0B0F16]/95 backdrop-blur px-4 py-3 shadow-2xl floaty" style="animation-delay:1.5s">
-        <div class="text-[10px] text-slate-400">Margen en vivo</div>
-        <svg width="120" height="32" viewBox="0 0 120 32" fill="none"><path d="M2 26 L22 20 L42 23 L62 12 L82 15 L118 4" stroke="#BEF264" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="props">
+        <div class="t">PROPIEDADES</div>
+        <div class="row"><span>Respuesta</span><span id="v1">&lt;60s</span></div>
+        <div class="row"><span>Disponibilidad</span><span id="v2">24/7</span></div>
+        <div class="row"><span>Integra</span><span id="v3">CRM · ERP</span></div>
+        <div class="row"><span>Estado</span><span class="lime">LISTO</span></div>
+        <p class="fine" style="margin-top:16px">Vista ilustrativa</p>
       </div>
-      <p class="absolute -bottom-10 right-0 text-[10.5px] text-slate-400">Vista ilustrativa</p>
     </div>
   </div>
 </section>
 
-<!-- FRANJA DE CONFIANZA -->
-<section class="border-y border-white/5 bg-panel/60" aria-label="Métricas de impacto">
-  <div class="wrap grid grid-cols-2 md:grid-cols-4 divide-x divide-white/5">
-    <div class="py-7 px-5 text-center reveal"><div class="font-mono text-3xl font-semibold text-white">12+</div><div class="text-xs text-slate-300 mt-1.5">plataformas desarrolladas</div></div>
-    <div class="py-7 px-5 text-center reveal"><div class="font-mono text-3xl font-semibold text-white">4.2K</div><div class="text-xs text-slate-300 mt-1.5">horas/mes recuperadas</div></div>
-    <div class="py-7 px-5 text-center reveal"><div class="font-mono text-3xl font-semibold text-white">24/7</div><div class="text-xs text-slate-300 mt-1.5">agentes autónomos</div></div>
-    <div class="py-7 px-5 text-center reveal"><div class="font-mono text-3xl font-semibold text-white">12+</div><div class="text-xs text-slate-300 mt-1.5">años en banca, seguros, telecom y fintech</div></div>
-  </div>
-</section>
-
-<!-- 01 MÉTODO -->
-<section id="metodo" class="wrap py-24 md:py-28">
-  <div class="max-w-2xl reveal">
-    <div class="sec-num">01 — MÉTODO</div>
-    <h2 class="text-3xl md:text-[42px] font-extrabold text-white mt-3 leading-tight tracking-tight">No vendemos horas. Entregamos sistemas que operan solos.</h2>
-    <p class="text-slate-300 mt-4 text-base md:text-lg">Diseñamos, construimos y dejamos funcionando la arquitectura que tu empresa necesita para escalar sin sumar headcount operativo.</p>
-  </div>
-  <div class="grid md:grid-cols-3 gap-5 mt-12">
-    <div class="card p-8 reveal">
-      <div class="flex justify-between items-start"><span class="sec-num">01</span><span class="text-slate-400 text-xl" aria-hidden="true">↗</span></div>
-      <h3 class="text-xl font-bold text-white mt-6">Diagnóstico</h3>
-      <p class="text-slate-300 text-sm leading-relaxed mt-3">Una llamada para identificar tus cuellos de botella y definir qué agente o tablero implementar primero.</p>
-    </div>
-    <div class="card p-8 reveal" style="transition-delay:.08s">
-      <div class="flex justify-between items-start"><span class="sec-num">02</span><span class="text-slate-400 text-xl" aria-hidden="true">↗</span></div>
-      <h3 class="text-xl font-bold text-white mt-6">Piloto en semanas</h3>
-      <p class="text-slate-300 text-sm leading-relaxed mt-3">Partimos de plataformas propias ya construidas, por eso ves resultados en semanas y no en meses.</p>
-    </div>
-    <div class="card p-8 reveal" style="transition-delay:.16s">
-      <div class="flex justify-between items-start"><span class="sec-num">03</span><span class="text-slate-400 text-xl" aria-hidden="true">↗</span></div>
-      <h3 class="text-xl font-bold text-white mt-6">Operación autónoma</h3>
-      <p class="text-slate-300 text-sm leading-relaxed mt-3">Queda funcionando en tu operación, integrado a tu CRM, ERP y bases de datos, con documentación técnica incluida.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 02 SERVICIOS -->
-<section id="servicios" class="border-t border-white/5">
-<div class="wrap py-24 md:py-28">
-  <div class="max-w-2xl reveal">
-    <div class="sec-num">02 — SERVICIOS</div>
-    <h2 class="text-3xl md:text-[42px] font-extrabold text-white mt-3 leading-tight tracking-tight">Cinco áreas críticas, un solo <span class="text-lime">AI Builder</span></h2>
-    <p class="text-slate-300 mt-4 text-base md:text-lg">Ventas es el núcleo, conectado en vivo con marketing, finanzas, software y talento.</p>
-  </div>
-  <div class="grid md:grid-cols-3 gap-5 mt-12">
-    <div class="card p-8 md:row-span-2 reveal relative overflow-hidden flex flex-col justify-between" style="background:radial-gradient(120% 120% at 0% 0%,rgba(190,242,100,.12),transparent 60%),var(--panel);border-color:rgba(190,242,100,.25)">
-      <div>
-        <div class="flex items-center justify-between">
-          <div class="ico !bg-lime !text-ink"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg></div>
-          <span class="eyebrow !text-[10px] border border-lime/25 rounded px-2 py-1">núcleo</span>
-        </div>
-        <h3 class="text-2xl font-bold text-white mt-7">Ventas &amp; Conversión</h3>
-        <p class="text-slate-300 text-sm leading-relaxed mt-3">Agentes de IA que califican, agendan y cierran dentro del mismo chat, conectados a marketing, finanzas y operaciones para que ninguna oportunidad se enfríe.</p>
-      </div>
-      <div class="flex gap-8 mt-10 pt-6 border-t border-white/10">
-        <div><div class="font-mono text-2xl text-white font-semibold">&lt;60s</div><div class="text-xs text-slate-400 mt-1">respuesta</div></div>
-        <div><div class="font-mono text-2xl text-white font-semibold">24/7</div><div class="text-xs text-slate-400 mt-1">disponibilidad</div></div>
-      </div>
-    </div>
-    
-    <div class="card p-7 reveal" style="transition-delay:.05s">
-      <div class="ico"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.34 15.84c-.688-.06-1.386-.09-2.09-.09H7.5a4.5 4.5 0 110-9h.75c.704 0 1.402-.03 2.09-.09m0 9.18c2.5.223 4.957.71 7.31 1.44a19.5 19.5 0 00-1.86-11.16 19.5 19.5 0 00-7.31-1.44m0 9.18v6.75"/></svg></div>
-      <h3 class="text-lg font-bold text-white mt-5">Marketing &amp; Atracción</h3>
-      <p class="text-slate-300 text-sm leading-relaxed mt-2">Motores de contenido y performance que generan demanda calificada, no solo alcance.</p>
-    </div>
-    <div class="card p-7 reveal" style="transition-delay:.1s">
-      <div class="ico"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3v18h18M7 14l4-4 3 3 5-6"/></svg></div>
-      <h3 class="text-lg font-bold text-white mt-5">Finanzas &amp; Reporting</h3>
-      <p class="text-slate-300 text-sm leading-relaxed mt-2">Tableros en tiempo real que muestran margen y caja antes de que se conviertan en un problema.</p>
-    </div>
-    <div class="card p-7 reveal" style="transition-delay:.15s">
-      <div class="ico"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5"/></svg></div>
-      <h3 class="text-lg font-bold text-white mt-5">Desarrollo de Software</h3>
-      <p class="text-slate-300 text-sm leading-relaxed mt-2">Plataformas propias a la medida de tu operación, no plantillas genéricas.</p>
-    </div>
-    <div class="card p-7 reveal" style="transition-delay:.2s">
-      <div class="ico"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19.13a9 9 0 00-6 0M12 12a4 4 0 100-8 4 4 0 000 8zm8 9v-1a5 5 0 00-3-4.58M4 21v-1a5 5 0 013-4.58"/></svg></div>
-      <h3 class="text-lg font-bold text-white mt-5">Gestión Humana</h3>
-      <p class="text-slate-300 text-sm leading-relaxed mt-2">Procesos de talento automatizados, del reclutamiento al onboarding, sin fricción.</p>
-    </div>
+<div class="mq" aria-label="Experiencia en sectores">
+  <div aria-hidden="true">
+    <span>Banca</span><span>Seguros</span><span>Telecom</span><span>Fintech</span><span>MYPEs</span><span>Startups LATAM</span>
+    <span>Banca</span><span>Seguros</span><span>Telecom</span><span>Fintech</span><span>MYPEs</span><span>Startups LATAM</span>
+    <span>Banca</span><span>Seguros</span><span>Telecom</span><span>Fintech</span><span>MYPEs</span><span>Startups LATAM</span>
+    <span>Banca</span><span>Seguros</span><span>Telecom</span><span>Fintech</span><span>MYPEs</span><span>Startups LATAM</span>
   </div>
 </div>
+
+<section id="servicios"><div class="wrap sec">
+  <div class="tag">[01] // SERVICIOS</div>
+  <h2 style="margin-top:12px">Cinco áreas críticas. Un solo AI Builder.</h2>
+  <p class="sub">Ventas es el núcleo, conectado en vivo con marketing, finanzas, software y talento.</p>
+  <div class="bento">
+    <div class="cell big">
+      <span class="tag">[NÚCLEO]</span>
+      <h3>Ventas &amp; Conversión</h3>
+      <p>Agentes de IA que califican, agendan y cierran dentro del mismo chat, conectados a marketing, finanzas y operaciones para que ninguna oportunidad se enfríe.</p>
+      <div class="stats"><div><b>&lt;60s</b><small>respuesta</small></div><div><b>24/7</b><small>disponibilidad</small></div></div>
+    </div>
+    <div class="cell"><span class="tag">[02]</span><h3>Marketing &amp; Atracción</h3><p>Motores de contenido y performance que generan demanda calificada, no solo alcance.</p></div>
+    <div class="cell"><span class="tag">[03]</span><h3>Finanzas &amp; Reporting</h3><p>Tableros en tiempo real que muestran margen y caja antes de que se conviertan en un problema.</p></div>
+    <div class="cell"><span class="tag">[04]</span><h3>Desarrollo de Software</h3><p>Plataformas propias a la medida de tu operación, no plantillas genéricas.</p></div>
+    <div class="cell"><span class="tag">[05]</span><h3>Gestión Humana</h3><p>Procesos de talento automatizados, del reclutamiento al onboarding, sin fricción.</p></div>
+  </div>
+</div></section>
+
+<section id="metodo"><div class="wrap sec">
+  <div class="tag">[02] // MÉTODO</div>
+  <h2 style="margin-top:12px">No vendemos horas. Entregamos sistemas que operan solos.</h2>
+  <p class="sub">Diseñamos, construimos y dejamos funcionando la arquitectura que tu empresa necesita para escalar sin sumar headcount operativo.</p>
+  <div class="steps">
+    <div><div class="n">01</div><h3>Diagnóstico</h3><p>Una llamada para identificar tus cuellos de botella y definir qué agente o tablero implementar primero.</p></div>
+    <div><div class="n">02</div><h3>Piloto en semanas</h3><p>Partimos de plataformas propias ya construidas, por eso ves resultados en semanas y no en meses.</p></div>
+    <div><div class="n">03</div><h3>Operación autónoma</h3><p>Queda funcionando en tu operación, integrado a tu CRM, ERP y bases de datos, con documentación técnica incluida.</p></div>
+  </div>
+</div></section>
+
+<section aria-label="Métricas">
+  <div class="wrap nums">
+    <div><b data-n="12" data-s="+">12+</b><small>plataformas desarrolladas</small></div>
+    <div><b data-n="4.2" data-s="K">4.2K</b><small>horas/mes recuperadas</small></div>
+    <div><b>24/7</b><small>agentes autónomos</small></div>
+    <div><b data-n="12" data-s="+">12+</b><small>años en banca, seguros, telecom y fintech</small></div>
+  </div>
 </section>
 
-<!-- 03 ECOSISTEMA -->
-<section id="ecosistema" class="border-t border-white/5">
-<div class="wrap py-24 md:py-28">
-  <div class="max-w-2xl reveal">
-    <div class="sec-num">03 — ECOSISTEMA</div>
-    <h2 class="text-3xl md:text-[42px] font-extrabold text-white mt-3 leading-tight tracking-tight">Plataformas propias que aceleran cada proyecto</h2>
-    <p class="text-slate-300 mt-4 text-base md:text-lg">Infraestructura construida internamente para automatización, análisis financiero e inteligencia comercial.</p>
+<section id="ecosistema"><div class="wrap sec">
+  <div class="tag">[03] // ECOSISTEMA</div>
+  <h2 style="margin-top:12px">Plataformas propias que aceleran cada proyecto.</h2>
+  <p class="sub">Infraestructura construida internamente para automatización, análisis financiero e inteligencia comercial.</p>
+  <div class="eco">
+    <a href="https://www.expandebot.com/" target="_blank" rel="noopener noreferrer">
+      <h3>ExpandeBot</h3><p>Motor comercial en WhatsApp y Web. Captura, califica, agenda reuniones y ejecuta el flujo de cierre con IA en tiempo real.</p>
+      <div class="meta"><span>Conversational AI &amp; CRM</span><span class="go">↗</span></div>
+    </a>
+    <a href="https://www.expandemoney.com/" target="_blank" rel="noopener noreferrer">
+      <h3>ExpandeMoney</h3><p>El CFO definitivo para MYPES y startups que desean potenciar sus resultados mejorando márgenes y KPIs clave.</p>
+      <div class="meta"><span>Data Analytics &amp; OKRs</span><span class="go">↗</span></div>
+    </a>
+    <a href="https://www.expandelab.app/social" target="_blank" rel="noopener noreferrer" class="soc">
+      <h3>Social · Ruta del Emprendedor</h3><p>Comunidad, talks y programas de ExpandeLab para fundadores y dueños de pyme. Todo en un solo lugar.</p>
+      <div class="meta"><span>Comunidad</span><span class="go">↗</span></div>
+    </a>
+    <a href="https://www.expandelab.app/login" target="_blank" rel="noopener noreferrer">
+      <h3>Expande Talks</h3><p>Expertos hablando de negocios, buenas y malas prácticas. Shorts y episodios completos de podcast.</p>
+      <div class="meta"><span>Podcasts y Shorts</span><span class="go">↗</span></div>
+    </a>
   </div>
-  <div class="grid md:grid-cols-3 gap-5 mt-12">
-    <div class="card p-8 reveal flex flex-col">
-      <div class="flex items-center gap-3">
-        <div class="ico"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg></div>
-        <h3 class="text-xl font-bold text-white">ExpandeBot</h3>
-      </div>
-      <p class="text-slate-300 text-sm leading-relaxed mt-5 flex-1">Motor comercial en WhatsApp y Web. Captura, califica, agenda reuniones y ejecuta el flujo de cierre con IA en tiempo real.</p>
-      <div class="mt-6 pt-5 border-t border-white/5 flex items-center justify-between">
-        <span class="font-mono text-[11px] text-slate-400">Conversational AI &amp; CRM</span>
-        <a href="https://www.expandebot.com/" target="_blank" rel="noopener noreferrer" class="arrow-link focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-lime">Explorar <span aria-hidden="true">↗</span></a>
-      </div>
-    </div>
-    
-    <div class="card p-8 reveal flex flex-col" style="transition-delay:.08s">
-      <div class="flex items-center gap-3">
-        <div class="ico"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
-        <h3 class="text-xl font-bold text-white">ExpandeMoney</h3>
-      </div>
-      <p class="text-slate-300 text-sm leading-relaxed mt-5 flex-1">El CFO definitivo para MYPES y startups que desean potenciar sus resultados mejorando márgenes y KPIs clave.</p>
-      <div class="mt-6 pt-5 border-t border-white/5 flex items-center justify-between">
-        <span class="font-mono text-[11px] text-slate-400">Data Analytics &amp; OKRs</span>
-        <a href="https://www.expandemoney.com/" target="_blank" rel="noopener noreferrer" class="arrow-link focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-lime">Ver Money <span aria-hidden="true">↗</span></a>
-      </div>
-    </div>
-    
-    <div class="card p-8 reveal flex flex-col" style="transition-delay:.16s;border-color:rgba(190,242,100,.25)">
-      <div class="flex items-center gap-3">
-        <div class="ico !bg-lime !text-ink"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4M9 7l6-3"/></svg></div>
-        <h3 class="text-xl font-bold text-white">Ruta del Emprendedor</h3>
-      </div>
-      <p class="text-slate-300 text-sm leading-relaxed mt-5 flex-1">Workshop semi-intensivo de 6 meses para pasar de la intuición a un modelo validado, rentable y medible.</p>
-      <div class="mt-6 pt-5 border-t border-white/5 flex items-center justify-between">
-        <span class="font-mono text-[11px] text-slate-400">Programa</span>
-        <a href="#programa" class="arrow-link focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-lime">Conocer <span aria-hidden="true">→</span></a>
-      </div>
-    </div>
-  </div>
-</div>
-</section>
+</div></section>
 
-<!-- PROGRAMA -->
-<section id="programa" class="border-t border-white/5">
-<div class="wrap py-24 md:py-28">
-  <div class="card reveal p-8 md:p-12 !rounded-3xl hover:!transform-none" style="background:radial-gradient(90% 120% at 100% 0%,rgba(190,242,100,.08),transparent 60%),var(--panel);border-color:rgba(190,242,100,.22)">
-    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-6 pb-8 border-b border-white/5">
-      <div>
-        <div class="eyebrow">Programa · Batch 2026</div>
-        <h2 class="text-3xl md:text-4xl font-extrabold text-white mt-3 tracking-tight">La Ruta del <span class="text-lime italic">Emprendedor</span></h2>
-        <p class="text-slate-300 text-sm md:text-base mt-3 max-w-xl">Workshop semi-intensivo de 6 meses para fundadores y dueños de pyme que quieren pasar de la intuición a un modelo validado, rentable y medible.</p>
-      </div>
-      <a href="https://www.expandelab.app/programa" class="btn-primary whitespace-nowrap">Conoce el programa completo <span aria-hidden="true">→</span></a>
-    </div>
-    
-    <ol class="grid grid-cols-2 md:grid-cols-6 gap-4 py-8">
-      <li><div class="font-mono text-xs text-lime">01</div><div class="text-[13px] text-slate-300 mt-1.5 leading-snug">Propuesta de valor</div></li>
-      <li><div class="font-mono text-xs text-lime">02</div><div class="text-[13px] text-slate-300 mt-1.5 leading-snug">Marketing &amp; atracción</div></li>
-      <li><div class="font-mono text-xs text-lime">03</div><div class="text-[13px] text-slate-300 mt-1.5 leading-snug">Ventas &amp; conversión</div></li>
-      <li><div class="font-mono text-xs text-lime">04</div><div class="text-[13px] text-slate-300 mt-1.5 leading-snug">Frameworks ágiles</div></li>
-      <li><div class="font-mono text-xs text-lime">05</div><div class="text-[13px] text-slate-300 mt-1.5 leading-snug">Finanzas y reporting</div></li>
-      <li><div class="font-mono text-xs text-lime">06</div><div class="text-[13px] text-slate-300 mt-1.5 leading-snug">IA para negocios</div></li>
-    </ol>
-    
-    <div class="pt-6 border-t border-white/5 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-      <div class="flex gap-9 flex-wrap">
-        <div><div class="font-mono text-xl text-white font-semibold">6</div><div class="text-xs text-slate-400 mt-1">meses</div></div>
-        <div><div class="font-mono text-xl text-white font-semibold">6</div><div class="text-xs text-slate-400 mt-1">bloques</div></div>
-        <div><div class="font-mono text-xl text-white font-semibold">1:1</div><div class="text-xs text-slate-400 mt-1">mentoría</div></div>
-        <div><div class="font-mono text-xl text-lime font-semibold">$145</div><div class="text-xs text-slate-400 mt-1">desde, pago único</div></div>
-      </div>
-      <div class="text-xs text-slate-400">Dictado por <span class="text-slate-200 font-semibold">David Libón</span> — economista, fundador de ExpandeLab</div>
-    </div>
-  </div>
-</div>
-</section>
+<section id="comparar"><div class="wrap sec">
+  <div class="tag">[04] // VS. LA ALTERNATIVA</div>
+  <h2 style="margin-top:12px">Por qué no es otra agencia.</h2>
+  <p class="sub">Comparación entre contratar horas sueltas y trabajar con ExpandeLab.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Criterio</th><th>Freelancer / agencia</th><th class="us">ExpandeLab</th></tr></thead>
+    <tbody>
+      <tr><td>Qué recibes</td><td>Horas sueltas</td><td class="us">Arquitectura completa</td></tr>
+      <tr><td>Punto de partida</td><td>Desde cero</td><td class="us">Plataformas propias</td></tr>
+      <tr><td>Operación</td><td>Depende de la persona</td><td class="us">Autónoma, 24/7</td></tr>
+      <tr><td>Documentación técnica</td><td>Según el proveedor</td><td class="us">Incluida</td></tr>
+      <tr><td>Integración CRM / ERP</td><td>Aparte</td><td class="us">Incluida</td></tr>
+    </tbody>
+  </table></div>
+</div></section>
 
-<!-- TALKS -->
-<section id="talks" class="border-t border-white/5">
-<div class="wrap py-24 md:py-28 grid md:grid-cols-[1.1fr_.9fr] gap-10 items-center">
-  <div class="reveal">
-    <div class="sec-num">COMUNIDAD</div>
-    <h2 class="text-3xl md:text-[40px] font-extrabold text-white mt-3 leading-tight tracking-tight">Expande Talks: la comunidad de emprendedores</h2>
-    <p class="text-slate-300 mt-4 text-base md:text-lg">Invitamos a expertos para hablar de negocios, compartir buenas y malas prácticas y aprender de la experiencia de todos. Shorts y episodios completos de podcast.</p>
-    <a href="https://www.expandelab.app/login" class="btn-primary mt-8">Quiero participar en los Talks <span aria-hidden="true">→</span></a>
+<section id="soluciones"><div class="wrap sec">
+  <div class="tag">[05] // DIAGNÓSTICO OPERATIVO</div>
+  <h2 style="margin-top:12px">Detén la fuga operativa y escala.</h2>
+  <div class="ba">
+    <div><div class="tag" style="color:var(--mut);margin-bottom:12px">// HOY · OPERACIÓN FRAGMENTADA</div><ul>
+      <li><strong>Leads fríos</strong>El equipo tarda horas en responder por WhatsApp o web y pierde cierres.</li>
+      <li><strong>Poca claridad financiera</strong>Sin margen en tiempo real ni previsión de caja.</li>
+      <li><strong>Trabajo manual</strong>Cientos de horas copiando datos entre Excel y sistemas desconectados.</li></ul></div>
+    <div><div class="tag" style="margin-bottom:12px">// CON ARQUITECTURA EXPANDELAB</div><ul>
+      <li><strong>Conversión inmediata 24/7</strong>Agentes autónomos califican, agendan y agilizan la venta en segundos.</li>
+      <li><strong>Inteligencia financiera activa</strong>Tableros que proyectan unit economics y detectan fugas de capital.</li>
+      <li><strong>Ecosistema integrado</strong>Flujos sincronizados con tu CRM, ERP y bases de datos.</li></ul></div>
   </div>
-  <div class="card reveal p-8 !rounded-3xl hover:!transform-none text-center" style="background:radial-gradient(100% 100% at 50% 0%,rgba(190,242,100,.1),transparent 70%),var(--panel)">
-    <div class="w-16 h-16 mx-auto rounded-full bg-lime/10 border border-lime/25 flex items-center justify-center text-lime">
-      <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M12 14a3 3 0 003-3V6a3 3 0 10-6 0v5a3 3 0 003 3zm-7-3a7 7 0 0014 0m-7 7v3"/></svg>
-    </div>
-    <div class="font-bold text-white text-lg mt-5">Podcasts y Shorts</div>
-    <div class="text-slate-400 text-xs mt-1 font-mono">Una iniciativa de ExpandeLab</div>
-  </div>
-</div>
-</section>
+</div></section>
 
-<!-- ANTES / DESPUÉS -->
-<section id="soluciones" class="border-t border-white/5">
-<div class="wrap py-24 md:py-28">
-  <div class="max-w-2xl reveal">
-    <div class="sec-num">DIAGNÓSTICO OPERATIVO</div>
-    <h2 class="text-3xl md:text-[42px] font-extrabold text-white mt-3 leading-tight tracking-tight">Detén la fuga operativa y escala</h2>
-    <p class="text-slate-300 mt-4 text-base md:text-lg">Reemplazamos procesos fragmentados por sistemas interconectados.</p>
+<section id="faq"><div class="wrap sec">
+  <div class="tag">[06] // FAQ</div>
+  <h2 style="margin-top:12px">Lo que suelen preguntarnos.</h2>
+  <div class="faq">
+    <button aria-expanded="false"><span>¿Qué diferencia hay con un freelancer o agencia?</span><i>+</i></button>
+    <div class="a"><p>No entregamos horas sueltas: diseñamos arquitectura completa (agentes IA, CRM, finanzas) que queda funcionando de forma autónoma en tu operación, con documentación técnica incluida.</p></div>
+    <button aria-expanded="false"><span>¿Cuánto tiempo toma ver resultados?</span><i>+</i></button>
+    <div class="a"><p>La mayoría de los pilotos (agente de WhatsApp, tablero financiero) quedan operativos en semanas, no meses, porque partimos de plataformas propias ya construidas.</p></div>
+    <button aria-expanded="false"><span>¿Qué tipo de negocios encajan mejor?</span><i>+</i></button>
+    <div class="a"><p>MYPEs y startups en LATAM con procesos comerciales o financieros manuales que quieren escalar sin sumar headcount operativo. Si ya tienes CRM, ERP o Excel fragmentados, encajas.</p></div>
+    <button aria-expanded="false"><span>¿Cómo empiezo?</span><i>+</i></button>
+    <div class="a"><p>Haz clic en "Hazme socio" y agenda una llamada de diagnóstico. Ahí identificamos tus cuellos de botella y te proponemos qué agente o tablero implementar primero.</p></div>
   </div>
-  <div class="grid md:grid-cols-2 gap-5 mt-12">
-    <div class="card reveal p-9 hover:!transform-none">
-      <div class="font-mono text-[11px] tracking-widest uppercase text-slate-300 border border-white/10 rounded-full px-3 py-1 inline-block">Hoy · operación fragmentada</div>
-      <ul class="space-y-5 mt-7 text-sm text-slate-300" role="list">
-        <li class="flex gap-3.5"><span class="text-slate-500" aria-hidden="true">—</span><span><strong class="text-white">Leads fríos.</strong> El equipo tarda horas en responder por WhatsApp o web y pierde cierres.</span></li>
-        <li class="flex gap-3.5"><span class="text-slate-500" aria-hidden="true">—</span><span><strong class="text-white">Poca claridad financiera.</strong> Sin margen en tiempo real ni previsión de caja.</span></li>
-        <li class="flex gap-3.5"><span class="text-slate-500" aria-hidden="true">—</span><span><strong class="text-white">Trabajo manual.</strong> Cientos de horas copiando datos entre Excel y sistemas desconectados.</span></li>
-      </ul>
-    </div>
-    <div class="card reveal p-9 hover:!transform-none" style="transition-delay:.1s;border-color:rgba(190,242,100,.25);background:radial-gradient(100% 100% at 100% 0%,rgba(190,242,100,.07),transparent 60%),var(--panel)">
-      <div class="eyebrow border border-lime/25 bg-lime/5 rounded-full px-3 py-1 inline-block !text-[11px]">Con arquitectura ExpandeLab</div>
-      <ul class="space-y-5 mt-7 text-sm text-slate-200" role="list">
-        <li class="flex gap-3.5"><span class="text-lime" aria-hidden="true">✓</span><span><strong class="text-white">Conversión inmediata 24/7.</strong> Agentes autónomos califican, agendan y agilizan la venta en segundos.</span></li>
-        <li class="flex gap-3.5"><span class="text-lime" aria-hidden="true">✓</span><span><strong class="text-white">Inteligencia financiera activa.</strong> Tableros que proyectan unit economics y detectan fugas de capital.</span></li>
-        <li class="flex gap-3.5"><span class="text-lime" aria-hidden="true">✓</span><span><strong class="text-white">Ecosistema integrado.</strong> Flujos sincronizados con tu CRM, ERP y bases de datos.</span></li>
-      </ul>
-    </div>
-  </div>
-</div>
-</section>
+</div></section>
 
-<!-- FAQ -->
-<section id="faq" class="border-t border-white/5">
-<div class="wrap py-24 md:py-28 max-w-3xl">
-  <div class="text-center reveal">
-    <div class="sec-num">PREGUNTAS FRECUENTES</div>
-    <h2 class="text-3xl md:text-[40px] font-extrabold text-white mt-3 tracking-tight">Lo que suelen preguntarnos</h2>
-  </div>
-  <div class="space-y-3 mt-10">
-    <div class="faq-item card reveal !rounded-2xl hover:!transform-none overflow-hidden">
-      <button class="faq-toggle w-full flex items-center justify-between gap-4 p-6 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime" aria-expanded="false">
-        <span class="font-semibold text-white">¿Qué diferencia hay entre ExpandeLab y contratar un freelancer o agencia?</span>
-        <span class="faq-icon text-lime text-2xl font-mono" aria-hidden="true">+</span>
-      </button>
-      <div class="faq-answer px-6">
-        <p class="text-slate-300 text-sm leading-relaxed pb-6">No entregamos horas sueltas: diseñamos arquitectura completa (agentes IA, CRM, finanzas) que queda funcionando de forma autónoma en tu operación, con documentación técnica incluida.</p>
-      </div>
-    </div>
-    <div class="faq-item card reveal !rounded-2xl hover:!transform-none overflow-hidden">
-      <button class="faq-toggle w-full flex items-center justify-between gap-4 p-6 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime" aria-expanded="false">
-        <span class="font-semibold text-white">¿Cuánto tiempo toma ver resultados?</span>
-        <span class="faq-icon text-lime text-2xl font-mono" aria-hidden="true">+</span>
-      </button>
-      <div class="faq-answer px-6">
-        <p class="text-slate-300 text-sm leading-relaxed pb-6">La mayoría de los pilotos (agente de WhatsApp, tablero financiero) quedan operativos en semanas, no meses, porque partimos de plataformas propias ya construidas.</p>
-      </div>
-    </div>
-    <div class="faq-item card reveal !rounded-2xl hover:!transform-none overflow-hidden">
-      <button class="faq-toggle w-full flex items-center justify-between gap-4 p-6 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime" aria-expanded="false">
-        <span class="font-semibold text-white">¿Qué tipo de negocios encajan mejor?</span>
-        <span class="faq-icon text-lime text-2xl font-mono" aria-hidden="true">+</span>
-      </button>
-      <div class="faq-answer px-6">
-        <p class="text-slate-300 text-sm leading-relaxed pb-6">MYPEs y startups en LATAM con procesos comerciales o financieros manuales que quieren escalar sin sumar headcount operativo. Si ya tienes CRM, ERP o Excel fragmentados, encajas.</p>
-      </div>
-    </div>
-    <div class="faq-item card reveal !rounded-2xl hover:!transform-none overflow-hidden">
-      <button class="faq-toggle w-full flex items-center justify-between gap-4 p-6 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lime" aria-expanded="false">
-        <span class="font-semibold text-white">¿Cómo empiezo?</span>
-        <span class="faq-icon text-lime text-2xl font-mono" aria-hidden="true">+</span>
-      </button>
-      <div class="faq-answer px-6">
-        <p class="text-slate-300 text-sm leading-relaxed pb-6">Haz clic en "Hazme socio" y agenda una llamada de diagnóstico. Ahí identificamos tus cuellos de botella y te proponemos qué agente o tablero implementar primero.</p>
-      </div>
-    </div>
-  </div>
-</div>
-</section>
-
-<!-- BANDA CTA -->
-<section id="contacto" class="wrap pb-24">
-  <div class="reveal rounded-[28px] border border-lime/25 p-10 md:p-16 text-center relative overflow-hidden" style="background:radial-gradient(80% 140% at 50% 0%,rgba(190,242,100,.12),transparent 65%),var(--panel)">
-    <h2 class="text-3xl md:text-5xl font-extrabold text-white tracking-tight leading-tight max-w-3xl mx-auto">Automatiza tu conversión y escala tu empresa</h2>
-    <p class="text-slate-300 mt-5 max-w-xl mx-auto">Evaluemos la viabilidad operativa e identifiquemos los cuellos de botella para diseñar tu arquitectura de automatización a medida.</p>
-    <a href="https://www.expandelab.app/login" class="btn-primary mt-9 !px-10 !py-4 !text-base">Hazme socio <span aria-hidden="true">→</span></a>
-    <p class="text-xs text-slate-400 font-mono mt-5">Atención directa del equipo de ingeniería de ExpandeLab</p>
-  </div>
-</section>
+<section class="final" id="contacto"><div class="wrap">
+  <div class="tag">[LISTO PARA EMPEZAR?]</div>
+  <h2 style="margin-top:14px">Automatiza tu conversión y escala tu empresa.</h2>
+  <p class="sub">Evaluemos la viabilidad operativa e identifiquemos los cuellos de botella para diseñar tu arquitectura de automatización a medida.</p>
+  <a class="btn p" href="https://www.expandelab.app/login" style="padding:18px 36px">Hazme socio →</a>
+  <p class="fine">ATENCIÓN DIRECTA DEL EQUIPO DE INGENIERÍA</p>
+</div></section>
 </main>
 
-<!-- FOOTER -->
-<footer class="border-t border-white/5 bg-panel/50">
-  <div class="wrap py-14 grid grid-cols-2 md:grid-cols-[1.4fr_1fr_1fr_1fr] gap-10 text-sm">
-    <div class="col-span-2 md:col-span-1">
-      <div class="flex items-center gap-2.5">
-        <span class="w-3 h-3 rounded-[3px] bg-lime rotate-45 inline-block" aria-hidden="true"></span>
-        <span class="text-lg font-extrabold text-white">Expande<span class="text-lime">Lab</span></span>
-      </div>
-      <p class="text-slate-400 text-[13px] mt-4 max-w-xs leading-relaxed">AI Venture Builder en Lima. Desarrollo e ingeniería de IA para MYPEs y startups de LATAM.</p>
-    </div>
-    <div>
-      <div class="text-white font-semibold mb-4">Servicios</div>
-      <ul class="space-y-2.5 text-slate-300" role="list">
-        <li><a class="hover:text-white transition-colors" href="#servicios">Ventas &amp; Conversión</a></li>
-        <li><a class="hover:text-white transition-colors" href="#servicios">Finanzas &amp; Reporting</a></li>
-        <li><a class="hover:text-white transition-colors" href="#servicios">Software a medida</a></li>
-        <li><a class="hover:text-white transition-colors" href="#soluciones">Diagnóstico operativo</a></li>
-      </ul>
-    </div>
-    <div>
-      <div class="text-white font-semibold mb-4">Ecosistema</div>
-      <ul class="space-y-2.5 text-slate-300" role="list">
-        <li><a class="hover:text-white transition-colors" href="https://www.expandebot.com/" target="_blank" rel="noopener noreferrer">ExpandeBot</a></li>
-        <li><a class="hover:text-white transition-colors" href="https://www.expandemoney.com/" target="_blank" rel="noopener noreferrer">ExpandeMoney</a></li>
-        <li><a class="hover:text-white transition-colors" href="#programa">Ruta del Emprendedor</a></li>
-        <li><a class="hover:text-white transition-colors" href="#talks">Expande Talks</a></li>
-      </ul>
-    </div>
-    <div>
-      <div class="text-white font-semibold mb-4">Empresa</div>
-      <ul class="space-y-2.5 text-slate-300" role="list">
-        <li><a class="hover:text-white transition-colors" href="#metodo">Método</a></li>
-        <li><a class="hover:text-white transition-colors" href="#faq">Preguntas</a></li>
-        <li><a class="hover:text-white transition-colors" href="https://www.expandelab.app/login">Hazme socio</a></li>
-      </ul>
-    </div>
+<footer><div class="wrap">
+  <div class="fg">
+    <div><a href="#" class="logo"><i></i>Expande<span class="lime">Lab</span></a><p style="color:var(--mut);margin-top:14px;max-width:280px">AI Venture Builder en Lima. Desarrollo e ingeniería de IA para MYPEs y startups de LATAM.</p></div>
+    <div><h4>Servicios</h4><ul><li><a href="#servicios">Ventas &amp; Conversión</a></li><li><a href="#servicios">Finanzas &amp; Reporting</a></li><li><a href="#servicios">Software a medida</a></li><li><a href="#soluciones">Diagnóstico operativo</a></li></ul></div>
+    <div><h4>Ecosistema</h4><ul><li><a href="https://www.expandebot.com/" target="_blank" rel="noopener noreferrer">ExpandeBot</a></li><li><a href="https://www.expandemoney.com/" target="_blank" rel="noopener noreferrer">ExpandeMoney</a></li><li><a href="https://www.expandelab.app/social" target="_blank" rel="noopener">Social</a></li></ul></div>
+    <div><h4>Empresa</h4><ul><li><a href="#metodo">Método</a></li><li><a href="#faq">Preguntas</a></li><li><a href="https://www.expandelab.app/login">Hazme socio</a></li></ul></div>
   </div>
-  <div class="wrap pb-8 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between gap-3 text-xs text-slate-400">
-    <span>© 2026 ExpandeLab. Todos los derechos reservados.</span>
-    <span class="font-mono">Lima, Perú · Atención directa de ingeniería</span>
-  </div>
-</footer>
+  <div class="copy"><span>© 2026 EXPANDELAB. TODOS LOS DERECHOS RESERVADOS.</span><span>LIMA, PERÚ</span></div>
+</div></footer>
 
-<!-- Botón Volver Arriba -->
-<button id="back-to-top" aria-label="Volver arriba" class="fixed bottom-6 right-6 z-50 w-11 h-11 rounded-full bg-lime text-ink flex items-center justify-center shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
-  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
-</button>
+<button id="up" aria-label="Volver arriba">↑</button>
 
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Header Scroll & Back to Top
-    const header = document.getElementById('site-header');
-    const btt = document.getElementById('back-to-top');
+(function(){
+  var up=document.getElementById('up');
+  addEventListener('scroll',function(){up.classList.toggle('show',scrollY>500)},{passive:true});
+  up.onclick=function(){scrollTo({top:0,behavior:'smooth'})};
 
-    function onScroll() {
-      const scrolled = window.scrollY > 40;
-      header.classList.toggle('is-scrolled', scrolled);
-      
-      const showBtt = window.scrollY > 500;
-      btt.style.opacity = showBtt ? '1' : '0';
-      btt.style.pointerEvents = showBtt ? 'auto' : 'none';
-    }
+  var hb=document.getElementById('hb'),mm=document.getElementById('mm');
+  function setMenu(o){mm.classList.toggle('open',o);hb.setAttribute('aria-expanded',o);hb.textContent=o?'Cerrar ×':'Menú +'}
+  hb.onclick=function(){setMenu(!mm.classList.contains('open'))};
+  mm.querySelectorAll('a').forEach(function(a){a.onclick=function(){setMenu(false)}});
+  addEventListener('keydown',function(e){if(e.key==='Escape')setMenu(false)});
 
-    window.addEventListener('scroll', onScroll, { passive: true });
-    onScroll();
+  // Inspector: capas -> panel + propiedades
+  var props={ventas:['<60s','24/7','CRM · ERP'],finanzas:['Tiempo real','Margen · Caja','OKRs'],software:['A medida','Docs incluidas','API · ERP']};
+  var tabs=document.querySelectorAll('.layers button');
+  function pick(k){
+    tabs.forEach(function(b){b.setAttribute('aria-selected',b.dataset.t===k)});
+    document.querySelectorAll('.pane').forEach(function(p){p.classList.toggle('on',p.id==='p-'+k)});
+    ['v1','v2','v3'].forEach(function(id,i){document.getElementById(id).textContent=props[k][i]});
+    // reinicia animación de barras
+    var bars=document.querySelectorAll('#p-finanzas span');
+    bars.forEach(function(s){s.style.animation='none';s.offsetWidth;s.style.animation=''});
+  }
+  tabs.forEach(function(b){b.onclick=function(){pick(b.dataset.t)}});
+  var order=['ventas','finanzas','software'],i=0,auto=setInterval(function(){i=(i+1)%3;pick(order[i])},4500);
+  document.querySelector('.insp').addEventListener('click',function(){clearInterval(auto)});
 
-    btt.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    // Menú Hamburguesa Móvil (Accesible)
-    const hb = document.getElementById('hamburger-btn');
-    const mm = document.getElementById('mobile-menu');
-
-    function closeMenu() {
-      mm.classList.remove('is-open');
-      hb.setAttribute('aria-expanded', 'false');
-      hb.textContent = 'Menú +';
-    }
-
-    hb.addEventListener('click', () => {
-      const isOpen = mm.classList.toggle('is-open');
-      hb.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-      hb.textContent = isOpen ? 'Cerrar ×' : 'Menú +';
-    });
-
-    document.querySelectorAll('.mobile-nav-link').forEach(link => {
-      link.addEventListener('click', closeMenu);
-    });
-
-    // Cerrar menú móvil al presionar Escape
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && mm.classList.contains('is-open')) {
-        closeMenu();
-      }
-    });
-
-    // ScrollSpy (IntersectionObserver)
-    const navLinks = document.querySelectorAll('.nav-link[data-section]');
-    const spyObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          navLinks.forEach(link => {
-            link.classList.toggle('nav-active', link.dataset.section === entry.target.id);
-          });
-        }
-      });
-    }, { rootMargin: '-45% 0px -50% 0px' });
-
-    navLinks.forEach(link => {
-      const section = document.getElementById(link.dataset.section);
-      if (section) spyObserver.observe(section);
-    });
-
-    // Scroll Reveal Animation
-    const revealObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('is-visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.12 });
-
-    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
-    // FAQ Acordeón (Calculado dinámicamente)
-    document.querySelectorAll('.faq-toggle').forEach(button => {
-      button.addEventListener('click', () => {
-        const item = button.closest('.faq-item');
-        const answer = item.querySelector('.faq-answer');
-        const isOpen = item.classList.contains('is-open');
-
-        // Cerrar todos
-        document.querySelectorAll('.faq-item.is-open').forEach(openItem => {
-          openItem.classList.remove('is-open');
-          openItem.querySelector('.faq-toggle').setAttribute('aria-expanded', 'false');
-          openItem.querySelector('.faq-answer').style.maxHeight = '0px';
-        });
-
-        // Abrir actual
-        if (!isOpen) {
-          item.classList.add('is-open');
-          button.setAttribute('aria-expanded', 'true');
-          answer.style.maxHeight = answer.scrollHeight + 'px';
-        }
-      });
-    });
+  // FAQ
+  document.querySelectorAll('.faq button').forEach(function(b){
+    b.onclick=function(){
+      var open=b.getAttribute('aria-expanded')==='true';
+      document.querySelectorAll('.faq button').forEach(function(x){x.setAttribute('aria-expanded','false');x.nextElementSibling.style.maxHeight='0'});
+      if(!open){b.setAttribute('aria-expanded','true');b.nextElementSibling.style.maxHeight=b.nextElementSibling.scrollHeight+'px'}
+    };
   });
+
+  // Scrollspy
+  var links=document.querySelectorAll('.links a[data-s]');
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)links.forEach(function(l){l.classList.toggle('on',l.dataset.s===e.target.id)})})},{rootMargin:'-45% 0px -50% 0px'});
+  links.forEach(function(l){var s=document.getElementById(l.dataset.s);if(s)io.observe(s)});
+
+  // Contadores (una sola vez, al entrar en pantalla)
+  if(!matchMedia('(prefers-reduced-motion: reduce)').matches){
+    var co=new IntersectionObserver(function(es){es.forEach(function(e){
+      if(!e.isIntersecting)return;co.unobserve(e.target);
+      var el=e.target,end=parseFloat(el.dataset.n),suf=el.dataset.s,dec=end%1?1:0,t0=performance.now();
+      (function step(t){var p=Math.min((t-t0)/900,1);el.textContent=(end*p).toFixed(dec)+suf;if(p<1)requestAnimationFrame(step)})(t0);
+    })},{threshold:.6});
+    document.querySelectorAll('[data-n]').forEach(function(n){co.observe(n)});
+  }
+})();
 </script>
 </body>
 </html>
